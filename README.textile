@@ -11,7 +11,7 @@ the remaining issues, so that we can finally enjoy nested model assignment in da
 
 h3. Why isn't this implemented as options on association declarations?
 
-* I somehow like the declarative style of accepts_nested_attributes_for better. it jumps out immediately.
+* I somehow like the declarative style of @accepts_nested_attributes_for@ better. it jumps out immediately.
 * The API for datamapper and activerecord is the same.
 * association definitions can already get quite long and "unreadable". chances are you overlook it!
 
@@ -19,7 +19,7 @@ h3. Why doesn't accepts_nested_attributes_for take more than one association_nam
 
 While writing the unit specs for this method, I realised that there are way too many ways to call this
 method, which makes it "hard" to spec all possible calls. That's why I started to list Pros and Cons, and
-decided to support only one association_name per call, at least for now.
+decided to support only one @association_name@ per call, at least for now.
 
 h4. Pros
 
