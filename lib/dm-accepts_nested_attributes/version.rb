@@ -1,0 +1,7 @@
+module DataMapper
+  module NestedAttributes
+    
+    VERSION = "0.0.1"
+  
+  end
+end
