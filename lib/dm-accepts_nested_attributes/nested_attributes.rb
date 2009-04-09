@@ -265,6 +265,9 @@ module DataMapper
         end
       else
         record.attributes = attributes.except(*UNASSIGNABLE_KEYS)
+        if self.class.association_type(association_name) == :many_to_many
+          record.save
+        end
       end
     end
     
