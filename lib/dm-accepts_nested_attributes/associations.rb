@@ -9,25 +9,20 @@ module DataMapper
           
           return false if @parent.nil?
           
-          # With this next line commented out, updating works !?!
-          # Also, I ran specs for dm-core-0.9.11 with this line
-          # commented out, and the only additional failures were
-          # because some mocks(!) didn't receive a call to new_record?
-          #
-          # I don't know if this means that this line is useless,
-          # or if there simply aren't enough (or wrong) specs in
-          # 0.9.11
-          #
-          # I'll leave this to the experts :)
+          # original dm-core-0.9.11 code:
+          # return true unless parent.new_record?
           
-          
-          # return true  unless parent.new_record?
+          # and the backwards compatible extension to it (allows update of belongs_to model)
+          if !parent.new_record? && !@relationship.child_model.autosave_associations.key?(@relationship.name)
+            return true
+          end
 
           @relationship.with_repository(parent) do
             result = parent.marked_for_destruction? ? parent.destroy : parent.save
             @relationship.child_key.set(@child, @relationship.parent_key.get(parent)) if result
             result
           end
+          
         end
         
       end
