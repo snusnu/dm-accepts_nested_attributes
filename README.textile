@@ -10,7 +10,7 @@ debugging statements (and helper methods). Feel free to (un)comment as you wish,
 the remaining issues, so that we can finally enjoy nested model assignment in datamapper as well!
 
 For more information on the progress, have a look at this README and also at
-http://sick.snusnu.info/2009/04/08/dm-accepts_nested_attributes/ where I will try to comment on the
+"this article":http://sick.snusnu.info/2009/04/08/dm-accepts_nested_attributes/ on my blog, where I will try to comment on the
 development (problems).
 
 h3. Why isn't this implemented as options on association declarations?
