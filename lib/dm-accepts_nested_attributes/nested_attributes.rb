@@ -73,25 +73,36 @@ module DataMapper
         # belongs_to seems to generate no options[:max]
         association_for_name(association_name, repository).options[:max] || 1
       end
-      
-      # this is here only because there is no #build_#{association_name}
-      # method in datamapper. maybe it's a good idea to add this one?
-      # ----------------------------------------------------------------
-      # TODO: this needs one of the following:
-      # - more dm-core reading
-      # - a different approach
-      # - an api in dm-core
-      # - dm-core next branch (investigate this)
+
+      # i have the feeling this should be refactored
       def associated_model_for_name(association_name, repository = :default)
         a = association_for_name(association_name, repository)
-        if a.options[:max].nil? # belongs_to
+        case association_type(association_name)
+        when :many_to_one
           a.parent_model
-        elsif a.options[:max] == 1 # has(1)
+        when :one_to_one
           a.child_model
-        elsif a.options[:max] > 1 && !a.is_a?(DataMapper::Associations::RelationshipChain) # has(n)
+        when :one_to_many
           a.child_model
-        elsif a.is_a?(DataMapper::Associations::RelationshipChain) # has(n, :through) MUST be checked after has(n) here
+        when :many_to_many
           Object.full_const_get(a.options[:child_model])
+        else
+          raise ArgumentError, "Unknown association type #{a.inspect}"
+        end
+      end
+      
+      # maybe this should be provided by dm-core somehow
+      # DataMapper::Association::Relationship would be a place maybe?
+      def association_type(association_name)
+        a = association_for_name(association_name)
+        if a.options[:max].nil? # belongs_to
+          :many_to_one
+        elsif a.options[:max] == 1 # has(1)
+          :one_to_one
+        elsif a.options[:max] > 1 && !a.is_a?(DataMapper::Associations::RelationshipChain) # has(n)
+          :one_to_many
+        elsif a.is_a?(DataMapper::Associations::RelationshipChain) # has(n, :through) MUST be checked after has(n) here
+          :many_to_many
         else
           raise ArgumentError, "Unknown association type #{a.inspect}"
         end
@@ -162,12 +173,8 @@ module DataMapper
           model = self.class.associated_model_for_name(association_name)
           send("#{association_name}=", model.new(attributes.except(*UNASSIGNABLE_KEYS)))
         end
-      elsif (existing_record = associated_instance_get(association_name)) && existing_record.id.to_s == attributes[:id].to_s
-        # puts "XXX: before assign_to_or_mark_for_destruction<br />"
+      else (existing_record = associated_instance_get(association_name)) && existing_record.id.to_s == attributes[:id].to_s
         assign_to_or_mark_for_destruction(existing_record, attributes, allow_destroy)
-      else
-        puts "XXXXX<br />"
-        puts "XXXXX<br />"
       end
     end
     
@@ -210,13 +217,34 @@ module DataMapper
       attributes_collection.each do |attributes|
         if attributes[:id].blank?
           unless reject_new_record?(association_name, attributes)
-            send(association_name).build(attributes.except(*UNASSIGNABLE_KEYS))
+            case self.class.association_type(association_name)
+            when :one_to_many
+              build_new_has_n_association(association_name, attributes)
+            when :many_to_many
+              build_new_has_n_through_association(association_name, attributes)
+            end
           end
         elsif existing_record = send(association_name).detect { |record| record.id.to_s == attributes[:id].to_s }
           assign_to_or_mark_for_destruction(existing_record, attributes, allow_destroy)
         end
       end
       
+    end
+    
+    def build_new_has_n_association(association_name, attributes)
+      send(association_name).build(attributes.except(*UNASSIGNABLE_KEYS))
+    end
+        
+    def build_new_has_n_through_association(association_name, attributes)
+      # fetch the association to have the information ready
+      association = self.class.association_for_name(association_name)
+      # do what's done in dm-core/specs/integration/association_through_spec.rb
+      join_entry = Extlib::Inflection.constantize(Extlib::Inflection.classify(association.name)).new
+      self.send(association.name) << join_entry
+      self.save
+      child_entry = self.class.associated_model_for_name(association_name).new(attributes)
+      child_entry.send(association.name) << join_entry
+      child_entry.save
     end
     
     # Updates a record with the +attributes+ or marks it for destruction if

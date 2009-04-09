@@ -4,5 +4,5 @@ class Person
   property :name, String
   has 1, :profile
   has n, :project_memberships
-  has n, :projects, :through => :project_memberships #, :mutable => true
+  has n, :projects, :through => :project_memberships
 end
