@@ -124,6 +124,20 @@ module DataMapper
     def associated_instance_get(association_name, repository = :default)
       send(self.class.association_for_name(association_name, repository).name)
     end
+    
+    # Reloads the attributes of the object as usual and removes a mark for destruction.
+    def reload
+      @marked_for_destruction = false
+      super
+    end
+    
+    def marked_for_destruction?
+      @marked_for_destruction
+    end
+    
+    def mark_for_destruction
+      @marked_for_destruction = true
+    end
 
 
     private
@@ -149,7 +163,11 @@ module DataMapper
           send("#{association_name}=", model.new(attributes.except(*UNASSIGNABLE_KEYS)))
         end
       elsif (existing_record = associated_instance_get(association_name)) && existing_record.id.to_s == attributes[:id].to_s
+        # puts "XXX: before assign_to_or_mark_for_destruction<br />"
         assign_to_or_mark_for_destruction(existing_record, attributes, allow_destroy)
+      else
+        puts "XXXXX<br />"
+        puts "XXXXX<br />"
       end
     end
     
@@ -207,7 +225,9 @@ module DataMapper
       if has_delete_flag?(attributes) && allow_destroy
         record.mark_for_destruction
       else
+        # puts "before: record.attributes = #{h(record.attributes.inspect)}<br />"
         record.attributes = attributes.except(*UNASSIGNABLE_KEYS)
+        # puts "after: record.attributes = #{h(record.attributes.inspect)}<br />"
       end
     end
     
