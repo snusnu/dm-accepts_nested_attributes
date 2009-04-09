@@ -174,7 +174,7 @@ module DataMapper
           send("#{association_name}=", model.new(attributes.except(*UNASSIGNABLE_KEYS)))
         end
       else (existing_record = associated_instance_get(association_name)) && existing_record.id.to_s == attributes[:id].to_s
-        assign_to_or_mark_for_destruction(existing_record, attributes, allow_destroy)
+        assign_to_or_mark_for_destruction(association_name, existing_record, attributes, allow_destroy)
       end
     end
     
@@ -225,7 +225,7 @@ module DataMapper
             end
           end
         elsif existing_record = send(association_name).detect { |record| record.id.to_s == attributes[:id].to_s }
-          assign_to_or_mark_for_destruction(existing_record, attributes, allow_destroy)
+          assign_to_or_mark_for_destruction(association_name, existing_record, attributes, allow_destroy)
         end
       end
       
@@ -253,13 +253,18 @@ module DataMapper
     
     # Updates a record with the +attributes+ or marks it for destruction if
     # +allow_destroy+ is +true+ and has_delete_flag? returns +true+.
-    def assign_to_or_mark_for_destruction(record, attributes, allow_destroy)
+    def assign_to_or_mark_for_destruction(association_name, record, attributes, allow_destroy)
       if has_delete_flag?(attributes) && allow_destroy
-        record.mark_for_destruction
+        if self.class.association_type(association_name) == :many_to_many
+          # destroy the join record
+          record.send(self.class.association_for_name(association_name).name).destroy!
+          # destroy the child record
+          record.destroy
+        else
+          record.mark_for_destruction
+        end
       else
-        # puts "before: record.attributes = #{h(record.attributes.inspect)}<br />"
         record.attributes = attributes.except(*UNASSIGNABLE_KEYS)
-        # puts "after: record.attributes = #{h(record.attributes.inspect)}<br />"
       end
     end
     

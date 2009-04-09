@@ -164,7 +164,7 @@ DataMapper::NestedAttributes Person.has(n, :projects, :through => :project_membe
 DataMapper::NestedAttributes Person.has(n, :projects, :through => :project_memberships) accepts_nested_attributes_for(:projects, :allow_destroy = true)
 - should allow to create a new project via Person#projects_attributes
 - should allow to update an existing project via Person#projects_attributes (FAILED - 2)
-- should allow to delete an existing project via Person#projects_attributes (FAILED - 3)
+- should allow to delete an existing project via Person#projects_attributes
 </code>
 </pre>
 
