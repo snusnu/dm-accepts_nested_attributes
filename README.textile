@@ -9,6 +9,10 @@ Inside @lib/dm-accepts_nested_attributes/autosave_association.rb@ the @#save@ me
 debugging statements (and helper methods). Feel free to (un)comment as you wish, and help me find
 the remaining issues, so that we can finally enjoy nested model assignment in datamapper as well!
 
+For more information on the progress, have a look at this README and also at
+http://sick.snusnu.info/2009/04/08/dm-accepts_nested_attributes/ where I will try to comment on the
+development (problems).
+
 h3. Why isn't this implemented as options on association declarations?
 
 * I somehow like the declarative style of @accepts_nested_attributes_for@ better. it jumps out immediately.
@@ -129,12 +133,12 @@ h2. Current Integration Specs
 <code>
 DataMapper::NestedAttributes Profile.belongs_to(:person) accepts_nested_attributes_for(:person, :allow_destroy = false)
 - should allow to create a new person via Profile#person_attributes
-- should allow to update an existing person via Profile#person_attributes (FAILED - 1)
+- should allow to update an existing person via Profile#person_attributes
 - should not allow to delete an existing person via Profile#person_attributes
 
 DataMapper::NestedAttributes Profile.belongs_to(:person) accepts_nested_attributes_for(:person, :allow_destroy = true)
 - should allow to create a new person via Profile#person_attributes
-- should allow to update an existing person via Profile#person_attributes (FAILED - 2)
+- should allow to update an existing person via Profile#person_attributes
 - should allow to delete an existing person via Profile#person_attributes
 
 DataMapper::NestedAttributes Person.has(1, :profile) accepts_nested_attributes_for(:profile, :allow_destroy = false)
@@ -149,23 +153,23 @@ DataMapper::NestedAttributes Person.has(1, :profile) accepts_nested_attributes_f
 
 DataMapper::NestedAttributes Project.has(n, :tasks) accepts_nested_attributes_for(:tasks, :allow_destroy = false)
 - should allow to create a new task via Project#tasks_attributes
-- should allow to update an existing task via Project#tasks_attributes (FAILED - 3)
+- should allow to update an existing task via Project#tasks_attributes
 - should not allow to delete an existing task via Profile#tasks_attributes
 
 DataMapper::NestedAttributes Project.has(n, :tasks) accepts_nested_attributes_for(:tasks, :allow_destroy = true)
 - should allow to create a new task via Project#tasks_attributes
-- should allow to update an existing task via Project#tasks_attributes (FAILED - 4)
+- should allow to update an existing task via Project#tasks_attributes
 - should allow to delete an existing task via Profile#tasks_attributes
 
 DataMapper::NestedAttributes Person.has(n, :projects, :through => :project_memberships) accepts_nested_attributes_for(:projects, :allow_destroy = false)
-- should allow to create a new project via Person#projects_attributes (FAILED - 5)
-- should allow to update an existing project via Person#projects_attributes (FAILED - 6)
+- should allow to create a new project via Person#projects_attributes (FAILED - 1)
+- should allow to update an existing project via Person#projects_attributes (FAILED - 2)
 - should not allow to delete an existing project via Person#projects_attributes
 
 DataMapper::NestedAttributes Person.has(n, :projects, :through => :project_memberships) accepts_nested_attributes_for(:projects, :allow_destroy = true)
-- should allow to create a new project via Person#projects_attributes (FAILED - 7)
-- should allow to update an existing project via Person#projects_attributes (FAILED - 8)
-- should allow to delete an existing project via Person#projects_attributes (FAILED - 9)
+- should allow to create a new project via Person#projects_attributes (FAILED - 3)
+- should allow to update an existing project via Person#projects_attributes (FAILED - 4)
+- should allow to delete an existing project via Person#projects_attributes (FAILED - 5)
 </code>
 </pre>
 
