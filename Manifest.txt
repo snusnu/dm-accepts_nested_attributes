@@ -9,6 +9,7 @@ lib/dm-accepts_nested_attributes.rb
 lib/dm-accepts_nested_attributes/autosave_association.rb
 lib/dm-accepts_nested_attributes/nested_attributes.rb
 lib/dm-accepts_nested_attributes/version.rb
+spec/shared/rspec_tmbundle_support.rb
 spec/fixtures/person.rb
 spec/fixtures/profile.rb
 spec/fixtures/project.rb
