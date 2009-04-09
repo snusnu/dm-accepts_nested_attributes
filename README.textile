@@ -2,7 +2,7 @@ h2. dm-accepts_nested_attributes
 
 A DataMapper plugin that allows nested model attribute assignment like activerecord does.
 
-At the end of this file, you can see a list of all current integration specs (and its failures!)
+At the end of this file, you can see a list of all current integration specs.
 
 For more information on the progress, have a look at this README and also at
 "this article":http://sick.snusnu.info/2009/04/08/dm-accepts_nested_attributes/ on my blog, where I will try to comment on the
@@ -158,12 +158,12 @@ DataMapper::NestedAttributes Project.has(n, :tasks) accepts_nested_attributes_fo
 
 DataMapper::NestedAttributes Person.has(n, :projects, :through => :project_memberships) accepts_nested_attributes_for(:projects, :allow_destroy = false)
 - should allow to create a new project via Person#projects_attributes
-- should allow to update an existing project via Person#projects_attributes (FAILED - 1)
+- should allow to update an existing project via Person#projects_attributes
 - should not allow to delete an existing project via Person#projects_attributes
 
 DataMapper::NestedAttributes Person.has(n, :projects, :through => :project_memberships) accepts_nested_attributes_for(:projects, :allow_destroy = true)
 - should allow to create a new project via Person#projects_attributes
-- should allow to update an existing project via Person#projects_attributes (FAILED - 2)
+- should allow to update an existing project via Person#projects_attributes
 - should allow to delete an existing project via Person#projects_attributes
 </code>
 </pre>
