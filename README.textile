@@ -2,12 +2,7 @@ h2. dm-accepts_nested_attributes
 
 A DataMapper plugin that allows nested model attribute assignment like activerecord does.
 
-@IMPORTANT NOTE:@ 
-
 At the end of this file, you can see a list of all current integration specs (and its failures!)
-Inside @lib/dm-accepts_nested_attributes/autosave_association.rb@ the @#save@ method has quite some
-debugging statements (and helper methods). Feel free to (un)comment as you wish, and help me find
-the remaining issues, so that we can finally enjoy nested model assignment in datamapper as well!
 
 For more information on the progress, have a look at this README and also at
 "this article":http://sick.snusnu.info/2009/04/08/dm-accepts_nested_attributes/ on my blog, where I will try to comment on the
@@ -162,14 +157,14 @@ DataMapper::NestedAttributes Project.has(n, :tasks) accepts_nested_attributes_fo
 - should allow to delete an existing task via Profile#tasks_attributes
 
 DataMapper::NestedAttributes Person.has(n, :projects, :through => :project_memberships) accepts_nested_attributes_for(:projects, :allow_destroy = false)
-- should allow to create a new project via Person#projects_attributes (FAILED - 1)
-- should allow to update an existing project via Person#projects_attributes (FAILED - 2)
+- should allow to create a new project via Person#projects_attributes
+- should allow to update an existing project via Person#projects_attributes (FAILED - 1)
 - should not allow to delete an existing project via Person#projects_attributes
 
 DataMapper::NestedAttributes Person.has(n, :projects, :through => :project_memberships) accepts_nested_attributes_for(:projects, :allow_destroy = true)
-- should allow to create a new project via Person#projects_attributes (FAILED - 3)
-- should allow to update an existing project via Person#projects_attributes (FAILED - 4)
-- should allow to delete an existing project via Person#projects_attributes (FAILED - 5)
+- should allow to create a new project via Person#projects_attributes
+- should allow to update an existing project via Person#projects_attributes (FAILED - 2)
+- should allow to delete an existing project via Person#projects_attributes (FAILED - 3)
 </code>
 </pre>
 
