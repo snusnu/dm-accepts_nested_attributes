@@ -126,7 +126,12 @@ h2. Current Integration Specs
 
 <pre>
 <code>
-DataMapper::NestedAttributes Profile.belongs_to(:person) accepts_nested_attributes_for(:person, :allow_destroy = false)
+DataMapper::NestedAttributes Profile.belongs_to(:person) accepts_nested_attributes_for(:person)
+- should allow to create a new person via Profile#person_attributes
+- should allow to update an existing person via Profile#person_attributes
+- should not allow to delete an existing person via Profile#person_attributes
+
+DataMapper::NestedAttributes Profile.belongs_to(:person) accepts_nested_attributes_for(:person, :allow_destroy => false)
 - should allow to create a new person via Profile#person_attributes
 - should allow to update an existing person via Profile#person_attributes
 - should not allow to delete an existing person via Profile#person_attributes
@@ -136,7 +141,26 @@ DataMapper::NestedAttributes Profile.belongs_to(:person) accepts_nested_attribut
 - should allow to update an existing person via Profile#person_attributes
 - should allow to delete an existing person via Profile#person_attributes
 
-DataMapper::NestedAttributes Person.has(1, :profile) accepts_nested_attributes_for(:profile, :allow_destroy = false)
+DataMapper::NestedAttributes Profile.belongs_to(:person) accepts_nested_attributes_for :person,  :reject_if => :foo
+- should allow to create a new person via Profile#person_attributes
+- should allow to update an existing person via Profile#person_attributes
+- should not allow to delete an existing person via Profile#person_attributes
+
+DataMapper::NestedAttributes Profile.belongs_to(:person) accepts_nested_attributes_for :person,  :reject_if => lambda { |attrs| true }
+- should not allow to create a new person via Profile#person_attributes
+- should not allow to delete an existing person via Profile#person_attributes
+
+DataMapper::NestedAttributes Profile.belongs_to(:person) accepts_nested_attributes_for :person,  :reject_if => lambda { |attrs| false }
+- should allow to create a new person via Profile#person_attributes
+- should allow to update an existing person via Profile#person_attributes
+- should not allow to delete an existing person via Profile#person_attributes
+
+DataMapper::NestedAttributes Person.has(1, :profile) accepts_nested_attributes_for(:profile)
+- should allow to create a new profile via Person#profile_attributes
+- should allow to update an existing profile via Person#profile_attributes
+- should not allow to delete an existing profile via Person#profile_attributes
+
+DataMapper::NestedAttributes Person.has(1, :profile) accepts_nested_attributes_for(:profile, :allow_destroy => false)
 - should allow to create a new profile via Person#profile_attributes
 - should allow to update an existing profile via Person#profile_attributes
 - should not allow to delete an existing profile via Person#profile_attributes
@@ -146,17 +170,55 @@ DataMapper::NestedAttributes Person.has(1, :profile) accepts_nested_attributes_f
 - should allow to update an existing profile via Person#profile_attributes
 - should allow to delete an existing profile via Person#profile_attributes
 
-DataMapper::NestedAttributes Project.has(n, :tasks) accepts_nested_attributes_for(:tasks, :allow_destroy = false)
+DataMapper::NestedAttributes Person.has(1, :profile) accepts_nested_attributes_for :profile,  :reject_if => :foo
+- should allow to create a new profile via Person#profile_attributes
+- should allow to update an existing profile via Person#profile_attributes
+- should not allow to delete an existing profile via Person#profile_attributes
+
+DataMapper::NestedAttributes Person.has(1, :profile) accepts_nested_attributes_for :profile,  :reject_if => lambda { |attrs| true }
+- should not allow to create a new profile via Person#profile_attributes
+- should not allow to delete an existing profile via Person#profile_attributes
+
+DataMapper::NestedAttributes Person.has(1, :profile) accepts_nested_attributes_for :profile,  :reject_if => lambda { |attrs| false }
+- should allow to create a new profile via Person#profile_attributes
+- should allow to update an existing profile via Person#profile_attributes
+- should not allow to delete an existing profile via Person#profile_attributes
+
+DataMapper::NestedAttributes Project.has(n, :tasks) accepts_nested_attributes_for(:tasks)
 - should allow to create a new task via Project#tasks_attributes
 - should allow to update an existing task via Project#tasks_attributes
 - should not allow to delete an existing task via Profile#tasks_attributes
 
-DataMapper::NestedAttributes Project.has(n, :tasks) accepts_nested_attributes_for(:tasks, :allow_destroy = true)
+DataMapper::NestedAttributes Project.has(n, :tasks) accepts_nested_attributes_for(:tasks, :allow_destroy => false)
+- should allow to create a new task via Project#tasks_attributes
+- should allow to update an existing task via Project#tasks_attributes
+- should not allow to delete an existing task via Profile#tasks_attributes
+
+DataMapper::NestedAttributes Project.has(n, :tasks) accepts_nested_attributes_for(:tasks, :allow_destroy => true)
 - should allow to create a new task via Project#tasks_attributes
 - should allow to update an existing task via Project#tasks_attributes
 - should allow to delete an existing task via Profile#tasks_attributes
 
-DataMapper::NestedAttributes Person.has(n, :projects, :through => :project_memberships) accepts_nested_attributes_for(:projects, :allow_destroy = false)
+DataMapper::NestedAttributes Project.has(n, :tasks) accepts_nested_attributes_for :tasks,  :reject_if => :foo
+- should allow to create a new task via Project#tasks_attributes
+- should allow to update an existing task via Project#tasks_attributes
+- should not allow to delete an existing task via Profile#tasks_attributes
+
+DataMapper::NestedAttributes Project.has(n, :tasks) accepts_nested_attributes_for :tasks,  :reject_if => lambda { |attrs| true }
+- should not allow to create a new task via Project#tasks_attributes
+- should not allow to delete an existing task via Profile#tasks_attributes
+
+DataMapper::NestedAttributes Project.has(n, :tasks) accepts_nested_attributes_for :tasks,  :reject_if => lambda { |attrs| false }
+- should allow to create a new task via Project#tasks_attributes
+- should allow to update an existing task via Project#tasks_attributes
+- should not allow to delete an existing task via Profile#tasks_attributes
+
+DataMapper::NestedAttributes Person.has(n, :projects, :through => :project_memberships) accepts_nested_attributes_for(:projects)
+- should allow to create a new project via Person#projects_attributes
+- should allow to update an existing project via Person#projects_attributes
+- should not allow to delete an existing project via Person#projects_attributes
+
+DataMapper::NestedAttributes Person.has(n, :projects, :through => :project_memberships) accepts_nested_attributes_for(:projects, :allow_destroy => false)
 - should allow to create a new project via Person#projects_attributes
 - should allow to update an existing project via Person#projects_attributes
 - should not allow to delete an existing project via Person#projects_attributes
@@ -165,6 +227,20 @@ DataMapper::NestedAttributes Person.has(n, :projects, :through => :project_membe
 - should allow to create a new project via Person#projects_attributes
 - should allow to update an existing project via Person#projects_attributes
 - should allow to delete an existing project via Person#projects_attributes
+
+DataMapper::NestedAttributes Person.has(n, :projects, :through => :project_memberships) accepts_nested_attributes_for :projects,  :reject_if => :foo
+- should allow to create a new project via Person#projects_attributes
+- should allow to update an existing project via Person#projects_attributes
+- should not allow to delete an existing project via Person#projects_attributes
+
+DataMapper::NestedAttributes Person.has(n, :projects, :through => :project_memberships) accepts_nested_attributes_for :projects,  :reject_if => lambda { |attrs| true }
+- should not allow to create a new project via Person#projects_attributes
+- should not allow to delete an existing project via Person#projects_attributes
+
+DataMapper::NestedAttributes Person.has(n, :projects, :through => :project_memberships) accepts_nested_attributes_for :projects,  :reject_if => lambda { |attrs| false }
+- should allow to create a new project via Person#projects_attributes
+- should allow to update an existing project via Person#projects_attributes
+- should not allow to delete an existing project via Person#projects_attributes
 </code>
 </pre>
 

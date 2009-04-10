@@ -13,6 +13,20 @@ describe DataMapper::Resource do
       Person.respond_to?(:reject_new_nested_attributes_proc_for).should be_true
     end
     
+    it "should return the proc that has been stored for the association named association_name" do
+      guard = lambda { |attributes| true }
+      Person.accepts_nested_attributes_for :profile, :reject_if => guard
+      Person.reject_new_nested_attributes_proc_for(:profile).should == guard
+    end
+        
+    it "should return nil if association_name is nil" do
+      Person.reject_new_nested_attributes_proc_for(nil).should be_nil
+    end
+            
+    it "should return nil if association_name is no valid association" do
+      Person.reject_new_nested_attributes_proc_for(:foo).should be_nil
+    end
+    
   end
   
   describe ".association_for_name(name)" do

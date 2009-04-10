@@ -3,7 +3,19 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::NestedAttributes do
   
-  describe "every accessible belongs_to association", :shared => true do
+  describe "every accessible belongs_to association with a valid reject_if proc", :shared => true do
+  
+    it "should not allow to create a new person via Profile#person_attributes" do
+      @profile.person_attributes = { :name => 'Martin' }
+      @profile.person.should be_nil
+      @profile.save
+      Profile.all.size.should == 1
+      Person.all.size.should == 0
+    end
+    
+  end
+    
+  describe "every accessible belongs_to association with no reject_if proc", :shared => true do
   
     it "should allow to create a new person via Profile#person_attributes" do
       @profile.person_attributes = { :name => 'Martin' }
@@ -15,7 +27,7 @@ describe DataMapper::NestedAttributes do
       Person.all.size.should == 1
       Person.first.name.should == 'Martin'
     end
-      
+    
     it "should allow to update an existing person via Profile#person_attributes" do
       person = Person.create(:name => 'Martin')
       @profile.person = person
@@ -34,12 +46,50 @@ describe DataMapper::NestedAttributes do
       Person.first.name.should == 'Martin Gamsjaeger'
       Profile.all.size.should == 1
     end
+    
+  end
   
+  describe "every accessible belongs_to association with :allow_destroy => false", :shared => true do
+    
+    it "should not allow to delete an existing person via Profile#person_attributes" do
+      person = Person.create(:name => 'Martin')
+      @profile.person = person
+      @profile.save
+      
+      Profile.all.size.should == 1
+      Person.all.size.should == 1
+    
+      @profile.person_attributes = { :id => person.id, :_delete => true }
+      @profile.save
+      
+      Profile.all.size.should == 1
+      Person.all.size.should == 1
+    end
+    
+  end
+    
+  describe "every accessible belongs_to association with :allow_destroy => true", :shared => true do
+    
+    it "should allow to delete an existing person via Profile#person_attributes" do
+      person = Person.create(:name => 'Martin')
+      @profile.person = person
+      @profile.save
+      
+      Profile.all.size.should == 1
+      Person.all.size.should == 1
+    
+      @profile.person_attributes = { :id => person.id, :_delete => true }
+      @profile.save
+      
+      Profile.all.size.should == 1
+      Person.all.size.should == 0
+    end
+    
   end
 
   describe "Profile.belongs_to(:person)" do
   
-    describe "accepts_nested_attributes_for(:person, :allow_destroy = false)" do
+    describe "accepts_nested_attributes_for(:person)" do
     
       before(:each) do
         DataMapper.auto_migrate!
@@ -47,22 +97,21 @@ describe DataMapper::NestedAttributes do
         @profile = Profile.new :nick => 'snusnu'
       end
     
-      it_should_behave_like "every accessible belongs_to association"
+      it_should_behave_like "every accessible belongs_to association with no reject_if proc"
+      it_should_behave_like "every accessible belongs_to association with :allow_destroy => false"
+    
+    end
       
-      it "should not allow to delete an existing person via Profile#person_attributes" do
-        person = Person.create(:name => 'Martin')
-        @profile.person = person
-        @profile.save
-        
-        Profile.all.size.should == 1
-        Person.all.size.should == 1
-      
-        @profile.person_attributes = { :id => person.id, :_delete => true }
-        @profile.save
-        
-        Profile.all.size.should == 1
-        Person.all.size.should == 1
+    describe "accepts_nested_attributes_for(:person, :allow_destroy => false)" do
+    
+      before(:each) do
+        DataMapper.auto_migrate!
+        Profile.accepts_nested_attributes_for :person, :allow_destroy => false
+        @profile = Profile.new :nick => 'snusnu'
       end
+    
+      it_should_behave_like "every accessible belongs_to association with no reject_if proc"
+      it_should_behave_like "every accessible belongs_to association with :allow_destroy => false"
     
     end
       
@@ -74,21 +123,50 @@ describe DataMapper::NestedAttributes do
         @profile = Profile.new :nick => 'snusnu'
       end
     
-      it_should_behave_like "every accessible belongs_to association"
+      it_should_behave_like "every accessible belongs_to association with no reject_if proc"
+      it_should_behave_like "every accessible belongs_to association with :allow_destroy => true"
+    
+    end
+          
+    describe "accepts_nested_attributes_for :person, " do
       
-      it "should allow to delete an existing person via Profile#person_attributes" do
-        person = Person.create(:name => 'Martin')
-        @profile.person = person
-        @profile.save
-        
-        Profile.all.size.should == 1
-        Person.all.size.should == 1
+      describe ":reject_if => :foo" do
+    
+        before(:each) do
+          DataMapper.auto_migrate!
+          Profile.accepts_nested_attributes_for :person, :reject_if => :foo
+          @profile = Profile.new :nick => 'snusnu'
+        end
+    
+        it_should_behave_like "every accessible belongs_to association with no reject_if proc"
+        it_should_behave_like "every accessible belongs_to association with :allow_destroy => false"
       
-        @profile.person_attributes = { :id => person.id, :_delete => true }
-        @profile.save
-        
-        Profile.all.size.should == 1
-        Person.all.size.should == 0
+      end
+            
+      describe ":reject_if => lambda { |attrs| true }" do
+    
+        before(:each) do
+          DataMapper.auto_migrate!
+          Profile.accepts_nested_attributes_for :person, :reject_if => lambda { |attrs| true }
+          @profile = Profile.new :nick => 'snusnu'
+        end
+    
+        it_should_behave_like "every accessible belongs_to association with a valid reject_if proc"
+        it_should_behave_like "every accessible belongs_to association with :allow_destroy => false"
+      
+      end
+                  
+      describe ":reject_if => lambda { |attrs| false }" do
+    
+        before(:each) do
+          DataMapper.auto_migrate!
+          Profile.accepts_nested_attributes_for :person, :reject_if => lambda { |attrs| false }
+          @profile = Profile.new :nick => 'snusnu'
+        end
+    
+        it_should_behave_like "every accessible belongs_to association with no reject_if proc"
+        it_should_behave_like "every accessible belongs_to association with :allow_destroy => false"
+      
       end
     
     end

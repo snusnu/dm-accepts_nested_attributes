@@ -3,7 +3,26 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::NestedAttributes do
   
-  describe "every accessible has(n, :through) association", :shared => true do
+  describe "every accessible has(n, :through) association with a valid reject_if proc", :shared => true do
+  
+    it "should not allow to create a new project via Person#projects_attributes" do
+      @person.save
+      Person.all.size.should == 1
+      ProjectMembership.all.size.should == 0
+      Project.all.size.should == 0
+      
+      @person.projects_attributes = { 'new_1' => { :name => 'dm-accepts_nested_attributes' } }
+      @person.projects.should be_empty
+      @person.save
+      
+      Person.all.size.should == 1
+      ProjectMembership.all.size.should == 0
+      Project.all.size.should == 0
+    end
+    
+  end
+  
+  describe "every accessible has(n, :through) association with no reject_if proc", :shared => true do
     
     it "should allow to create a new project via Person#projects_attributes" do
       @person.save
@@ -48,9 +67,53 @@ describe DataMapper::NestedAttributes do
     
   end
   
+  describe "every accessible has(n, :through) association with :allow_destroy => false", :shared => true do
+    
+    it "should not allow to delete an existing project via Person#projects_attributes" do
+      @person.save
+      project = Project.create(:name => 'dm-accepts_nested_attributes')
+      project_membership = ProjectMembership.create(:person => @person, :project => project)
+      
+      Person.all.size.should            == 1
+      ProjectMembership.all.size.should == 1
+      Project.all.size.should           == 1
+    
+      @person.reload
+      @person.projects_attributes = { '1' => { :id => project.id, :_delete => true } }
+      @person.save
+      
+      Person.all.size.should            == 1
+      ProjectMembership.all.size.should == 1
+      Project.all.size.should           == 1
+    end
+    
+  end
+  
+  describe "every accessible has(n, :through) association with :allow_destroy => true", :shared => true do
+    
+    it "should allow to delete an existing project via Person#projects_attributes" do
+      @person.save
+      project = Project.create(:name => 'dm-accepts_nested_attributes')
+      project_membership = ProjectMembership.create(:person => @person, :project => project)
+      
+      Person.all.size.should            == 1
+      ProjectMembership.all.size.should == 1
+      Project.all.size.should           == 1
+    
+      @person.reload
+      @person.projects_attributes = { '1' => { :id => project.id, :_delete => true } }
+      @person.save
+      
+      Person.all.size.should            == 1
+      ProjectMembership.all.size.should == 0
+      Project.all.size.should           == 0
+    end
+    
+  end
+  
   describe "Person.has(n, :projects, :through => :project_memberships)" do
   
-    describe "accepts_nested_attributes_for(:projects, :allow_destroy = false)" do
+    describe "accepts_nested_attributes_for(:projects)" do
       
       before(:each) do
         DataMapper.auto_migrate!
@@ -58,25 +121,21 @@ describe DataMapper::NestedAttributes do
         @person = Person.new :name => 'snusnu'
       end
       
-      it_should_behave_like "every accessible has(n, :through) association"
+      it_should_behave_like "every accessible has(n, :through) association with no reject_if proc"
+      it_should_behave_like "every accessible has(n, :through) association with :allow_destroy => false"
       
-      it "should not allow to delete an existing project via Person#projects_attributes" do
-        @person.save
-        project = Project.create(:name => 'dm-accepts_nested_attributes')
-        project_membership = ProjectMembership.create(:person => @person, :project => project)
-        
-        Person.all.size.should            == 1
-        ProjectMembership.all.size.should == 1
-        Project.all.size.should           == 1
+    end
       
-        @person.reload
-        @person.projects_attributes = { '1' => { :id => project.id, :_delete => true } }
-        @person.save
-        
-        Person.all.size.should            == 1
-        ProjectMembership.all.size.should == 1
-        Project.all.size.should           == 1
+    describe "accepts_nested_attributes_for(:projects, :allow_destroy => false)" do
+      
+      before(:each) do
+        DataMapper.auto_migrate!
+        Person.accepts_nested_attributes_for :projects, :allow_destroy => false
+        @person = Person.new :name => 'snusnu'
       end
+      
+      it_should_behave_like "every accessible has(n, :through) association with no reject_if proc"
+      it_should_behave_like "every accessible has(n, :through) association with :allow_destroy => false"
       
     end
         
@@ -88,26 +147,52 @@ describe DataMapper::NestedAttributes do
         @person = Person.new :name => 'snusnu'
       end
       
-      it_should_behave_like "every accessible has(n, :through) association"
+      it_should_behave_like "every accessible has(n, :through) association with no reject_if proc"
+      it_should_behave_like "every accessible has(n, :through) association with :allow_destroy => true"
       
-      it "should allow to delete an existing project via Person#projects_attributes" do
-        @person.save
-        project = Project.create(:name => 'dm-accepts_nested_attributes')
-        project_membership = ProjectMembership.create(:person => @person, :project => project)
-        
-        Person.all.size.should            == 1
-        ProjectMembership.all.size.should == 1
-        Project.all.size.should           == 1
+    end
+    
+    describe "accepts_nested_attributes_for :projects, " do
       
-        @person.reload
-        @person.projects_attributes = { '1' => { :id => project.id, :_delete => true } }
-        @person.save
-        
-        Person.all.size.should            == 1
-        ProjectMembership.all.size.should == 0
-        Project.all.size.should           == 0
+      describe ":reject_if => :foo" do
+    
+        before(:each) do
+          DataMapper.auto_migrate!
+          Person.accepts_nested_attributes_for :projects, :reject_if => :foo
+          @person = Person.new :name => 'snusnu'
+        end
+    
+        it_should_behave_like "every accessible has(n, :through) association with no reject_if proc"
+        it_should_behave_like "every accessible has(n, :through) association with :allow_destroy => false"
+      
       end
+            
+      describe ":reject_if => lambda { |attrs| true }" do
+    
+        before(:each) do
+          DataMapper.auto_migrate!
+          Person.accepts_nested_attributes_for :projects, :reject_if => lambda { |attrs| true }
+          @person = Person.new :name => 'snusnu'
+        end
+    
+        it_should_behave_like "every accessible has(n, :through) association with a valid reject_if proc"
+        it_should_behave_like "every accessible has(n, :through) association with :allow_destroy => false"
       
+      end
+                  
+      describe ":reject_if => lambda { |attrs| false }" do
+    
+        before(:each) do
+          DataMapper.auto_migrate!
+          Person.accepts_nested_attributes_for :projects, :reject_if => lambda { |attrs| false }
+          @person = Person.new :name => 'snusnu'
+        end
+    
+        it_should_behave_like "every accessible has(n, :through) association with no reject_if proc"
+        it_should_behave_like "every accessible has(n, :through) association with :allow_destroy => false"
+      
+      end
+    
     end
     
   end

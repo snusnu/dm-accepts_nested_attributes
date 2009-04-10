@@ -282,8 +282,8 @@ module DataMapper
     # has_delete_flag? or if a <tt>:reject_if</tt> proc exists for this
     # association and evaluates to +true+.
     def reject_new_record?(association_name, attributes)
-      has_delete_flag?(attributes) ||
-        self.class.reject_new_nested_attributes_proc_for(association_name).try_call(attributes)
+      guard = self.class.reject_new_nested_attributes_proc_for(association_name)
+      has_delete_flag?(attributes) || (guard.respond_to?(:call) && guard.call(attributes))
     end
 
   end
