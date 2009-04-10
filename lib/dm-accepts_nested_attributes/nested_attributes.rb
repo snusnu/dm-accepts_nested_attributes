@@ -55,9 +55,19 @@ module DataMapper
         type = nr_of_possible_child_instances(association_name) > 1 ? :collection : :one_to_one
         
         class_eval %{
+          
           def #{association_name}_attributes=(attributes)
-          assign_nested_attributes_for_#{type}_association(:#{association_name}, attributes, #{options[:allow_destroy]})
+            assign_nested_attributes_for_#{type}_association(:#{association_name}, attributes, #{options[:allow_destroy]})
           end
+          
+          if association_type(:#{association_name}) == :many_to_one || association_type(:#{association_name}) == :one_to_one
+          
+            def get_#{association_name}
+              #{association_name.to_s} || self.class.associated_model_for_name(:#{association_name}).new
+            end
+          
+          end
+          
         }, __FILE__, __LINE__ + 1
         
       end

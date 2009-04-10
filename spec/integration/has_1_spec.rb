@@ -3,7 +3,31 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::NestedAttributes do
   
+  describe "every accessible has(1) association with no associated parent model", :shared => true do
+    
+    it "should return a new_record from get_\#{association_name}" do
+      @person.profile_attributes = { :nick => 'snusnu' }
+      @person.get_profile.should_not be_nil
+      @person.get_profile.should be_new_record
+    end
+    
+  end
+  
+  describe "every accessible has(1) association with an associated parent model", :shared => true do
+
+    it "should return an already existing record from get_\#{association_name}" do
+      @person.profile_attributes = { :nick => 'snusnu' }
+      @person.save
+      @person.get_profile.should_not be_nil
+      @person.get_profile.should_not be_new_record
+      @person.get_profile.should be_kind_of(Profile)
+    end
+  
+  end
+  
   describe "every accessible has(1) association with a valid reject_if proc", :shared => true do
+    
+    it_should_behave_like "every accessible has(1) association with no associated parent model"
   
     it "should not allow to create a new profile via Person#profile_attributes" do
       @person.profile_attributes = { :nick => 'snusnu' }
@@ -16,6 +40,9 @@ describe DataMapper::NestedAttributes do
   end
   
   describe "every accessible has(1) association with no reject_if proc", :shared => true do
+    
+    it_should_behave_like "every accessible has(1) association with no associated parent model"
+    it_should_behave_like "every accessible has(1) association with an associated parent model"
     
     it "should allow to create a new profile via Person#profile_attributes" do
       @person.profile_attributes = { :nick => 'snusnu' }

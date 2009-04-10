@@ -2,8 +2,33 @@ require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::NestedAttributes do
+
   
+  describe "every accessible belongs_to association with no associated parent model", :shared => true do
+    
+    it "should return a new_record from get_\#{association_name}" do
+      @profile.person_attributes = { :name => 'Martin' }
+      @profile.get_person.should_not be_nil
+      @profile.get_person.should be_new_record
+    end
+    
+  end
+  
+  describe "every accessible belongs_to association with an associated parent model", :shared => true do
+
+    it "should return an already existing record from get_\#{association_name}" do
+      @profile.person_attributes = { :name => 'Martin' }
+      @profile.save
+      @profile.get_person.should_not be_nil
+      @profile.get_person.should_not be_new_record
+      @profile.get_person.should be_kind_of(Person)
+    end
+  
+  end
+    
   describe "every accessible belongs_to association with a valid reject_if proc", :shared => true do
+    
+    it_should_behave_like "every accessible belongs_to association with no associated parent model"
   
     it "should not allow to create a new person via Profile#person_attributes" do
       @profile.person_attributes = { :name => 'Martin' }
@@ -16,6 +41,9 @@ describe DataMapper::NestedAttributes do
   end
     
   describe "every accessible belongs_to association with no reject_if proc", :shared => true do
+    
+    it_should_behave_like "every accessible belongs_to association with no associated parent model"
+    it_should_behave_like "every accessible belongs_to association with an associated parent model"
   
     it "should allow to create a new person via Profile#person_attributes" do
       @profile.person_attributes = { :name => 'Martin' }
@@ -96,7 +124,7 @@ describe DataMapper::NestedAttributes do
         Profile.accepts_nested_attributes_for :person
         @profile = Profile.new :nick => 'snusnu'
       end
-    
+      
       it_should_behave_like "every accessible belongs_to association with no reject_if proc"
       it_should_behave_like "every accessible belongs_to association with :allow_destroy => false"
     
@@ -109,7 +137,7 @@ describe DataMapper::NestedAttributes do
         Profile.accepts_nested_attributes_for :person, :allow_destroy => false
         @profile = Profile.new :nick => 'snusnu'
       end
-    
+      
       it_should_behave_like "every accessible belongs_to association with no reject_if proc"
       it_should_behave_like "every accessible belongs_to association with :allow_destroy => false"
     
@@ -122,7 +150,7 @@ describe DataMapper::NestedAttributes do
         Profile.accepts_nested_attributes_for :person, :allow_destroy => true
         @profile = Profile.new :nick => 'snusnu'
       end
-    
+      
       it_should_behave_like "every accessible belongs_to association with no reject_if proc"
       it_should_behave_like "every accessible belongs_to association with :allow_destroy => true"
     
@@ -137,7 +165,7 @@ describe DataMapper::NestedAttributes do
           Profile.accepts_nested_attributes_for :person, :reject_if => :foo
           @profile = Profile.new :nick => 'snusnu'
         end
-    
+        
         it_should_behave_like "every accessible belongs_to association with no reject_if proc"
         it_should_behave_like "every accessible belongs_to association with :allow_destroy => false"
       
@@ -150,7 +178,7 @@ describe DataMapper::NestedAttributes do
           Profile.accepts_nested_attributes_for :person, :reject_if => lambda { |attrs| true }
           @profile = Profile.new :nick => 'snusnu'
         end
-    
+        
         it_should_behave_like "every accessible belongs_to association with a valid reject_if proc"
         it_should_behave_like "every accessible belongs_to association with :allow_destroy => false"
       

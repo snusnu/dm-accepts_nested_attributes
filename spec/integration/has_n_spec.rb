@@ -4,7 +4,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 describe DataMapper::NestedAttributes do
   
   describe "every accessible has(n) association with a valid reject_if proc", :shared => true do
-  
+    
     it "should not allow to create a new task via Project#tasks_attributes" do
       @project.save
       Project.all.size.should == 1
