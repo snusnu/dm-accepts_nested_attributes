@@ -1,11 +1,8 @@
-WIN32 = (RUBY_PLATFORM =~ /win32|mingw|bccwin|cygwin/) rescue nil
-SUDO = WIN32 ? '' : ('sudo' unless ENV['SUDOLESS'])
- 
 def sudo_gem(cmd)
   sh "#{SUDO} #{RUBY} -S gem #{cmd}", :verbose => false
 end
  
-if WIN32
+if WINDOWS
   desc "Install #{GEM_NAME}"
   task :install => :gem do
     sudo_gem "install --no-rdoc --no-ri --local pkg/#{GEM_NAME}-#{GEM_VERSION}.gem"
