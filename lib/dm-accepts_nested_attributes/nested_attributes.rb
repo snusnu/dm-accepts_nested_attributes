@@ -56,6 +56,9 @@ module DataMapper
         
         class_eval %{
           
+          def #{association_name}_attributes
+          end
+          
           def #{association_name}_attributes=(attributes)
             assign_nested_attributes_for_#{type}_association(:#{association_name}, attributes, #{options[:allow_destroy]})
           end
