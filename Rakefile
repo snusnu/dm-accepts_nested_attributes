@@ -17,8 +17,7 @@ GEM_VERSION = DataMapper::NestedAttributes::VERSION
 
 GEM_DEPENDENCIES = [
   ["dm-core",         '>=0.9.11'],
-  ['addressable',     '~>2.0.2' ],
-  ["dm-validations",  '>=0.9.11']
+  ['addressable',     '~>2.0.2' ]
 ]
 
 GEM_CLEAN = %w[ log pkg coverage ]

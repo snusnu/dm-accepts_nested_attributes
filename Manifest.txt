@@ -9,7 +9,6 @@ lib/dm-accepts_nested_attributes.rb
 lib/dm-accepts_nested_attributes/associations.rb
 lib/dm-accepts_nested_attributes/nested_attributes.rb
 lib/dm-accepts_nested_attributes/version.rb
-spec/shared/rspec_tmbundle_support.rb
 spec/fixtures/person.rb
 spec/fixtures/profile.rb
 spec/fixtures/project.rb
@@ -19,6 +18,7 @@ spec/integration/belongs_to_spec.rb
 spec/integration/has_1_spec.rb
 spec/integration/has_n_spec.rb
 spec/integration/has_n_through_spec.rb
+spec/shared/rspec_tmbundle_support.rb
 spec/spec.opts
 spec/spec_helper.rb
 spec/unit/accepts_nested_attributes_for_spec.rb
