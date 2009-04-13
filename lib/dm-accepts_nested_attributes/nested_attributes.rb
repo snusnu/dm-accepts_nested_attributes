@@ -252,7 +252,7 @@ module DataMapper
       # do what's done in dm-core/specs/integration/association_through_spec.rb
       
       # explicitly build the join entry and assign it to the join association
-      join_entry = Extlib::Inflection.constantize(Extlib::Inflection.classify(association.name)).new
+      join_entry = self.class.associated_model_for_name(association.name).new
       self.send(association.name) << join_entry
       self.save
       # explicitly build the child entry and assign the join entry to its join association
