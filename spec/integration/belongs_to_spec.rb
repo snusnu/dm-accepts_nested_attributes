@@ -112,7 +112,19 @@ describe DataMapper::NestedAttributes do
       Profile.all.size.should == 1
       Person.all.size.should == 0
     end
+
+  end
     
+  describe "every accessible belongs_to association with a nested attributes reader", :shared => true do
+
+    it "should return the attributes written to Profile#person_attributes from the Profile#person_attributes reader" do
+      @profile.person_attributes.should be_nil
+
+      @profile.person_attributes = { :name => 'Martin' }
+
+      @profile.person_attributes.should == { :name => 'Martin' }
+    end
+
   end
 
   describe "Profile.belongs_to(:person)" do
@@ -127,6 +139,7 @@ describe DataMapper::NestedAttributes do
       
       it_should_behave_like "every accessible belongs_to association with no reject_if proc"
       it_should_behave_like "every accessible belongs_to association with :allow_destroy => false"
+      it_should_behave_like "every accessible belongs_to association with a nested attributes reader"
     
     end
       

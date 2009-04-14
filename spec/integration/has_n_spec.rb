@@ -91,6 +91,18 @@ describe DataMapper::NestedAttributes do
     end
     
   end
+
+  describe "every accessible has(n) association with a nested attributes reader", :shared => true do
+
+    it "should return the attributes written to Project#task_attributes from the Project#task_attributes reader" do
+      @project.tasks_attributes.should be_nil
+
+      @project.tasks_attributes = { 'new_1' => { :name => 'write specs' } }
+
+      @project.tasks_attributes.should == { 'new_1' => { :name => 'write specs' } }
+    end
+
+  end
   
   describe "Project.has(n, :tasks)" do
   
@@ -104,6 +116,7 @@ describe DataMapper::NestedAttributes do
       
       it_should_behave_like "every accessible has(n) association with no reject_if proc"
       it_should_behave_like "every accessible has(n) association with :allow_destroy => false"
+      it_should_behave_like "every accessible has(n) association with a nested attributes reader"
       
     end
       
