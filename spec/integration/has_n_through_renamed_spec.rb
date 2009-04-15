@@ -31,7 +31,6 @@ describe DataMapper::NestedAttributes do
       Tagging.all.size.should == 0
       Photo.all.size.should == 0
       
-      # debugger
       @tag.pictures_attributes = { 'new_1' => { :name => 'dm-accepts_nested_attributes' } }
       @tag.pictures.should_not be_empty
       @tag.pictures.first.name.should == 'dm-accepts_nested_attributes'
@@ -112,6 +111,18 @@ describe DataMapper::NestedAttributes do
     end
     
   end
+
+  describe "every accessible has(n, :through) renamed association with a nested attributes reader", :shared => true do
+
+    it "should return the attributes written to Tag#pictures_attributes from the Tag#pictures_attributes reader" do
+      @tag.pictures_attributes.should be_nil
+
+      @tag.pictures_attributes = { 'new_1' => { :name => 'write specs' } }
+
+      @tag.pictures_attributes.should == { 'new_1' => { :name => 'write specs' } }
+    end
+
+  end
   
   describe "Tag.has(n, :pictures, :through => :taggings) renamed" do
   
@@ -125,6 +136,7 @@ describe DataMapper::NestedAttributes do
       
       it_should_behave_like "every accessible has(n, :through) renamed association with no reject_if proc"
       it_should_behave_like "every accessible has(n, :through) renamed association with :allow_destroy => false"
+      it_should_behave_like "every accessible has(n, :through) renamed association with a nested attributes reader"
       
     end
       

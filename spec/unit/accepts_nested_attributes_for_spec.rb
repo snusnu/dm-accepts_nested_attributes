@@ -181,6 +181,14 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
           @model.autosave_associations[@association].should == { :allow_destroy => false }
         end
         
+        it "should create a \#{association_name}_attributes instance reader" do
+          p = @model.new
+          p.respond_to?("#{@association}_attributes").should be_false
+          @model.accepts_nested_attributes_for @association
+          p = @model.new
+          p.respond_to?("#{@association}_attributes").should be_true
+        end
+        
         it "should create a \#{association_name}_attributes instance writer" do
           p = @model.new
           p.respond_to?("#{@association}_attributes=").should be_false
@@ -209,6 +217,14 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
           @model.autosave_associations[@association].should == { :allow_destroy => false }
         end
         
+        it "should create a \#{association_name}_attributes instance reader" do
+          p = @model.new
+          p.respond_to?("#{@association}_attributes").should be_false
+          @model.accepts_nested_attributes_for @association, {}
+          p = @model.new
+          p.respond_to?("#{@association}_attributes").should be_true
+        end
+        
         it "should create a \#{association_name}_attributes instance writer" do
           p = @model.new
           p.respond_to?("#{@association}_attributes=").should be_false
@@ -229,6 +245,14 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
           @model.autosave_associations[@association].should be_nil
           lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error
           @model.autosave_associations[@association].should be_nil
+        end
+        
+        it "should not create a \#{association_name}_attributes instance reader" do
+          p = @model.new
+          p.respond_to?("#{@association}_attributes").should be_false
+          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error
+          p = @model.new
+          p.respond_to?("#{@association}_attributes").should be_false
         end
         
         it "should not create a \#{association_name}_attributes instance writer" do
@@ -277,9 +301,17 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
           @model.reject_new_nested_attributes_proc_for(@association).should be_kind_of(Proc)
         end
         
+        it "should create a \#{association_name}_attributes instance reader" do
+          p = @model.new
+          p.respond_to?("#{@association}_attributes").should be_false
+          @model.accepts_nested_attributes_for @association, :allow_destroy => true
+          p = @model.new
+          p.respond_to?("#{@association}_attributes=").should be_true
+        end
+        
         it "should create a \#{association_name}_attributes instance writer" do
           p = @model.new
-          p.respond_to?("#{@association}_attributes=").should be_false
+          p.respond_to?("#{@association}_attributes").should be_false
           @model.accepts_nested_attributes_for @association, :allow_destroy => true
           p = @model.new
           p.respond_to?("#{@association}_attributes=").should be_true

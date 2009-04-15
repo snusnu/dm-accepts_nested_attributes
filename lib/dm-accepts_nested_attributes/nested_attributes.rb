@@ -9,9 +9,14 @@ module DataMapper
     
     module ClassMethods
       
-      # Defines an attributes writer for the specified association(s). If you
-      # are using <tt>attr_protected</tt> or <tt>attr_accessible</tt>, then you
-      # will need to add the attribute writer to the allowed list.
+      # Defines an attributes reader and writer for the specified association(s).
+      # If you are using <tt>attr_protected</tt> or <tt>attr_accessible</tt>,
+      # then you will need to add the attribute writer to the allowed list.
+      #
+      # After any params are passed to the attributes writer they are available
+      # via the attributes reader (they are stored in an instance variable of
+      # the same name). The attributes reader returns nil if the attributes
+      # writer has not been called.
       #
       # Supported options:
       # [:allow_destroy]
@@ -26,8 +31,10 @@ module DataMapper
       # do not have a <tt>_delete</tt> that evaluates to true.
       #
       # Examples:
+      # # creates avatar_attributes
       # # creates avatar_attributes=
       # accepts_nested_attributes_for :avatar, :reject_if => proc { |attributes| attributes['name'].blank? }
+      # # creates avatar_attributes  and posts_attributes
       # # creates avatar_attributes= and posts_attributes=
       # accepts_nested_attributes_for :avatar, :posts, :allow_destroy => true
       def accepts_nested_attributes_for(association_name, options = {})
@@ -56,7 +63,12 @@ module DataMapper
         
         class_eval %{
           
+          def #{association_name}_attributes
+            @#{association_name}_attributes
+          end
+          
           def #{association_name}_attributes=(attributes)
+            @#{association_name}_attributes = attributes
             assign_nested_attributes_for_#{type}_association(:#{association_name}, attributes, #{options[:allow_destroy]})
           end
           
