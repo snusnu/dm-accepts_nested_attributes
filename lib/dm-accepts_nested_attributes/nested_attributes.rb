@@ -68,6 +68,7 @@ module DataMapper
           end
           
           def #{association_name}_attributes=(attributes)
+            attributes = sanitize_nested_attributes(attributes)
             @#{association_name}_attributes = attributes
             assign_nested_attributes_for_#{type}_association(:#{association_name}, attributes, #{options[:allow_destroy]})
           end
@@ -239,6 +240,20 @@ module DataMapper
         true # no-op, validations are checked inside #save
       end
       
+    end
+    
+    # This method can be used to remove ambiguities from the passed attributes.
+    # Consider a situation with a belongs_to association where both a valid value
+    # for the foreign_key attribute *and* nested_attributes for a new record are
+    # present (i.e. item_type_id and item_type_attributes are present).
+    # Also see http://is.gd/sz2d on the rails-core ml for a discussion on this.
+    # The basic idea is, that there should be a well defined behavior for what
+    # exactly happens when such a situation occurs. I'm currently in favor for 
+    # using the foreign_key if it is present, but this probably needs more thinking.
+    # For now, this method basically is a no-op, but at least it provides a hook where
+    # everyone can perform it's own sanitization (just overwrite this method) 
+    def sanitize_nested_attributes(attrs)
+      attrs
     end
     
     # returns nil if no resource has been associated yet
