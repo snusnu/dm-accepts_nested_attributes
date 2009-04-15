@@ -1,4 +1,3 @@
-(in /Users/snusnu/projects/github/dm-accepts_nested_attributes)
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
