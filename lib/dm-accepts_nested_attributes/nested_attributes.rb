@@ -63,6 +63,10 @@ module DataMapper
         
         class_eval %{
           
+          def save(context = :default)
+            transaction { super }
+          end
+          
           def #{association_name}_attributes
             @#{association_name}_attributes
           end
