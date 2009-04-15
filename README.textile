@@ -8,6 +8,32 @@ For more information on the progress, have a look at this README and also at
 "this article":http://sick.snusnu.info/2009/04/08/dm-accepts_nested_attributes/ on my blog, where I will try to comment on the
 development (problems).
 
+h2. Current limitations
+
+Interaction with @dm-validations@ is actually possible but not very well specced atm. I added @not null@
+constraints to all spec fixtures for now, but no other custom validations. All specs still pass. However,
+as long as I'm not decided on where to put the specs for interaction with @dm-validations@ (most probably
+inside @dm-validations@ would be the right place for these), I won't write many more specs for these scenarios,
+since it's very hard to decide where to stop, once I start writing some.
+
+Currently, the creation of the record together with all its join models, is not handled inside a transaction.
+This must definitely change! As soon as I find out why my initial experiments with transactions consistently
+yielded _no such table errors_ while migrating the specsuite (see "this pastie":http://pastie.org/446060), I
+will do my best to add this feature.
+
+h2. TODO
+
+* use transactions
+* update README to include more complete usecases
+* specs for custom validations (dm-validations in general)
+* specs for adding errors to the parent objects
+* reorganize specs and fix bugs
+* Adapt to datamapper/next
+
+h2. Implementation details
+
+This section mainly serves as a place for me to take notes during development.
+
 h3. Why isn't this implemented as options on association declarations?
 
 * I somehow like the declarative style of @accepts_nested_attributes_for@ better. it jumps out immediately.
@@ -243,8 +269,3 @@ DataMapper::NestedAttributes Person.has(n, :projects, :through => :project_membe
 - should not allow to delete an existing project via Person#projects_attributes
 </code>
 </pre>
-
-h2. TODO
-
-* add more specs and fix bugs
-* Adapt to datamapper/next

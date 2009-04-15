@@ -7,7 +7,6 @@ describe DataMapper::NestedAttributes do
   describe "every accessible belongs_to association with no associated parent model", :shared => true do
     
     it "should return a new_record from get_\#{association_name}" do
-      @profile.person_attributes = { :name => 'Martin' }
       @profile.get_person.should_not be_nil
       @profile.get_person.should be_new_record
     end
@@ -33,8 +32,8 @@ describe DataMapper::NestedAttributes do
     it "should not allow to create a new person via Profile#person_attributes" do
       @profile.person_attributes = { :name => 'Martin' }
       @profile.person.should be_nil
-      @profile.save
-      Profile.all.size.should == 1
+      @profile.save # fails because of validations (not null on belongs_to)
+      Profile.all.size.should == 0
       Person.all.size.should == 0
     end
     

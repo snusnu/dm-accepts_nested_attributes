@@ -1,12 +1,13 @@
+(in /Users/snusnu/projects/github/dm-accepts_nested_attributes)
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
   s.name = %q{dm-accepts_nested_attributes}
-  s.version = "0.0.1"
+  s.version = "0.0.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Martin Gamsj\303\244ger"]
-  s.date = %q{2009-04-13}
+  s.date = %q{2009-04-15}
   s.description = %q{A DataMapper plugin that adds the possibility to perform nested model attribute assignment}
   s.email = ["gamsnjaga [a] gmail [d] com"]
   s.extra_rdoc_files = ["History.txt", "Manifest.txt"]
