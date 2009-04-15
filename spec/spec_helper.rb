@@ -13,8 +13,8 @@ require 'dm-validations'
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-accepts_nested_attributes'
  
 ENV["SQLITE3_SPEC_URI"]  ||= 'sqlite3::memory:'
-ENV["MYSQL_SPEC_URI"]    ||= 'mysql://localhost/dm_core_test'
-ENV["POSTGRES_SPEC_URI"] ||= 'postgres://postgres@localhost/dm_more_test'
+ENV["MYSQL_SPEC_URI"]    ||= 'mysql://localhost/dm-accepts_nested_attributes_test'
+ENV["POSTGRES_SPEC_URI"] ||= 'postgres://postgres@localhost/dm-accepts_nested_attributes_test'
  
  
 def setup_adapter(name, default_uri = nil)
@@ -30,13 +30,6 @@ def setup_adapter(name, default_uri = nil)
     false
   end
 end
- 
-ENV['ADAPTER'] ||= 'sqlite3'
-
- 
-setup_adapter(:default)
-Dir[Pathname(__FILE__).dirname.to_s + "/fixtures/**/*.rb"].each { |rb| require(rb) }
-
 
 # -----------------------------------------------
 # support for nice html output in rspec tmbundle
@@ -50,9 +43,14 @@ if USE_TEXTMATE_RSPEC_BUNDLE
 
   # use the tmbundle logger
   RSpecTmBundleHelpers::TextmateRspecLogger.new(STDOUT, :off)
+  
 
   class Object
     include RSpecTmBundleHelpers
   end
 
 end
+
+ENV['ADAPTER'] ||= 'sqlite3'
+setup_adapter(:default)
+Dir[Pathname(__FILE__).dirname.to_s + "/fixtures/**/*.rb"].each { |rb| require(rb) }
