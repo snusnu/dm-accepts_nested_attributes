@@ -23,7 +23,7 @@ module RSpecTmBundleHelpers
     end
   end
   
-  def puth(html)
+  def puth(html = nil)
     print "#{h(html)}<br />"
   end
   
