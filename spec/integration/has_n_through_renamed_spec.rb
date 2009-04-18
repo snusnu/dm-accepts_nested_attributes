@@ -8,17 +8,17 @@ describe DataMapper::NestedAttributes do
   
     it "should not allow to create a new picture via Tag#pictures_attributes" do
       @tag.save
-      Tag.all.size.should == 1
+      Tag.all.size.should     == 1
       Tagging.all.size.should == 0
-      Photo.all.size.should == 0
+      Photo.all.size.should   == 0
       
       @tag.pictures_attributes = { 'new_1' => { :name => 'dm-accepts_nested_attributes' } }
       @tag.pictures.should be_empty
       @tag.save
       
-      Tag.all.size.should == 1
+      Tag.all.size.should     == 1
       Tagging.all.size.should == 0
-      Photo.all.size.should == 0
+      Photo.all.size.should   == 0
     end
     
   end
@@ -27,9 +27,9 @@ describe DataMapper::NestedAttributes do
     
     it "should allow to create a new picture via Tag#pictures_attributes" do
       @tag.save
-      Tag.all.size.should == 1
+      Tag.all.size.should     == 1
       Tagging.all.size.should == 0
-      Photo.all.size.should == 0
+      Photo.all.size.should   == 0
       
       @tag.pictures_attributes = { 'new_1' => { :name => 'dm-accepts_nested_attributes' } }
       @tag.pictures.should_not be_empty
@@ -37,9 +37,9 @@ describe DataMapper::NestedAttributes do
       @tag.save
       @tag.pictures.first.should == Photo.first
       
-      Tag.all.size.should == 1
+      Tag.all.size.should     == 1
       Tagging.all.size.should == 1
-      Photo.all.size.should == 1
+      Photo.all.size.should   == 1
       
       Photo.first.name.should == 'dm-accepts_nested_attributes'
     end
@@ -48,8 +48,8 @@ describe DataMapper::NestedAttributes do
       @tag.save
       photo = Photo.create(:name => 'dm-accepts_nested_attributes')
       tagging = Tagging.create(:tag => @tag, :photo => photo)
-      Tag.all.size.should == 1
-      Photo.all.size.should == 1
+      Tag.all.size.should     == 1
+      Photo.all.size.should   == 1
       Tagging.all.size.should == 1
       
       @tag.reload
@@ -59,9 +59,9 @@ describe DataMapper::NestedAttributes do
       @tag.pictures.first.name.should == 'still dm-accepts_nested_attributes'
       @tag.save
       
-      Tag.all.size.should == 1
+      Tag.all.size.should     == 1
       Tagging.all.size.should == 1
-      Photo.all.size.should == 1
+      Photo.all.size.should   == 1
       
       Photo.first.name.should == 'still dm-accepts_nested_attributes'
     end
@@ -75,17 +75,17 @@ describe DataMapper::NestedAttributes do
       photo = Photo.create(:name => 'dm-accepts_nested_attributes')
       tagging = Tagging.create(:tag => @tag, :photo => photo)
       
-      Tag.all.size.should            == 1
+      Tag.all.size.should     == 1
       Tagging.all.size.should == 1
-      Photo.all.size.should           == 1
+      Photo.all.size.should   == 1
     
       @tag.reload
       @tag.pictures_attributes = { '1' => { :id => photo.id, :_delete => true } }
       @tag.save
       
-      Tag.all.size.should            == 1
+      Tag.all.size.should     == 1
       Tagging.all.size.should == 1
-      Photo.all.size.should           == 1
+      Photo.all.size.should   == 1
     end
     
   end
@@ -97,17 +97,17 @@ describe DataMapper::NestedAttributes do
       photo = Photo.create(:name => 'dm-accepts_nested_attributes')
       tagging = Tagging.create(:tag => @tag, :photo => photo)
       
-      Tag.all.size.should            == 1
+      Tag.all.size.should     == 1
       Tagging.all.size.should == 1
-      Photo.all.size.should           == 1
+      Photo.all.size.should   == 1
     
       @tag.reload
       @tag.pictures_attributes = { '1' => { :id => photo.id, :_delete => true } }
       @tag.save
       
-      Tag.all.size.should            == 1
+      Tag.all.size.should     == 1
       Tagging.all.size.should == 0
-      Photo.all.size.should           == 0
+      Photo.all.size.should   == 0
     end
     
   end
