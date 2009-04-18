@@ -65,6 +65,29 @@ describe DataMapper::NestedAttributes do
       Project.first.name.should == 'still dm-accepts_nested_attributes'
     end
     
+    it "should perform atomic commits" do
+      
+      @person.projects_attributes = { 'new_1' => { :name => nil } } # should fail because of validations
+      @person.projects.should be_empty
+      @person.save
+      @person.projects.should be_empty
+      
+      Person.all.size.should            == 1
+      ProjectMembership.all.size.should == 0
+      Project.all.size.should           == 0
+      
+      @person.name = nil # should fail because of validations
+      @person.projects_attributes = { 'new_1' => { :name => nil } }
+      @person.projects.should be_empty
+      @person.save
+      @person.projects.should be_empty
+      
+      Person.all.size.should            == 0
+      ProjectMembership.all.size.should == 0
+      Project.all.size.should           == 0
+      
+    end
+    
   end
   
   describe "every accessible has(n, :through) association with :allow_destroy => false", :shared => true do

@@ -66,6 +66,31 @@ describe DataMapper::NestedAttributes do
       Photo.first.name.should == 'still dm-accepts_nested_attributes'
     end
     
+    it "should perform atomic commits" do
+      
+      @tag.pictures_attributes = { 'new_1' => { :name => nil } } # should fail because of validations
+      @tag.pictures.should be_empty
+      @tag.save
+      @tag.pictures.should be_empty
+      
+      Tag.all.size.should     == 1
+      Tagging.all.size.should == 0
+      Photo.all.size.should   == 0
+      
+      Tag.all.destroy! # TODO refactor specs into more it blocks
+      
+      @tag.name = nil # should fail because of validations
+      @tag.pictures_attributes = { 'new_1' => { :name => 'beach' } }
+      @tag.pictures.should be_empty
+      @tag.save
+      @tag.pictures.should be_empty
+      
+      Tag.all.size.should     == 0
+      Tagging.all.size.should == 0
+      Photo.all.size.should   == 0
+      
+    end
+    
   end
   
   describe "every accessible has(n, :through) renamed association with :allow_destroy => false", :shared => true do

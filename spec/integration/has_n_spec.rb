@@ -52,6 +52,35 @@ describe DataMapper::NestedAttributes do
       Task.first.name.should == 'write more specs'
     end
     
+    it "should perform atomic commits" do
+      Project.all.size.should == 0
+      Task.all.size.should == 0
+      
+      @project.name = nil # will fail because of validations
+      @project.tasks_attributes = { 'new_1' => { :name => 'write specs' } }
+      @project.tasks.should_not be_empty
+      @project.tasks.first.name.should == 'write specs'
+      @project.save
+      @project.should be_new_record
+      @project.tasks.all? { |t| t.should be_new_record }
+      Project.all.size.should == 0
+      Task.all.size.should == 0
+      
+      # TODO write specs for xxx_attributes= method that test
+      # if same hash keys properly get overwritten and not end up being multiple records
+      # (which obviously is the case right now)
+      
+      @project.name = 'dm-accepts_nested_attributes'
+      @project.tasks_attributes = { 'new_1' => { :name => nil } } # will fail because of validations
+      @project.tasks.should_not be_empty
+      @project.tasks.first.name.should be_nil
+      @project.save
+      @project.should be_new_record
+      @project.tasks.all? { |t| t.should be_new_record }
+      Project.all.size.should == 0
+      Task.all.size.should == 0
+    end
+    
   end
   
   describe "every accessible has(n) association with :allow_destroy => false", :shared => true do

@@ -74,6 +74,27 @@ describe DataMapper::NestedAttributes do
       Profile.all.size.should == 1
     end
     
+    it "should perform atomic commits" do
+      @profile.person_attributes = { :name => nil } # will fail because of validations
+      @profile.person.should_not be_nil
+      @profile.person.name.should be_nil
+      @profile.save
+      @profile.person.should be_new_record
+      @profile.should be_new_record
+      Profile.all.size.should == 0
+      Person.all.size.should == 0
+    
+      @profile.person_attributes = { :name => 'Martin' }
+      @profile.person.should_not be_nil
+      @profile.person.name.should == 'Martin'
+      @profile.nick = nil # will fail because of validations
+      @profile.save
+      @profile.person.should be_new_record
+      @profile.should be_new_record
+      Profile.all.size.should == 0
+      Person.all.size.should == 0
+    end
+    
   end
   
   describe "every accessible belongs_to association with :allow_destroy => false", :shared => true do
