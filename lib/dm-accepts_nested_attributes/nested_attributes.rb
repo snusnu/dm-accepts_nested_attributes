@@ -64,7 +64,9 @@ module DataMapper
         class_eval %{
           
           def save(context = :default)
-            transaction { super }
+            saved = false # preserve Resource#save api contract
+            transaction { |t| t.rollback unless saved = super }
+            saved
           end
           
           def #{association_name}_attributes
@@ -193,7 +195,6 @@ module DataMapper
         # (saved | associations_saved) == true
         #
         # -----------------------------------------------------------------
-        
         
         return super if context.nil? # preserve save! behavior
         
