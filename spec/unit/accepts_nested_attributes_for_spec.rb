@@ -3,16 +3,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe "DataMapper::Model.accepts_nested_attributes_for" do
   
-  before(:each) do
-    
-    # don't use the originally defined fixtures but provide new ones,
-    # this time without already calling accepts_nested_attributes_for on them.
-    # this helps speccing the exact behavior of this very method call
-  
-    Object.send(:remove_const, 'Branch')  if Object.const_defined?('Branch')
-    Object.send(:remove_const, 'Shop')    if Object.const_defined?('Shop')
-    Object.send(:remove_const, 'Item')    if Object.const_defined?('Item')
-    Object.send(:remove_const, 'Booking') if Object.const_defined?('Booking')
+  FIXTURES = <<-RUBY
   
     class Branch
       include DataMapper::Resource
@@ -21,14 +12,14 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
       has n, :items
       has n, :bookings, :through => :items
     end
-    
+  
     class Shop
       include DataMapper::Resource
       property :id,        Serial
       property :branch_id, Integer
       belongs_to :branch
     end
-  
+
     class Item
       include DataMapper::Resource
       property :id,        Serial
@@ -36,15 +27,29 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
       belongs_to :branch
       has n, :bookings
     end
-    
+  
     class Booking
       include DataMapper::Resource
       property :id,      Serial
       property :item_id, Integer
       belongs_to :item
     end
-    
+  
+  RUBY
+  
+  before(:all) do
+    eval FIXTURES
     DataMapper.auto_migrate!
+  end
+  
+  before(:each) do
+    
+    Object.send(:remove_const, 'Branch')  if Object.const_defined?('Branch')
+    Object.send(:remove_const, 'Shop')    if Object.const_defined?('Shop')
+    Object.send(:remove_const, 'Item')    if Object.const_defined?('Item')
+    Object.send(:remove_const, 'Booking') if Object.const_defined?('Booking')
+  
+    eval FIXTURES # neither class_eval nor instance_eval work here
   
   end
   
