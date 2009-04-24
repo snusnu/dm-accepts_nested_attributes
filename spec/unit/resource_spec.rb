@@ -143,7 +143,7 @@ describe DataMapper::Resource do
   
   describe "#associated_instance_get(association_name)" do
     
-    before do
+    before(:each) do
       @person = Person.create(:name => 'snusnu')
       @person.profile = Profile.new
       @person.save
