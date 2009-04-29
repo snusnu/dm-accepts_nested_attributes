@@ -10,17 +10,13 @@ lib/dm-accepts_nested_attributes/associations.rb
 lib/dm-accepts_nested_attributes/nested_attributes.rb
 lib/dm-accepts_nested_attributes/version.rb
 spec/fixtures/person.rb
-spec/fixtures/photo.rb
 spec/fixtures/profile.rb
 spec/fixtures/project.rb
 spec/fixtures/project_membership.rb
-spec/fixtures/tag.rb
-spec/fixtures/tagging.rb
 spec/fixtures/task.rb
 spec/integration/belongs_to_spec.rb
 spec/integration/has_1_spec.rb
 spec/integration/has_n_spec.rb
-spec/integration/has_n_through_renamed_spec.rb
 spec/integration/has_n_through_spec.rb
 spec/shared/rspec_tmbundle_support.rb
 spec/spec.opts
