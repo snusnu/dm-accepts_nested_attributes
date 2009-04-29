@@ -134,11 +134,17 @@ describe DataMapper::NestedAttributes do
   end
   
   describe "Project.has(n, :tasks)" do
+    
+    include OneToManyHelpers
+    
+    before(:all) do
+      DataMapper.auto_migrate!
+    end
   
     describe "accepts_nested_attributes_for(:tasks)" do
       
       before(:each) do
-        DataMapper.auto_migrate!
+        clear_data
         Project.accepts_nested_attributes_for :tasks
         @project = Project.new :name => 'trippings'
       end
@@ -152,7 +158,7 @@ describe DataMapper::NestedAttributes do
     describe "accepts_nested_attributes_for(:tasks, :allow_destroy => false)" do
       
       before(:each) do
-        DataMapper.auto_migrate!
+        clear_data
         Project.accepts_nested_attributes_for :tasks, :allow_destroy => false
         @project = Project.new :name => 'trippings'
       end
@@ -165,7 +171,7 @@ describe DataMapper::NestedAttributes do
     describe "accepts_nested_attributes_for(:tasks, :allow_destroy => true)" do
       
       before(:each) do
-        DataMapper.auto_migrate!
+        clear_data
         Project.accepts_nested_attributes_for :tasks, :allow_destroy => true
         @project = Project.new :name => 'trippings'
       end
@@ -180,7 +186,7 @@ describe DataMapper::NestedAttributes do
       describe ":reject_if => :foo" do
     
         before(:each) do
-          DataMapper.auto_migrate!
+          clear_data
           Project.accepts_nested_attributes_for :tasks, :reject_if => :foo
           @project = Project.new :name => 'trippings'
         end
@@ -193,7 +199,7 @@ describe DataMapper::NestedAttributes do
       describe ":reject_if => lambda { |attrs| true }" do
     
         before(:each) do
-          DataMapper.auto_migrate!
+          clear_data
           Project.accepts_nested_attributes_for :tasks, :reject_if => lambda { |attrs| true }
           @project = Project.new :name => 'trippings'
         end
@@ -206,7 +212,7 @@ describe DataMapper::NestedAttributes do
       describe ":reject_if => lambda { |attrs| false }" do
     
         before(:each) do
-          DataMapper.auto_migrate!
+          clear_data
           Project.accepts_nested_attributes_for :tasks, :reject_if => lambda { |attrs| false }
           @project = Project.new :name => 'trippings'
         end

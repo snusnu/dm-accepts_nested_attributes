@@ -147,11 +147,17 @@ describe DataMapper::NestedAttributes do
   end
   
   describe "Person.has(n, :projects, :through => :project_memberships)" do
+    
+    include ManyToManyHelpers
+    
+    before(:all) do
+      DataMapper.auto_migrate!
+    end
   
     describe "accepts_nested_attributes_for(:projects)" do
       
       before(:each) do
-        DataMapper.auto_migrate!
+        clear_data
         Person.accepts_nested_attributes_for :projects
         @person = Person.new :name => 'snusnu'
       end
@@ -165,7 +171,7 @@ describe DataMapper::NestedAttributes do
     describe "accepts_nested_attributes_for(:projects, :allow_destroy => false)" do
       
       before(:each) do
-        DataMapper.auto_migrate!
+        clear_data
         Person.accepts_nested_attributes_for :projects, :allow_destroy => false
         @person = Person.new :name => 'snusnu'
       end
@@ -178,7 +184,7 @@ describe DataMapper::NestedAttributes do
     describe "accepts_nested_attributes_for(:projects, :allow_destroy = true)" do
       
       before(:each) do
-        DataMapper.auto_migrate!
+        clear_data
         Person.accepts_nested_attributes_for :projects, :allow_destroy => true
         @person = Person.new :name => 'snusnu'
       end
@@ -193,7 +199,7 @@ describe DataMapper::NestedAttributes do
       describe ":reject_if => :foo" do
     
         before(:each) do
-          DataMapper.auto_migrate!
+          clear_data
           Person.accepts_nested_attributes_for :projects, :reject_if => :foo
           @person = Person.new :name => 'snusnu'
         end
@@ -206,7 +212,7 @@ describe DataMapper::NestedAttributes do
       describe ":reject_if => lambda { |attrs| true }" do
     
         before(:each) do
-          DataMapper.auto_migrate!
+          clear_data
           Person.accepts_nested_attributes_for :projects, :reject_if => lambda { |attrs| true }
           @person = Person.new :name => 'snusnu'
         end
@@ -219,7 +225,7 @@ describe DataMapper::NestedAttributes do
       describe ":reject_if => lambda { |attrs| false }" do
     
         before(:each) do
-          DataMapper.auto_migrate!
+          clear_data
           Person.accepts_nested_attributes_for :projects, :reject_if => lambda { |attrs| false }
           @person = Person.new :name => 'snusnu'
         end

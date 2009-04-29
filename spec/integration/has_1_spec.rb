@@ -3,31 +3,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::NestedAttributes do
   
-  describe "every accessible has(1) association with no associated parent model", :shared => true do
-    
-    it "should return a new_record from get_\#{association_name}" do
-      @person.profile_attributes = { :nick => 'snusnu' }
-      @person.get_profile.should_not be_nil
-      @person.get_profile.should be_new_record
-    end
-    
-  end
-  
-  describe "every accessible has(1) association with an associated parent model", :shared => true do
-
-    it "should return an already existing record from get_\#{association_name}" do
-      @person.profile_attributes = { :nick => 'snusnu' }
-      @person.save
-      @person.get_profile.should_not be_nil
-      @person.get_profile.should_not be_new_record
-      @person.get_profile.should be_kind_of(Profile)
-    end
-  
-  end
-  
   describe "every accessible has(1) association with a valid reject_if proc", :shared => true do
-    
-    it_should_behave_like "every accessible has(1) association with no associated parent model"
   
     it "should not allow to create a new profile via Person#profile_attributes" do
       @person.profile_attributes = { :nick => 'snusnu' }
@@ -41,29 +17,26 @@ describe DataMapper::NestedAttributes do
   
   describe "every accessible has(1) association with no reject_if proc", :shared => true do
     
-    it_should_behave_like "every accessible has(1) association with no associated parent model"
-    it_should_behave_like "every accessible has(1) association with an associated parent model"
-    
     it "should allow to create a new profile via Person#profile_attributes" do
       @person.profile_attributes = { :nick => 'snusnu' }
       @person.profile.should_not be_nil
       @person.profile.nick.should == 'snusnu'
-      @person.save
-      @person.profile.should == Profile.first
+      @person.save.should be_true
+      
       Person.all.size.should == 1
       Profile.all.size.should == 1
       Profile.first.nick.should == 'snusnu'
     end
         
     it "should allow to update an existing profile via Person#profile_attributes" do
-      @person.save
+      @person.save.should be_true
       profile = Profile.create(:person_id => @person.id, :nick => 'snusnu')
       @person.reload
       
       @person.profile.should == profile
       @person.profile_attributes = { :id => profile.id, :nick => 'still snusnu somehow' }
       @person.profile.nick.should == 'still snusnu somehow'
-      @person.save
+      @person.save.should be_true
       @person.profile.should == Profile.first
       Person.all.size.should == 1
       Profile.all.size.should == 1
@@ -74,9 +47,8 @@ describe DataMapper::NestedAttributes do
       @person.profile_attributes = { :nick => nil } # will fail because of validations
       @person.profile.should_not be_nil
       @person.profile.nick.should be_nil
-      @person.save
-      @person.profile.should be_new_record
-      @person.should be_new_record
+      @person.save.should be_false
+      
       Person.all.size.should == 0
       Profile.all.size.should == 0
       
@@ -84,9 +56,8 @@ describe DataMapper::NestedAttributes do
       @person.profile.should_not be_nil
       @person.profile.nick.should == 'snusnu'
       @person.name = nil # will fail because of validations
-      @person.save
-      @person.profile.should be_new_record
-      @person.should be_new_record
+      @person.save.should be_false
+      
       Person.all.size.should == 0
       Profile.all.size.should == 0
     end
@@ -137,14 +108,20 @@ describe DataMapper::NestedAttributes do
   
   describe "Person.has(1, :profile)" do
     
+    include XToOneHelpers
+    
+    before(:all) do
+      DataMapper.auto_migrate!
+    end
+    
     describe "accepts_nested_attributes_for(:profile)" do
     
       before(:each) do
-        DataMapper.auto_migrate!
+        clear_data
         Person.accepts_nested_attributes_for :profile
         @person = Person.new :name => 'Martin'
       end
-    
+      
       it_should_behave_like "every accessible has(1) association with no reject_if proc"
       it_should_behave_like "every accessible has(1) association with :allow_destroy => false"
       it_should_behave_like "every accessible has(1) association with a nested attributes reader"
@@ -154,7 +131,7 @@ describe DataMapper::NestedAttributes do
     describe "accepts_nested_attributes_for(:profile, :allow_destroy => false)" do
     
       before(:each) do
-        DataMapper.auto_migrate!
+        clear_data
         Person.accepts_nested_attributes_for :profile, :allow_destroy => false
         @person = Person.new :name => 'Martin'
       end
@@ -167,7 +144,7 @@ describe DataMapper::NestedAttributes do
     describe "accepts_nested_attributes_for(:profile, :allow_destroy => true)" do
       
       before(:each) do
-        DataMapper.auto_migrate!
+        clear_data
         Person.accepts_nested_attributes_for :profile, :allow_destroy => true
         @person = Person.new :name => 'Martin'
       end
@@ -183,7 +160,7 @@ describe DataMapper::NestedAttributes do
       describe ":reject_if => :foo" do
     
         before(:each) do
-          DataMapper.auto_migrate!
+          clear_data
           Person.accepts_nested_attributes_for :profile, :reject_if => :foo
           @person = Person.new :name => 'Martin'
         end
@@ -196,7 +173,7 @@ describe DataMapper::NestedAttributes do
       describe ":reject_if => lambda { |attrs| true }" do
     
         before(:each) do
-          DataMapper.auto_migrate!
+          clear_data
           Person.accepts_nested_attributes_for :profile, :reject_if => lambda { |attrs| true }
           @person = Person.new :name => 'Martin'
         end
@@ -205,11 +182,11 @@ describe DataMapper::NestedAttributes do
         it_should_behave_like "every accessible has(1) association with :allow_destroy => false"
       
       end
-                  
+      
       describe ":reject_if => lambda { |attrs| false }" do
-    
+        
         before(:each) do
-          DataMapper.auto_migrate!
+          clear_data
           Person.accepts_nested_attributes_for :profile, :reject_if => lambda { |attrs| false }
           @person = Person.new :name => 'Martin'
         end

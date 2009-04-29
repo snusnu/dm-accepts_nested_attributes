@@ -3,6 +3,9 @@ require 'rubygems'
  
 gem 'rspec', '>=1.1.12'
 require 'spec'
+
+gem 'dm-association_validator', '>=0.0.1'
+require 'dm-association_validator'
  
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-accepts_nested_attributes'
  
@@ -48,3 +51,32 @@ end
 ENV['ADAPTER'] ||= 'sqlite3'
 setup_adapter(:default)
 Dir[Pathname(__FILE__).dirname.to_s + "/fixtures/**/*.rb"].each { |rb| require(rb) }
+
+
+module XToOneHelpers
+  
+  def clear_data
+    Profile.all.destroy!
+    Person.all.destroy!
+  end
+  
+end
+
+module OneToManyHelpers
+  
+  def clear_data
+    Task.all.destroy!
+    Project.all.destroy!
+  end
+  
+end
+
+module ManyToManyHelpers
+  
+  def clear_data
+    ProjectMembership.all.destroy!
+    Project.all.destroy!
+    Person.all.destroy!
+  end
+  
+end
