@@ -6,7 +6,8 @@ README.textile
 Rakefile
 TODO
 lib/dm-accepts_nested_attributes.rb
-lib/dm-accepts_nested_attributes/associations.rb
+lib/dm-accepts_nested_attributes/association_proxies.rb
+lib/dm-accepts_nested_attributes/association_validation.rb
 lib/dm-accepts_nested_attributes/nested_attributes.rb
 lib/dm-accepts_nested_attributes/version.rb
 spec/fixtures/person.rb
