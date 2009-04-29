@@ -10,9 +10,10 @@ require 'dm-core'
 require 'dm-validations'
 
 # Require plugin-files
-require Pathname(__FILE__).dirname.expand_path / 'dm-accepts_nested_attributes' / 'nested_attributes'
-# monkeypatches for dm-core/associations/(many_to_one.rb and one_to_many.rb)
-require Pathname(__FILE__).dirname.expand_path / 'dm-accepts_nested_attributes' / 'association_proxies'
+dir = Pathname(__FILE__).dirname.expand_path / 'dm-accepts_nested_attributes'
+require dir / 'resource'
+require dir / 'association_proxies'
+require dir / 'nested_attributes'
 
 # Include the plugin in Model
 DataMapper::Model.append_extensions DataMapper::NestedAttributes::ClassMethods
