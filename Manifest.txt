@@ -5,6 +5,7 @@ Manifest.txt
 README.textile
 Rakefile
 TODO
+CHANGELOG
 lib/dm-accepts_nested_attributes.rb
 lib/dm-accepts_nested_attributes/association_proxies.rb
 lib/dm-accepts_nested_attributes/association_validation.rb

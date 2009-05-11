@@ -1,0 +1,218 @@
+[52c55bc | Wed Apr 29 04:50:32 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * bump tiny version for extlib/hook compatible gem.
+
+[c34edae | Wed Apr 29 04:46:43 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * now compatible with extlib/hook. (last commit was missing files)
+
+[8e42229 | Wed Apr 29 04:34:20 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * workaround extlib/hook not respecting hooked but redefined methods.
+
+[578e658 | Wed Apr 29 02:46:56 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * only alter common DataMapper namespace if really necessary.
+
+[7da8378 | Wed Apr 29 01:41:07 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * less brittle specs with no more auto_migrations before(:each)
+
+[f2a2fcb | Wed Apr 29 01:38:00 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * updated Manifest and gemspec to reflect spec cleanings
+
+[dd0a4a8 | Fri Apr 24 17:29:41 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * removed fixtures and specs for customized has(n, :through) associations.
+
+    It makes no sense to spec all different options for the association
+    macros in integration specs. Rather, it should be specced once and
+    for all (in unit specs) that dm-accepts_nested_attributes infers the
+    right kind of associations. Think about it, then do it!
+
+[ac7c008 | Fri Apr 24 17:27:12 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * be explicit about before(:each)
+
+[7a56d17 | Fri Apr 24 17:26:35 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * removed commented code
+
+[03bc5c2 | Fri Apr 24 17:25:25 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * don't auto_migrate! before(:each) spec run (takes half the time)
+
+[b6f5bf5 | Tue Apr 21 14:52:22 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * removed debugging outputs
+
+[001c791 | Sat Apr 18 14:31:35 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * added red specs for transactions. make them green.
+
+[9852f03 | Sat Apr 18 03:07:04 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * formatting
+
+[3fceda3 | Sat Apr 18 02:34:54 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * no need to require gem dependencies in spec_helper.rb
+
+[2118726 | Wed Apr 15 18:57:22 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * initial support for wrapping every save inside a transaction.
+
+    * this probably needs more thinking, also funny is that specs if
+      called from textmate rspec bundle all pass, whereas when called
+      from the shell, some of them (only has(1)) break.
+      investigate this
+    * dbussink also suggested it might be a good idea to add an option
+      that allows to turn transaction usage off.
+    * also, look for some api to infer wether a backend supports
+      (nested) transactions or not. we could default to true if it does,
+      but still leave the option to turn it off nevertheless.
+
+[abdc211 | Wed Apr 15 14:18:07 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * added sanitize_nested_attributes to provide a hook for doing this.
+
+    * see http://is.gd/sz2d for the motivation behind this new method
+
+[158b6ea | Wed Apr 15 02:50:38 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * fixed broken generated gemspec. find out why this happens.
+
+[5603c57 | Wed Apr 15 02:49:54 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * updated manifest to include new specs from integration branch
+
+[4c5e656 | Tue Apr 14 18:25:02 UTC 2009] Rupert Voelcker <rupert@rupespad.com>
+
+ * added #{association_name}_attributes reader
+
+    Signed-off-by: Martin Gamsjaeger <gamsnjaga@gmail.com>
+
+[6d26213 | Tue Apr 14 03:09:34 UTC 2009] Rupert Voelcker <rupert@rupespad.com>
+
+ * added associated attributes reader (doesn't do anything yet)
+
+    Signed-off-by: Martin Gamsjaeger <gamsnjaga@gmail.com>
+
+[32dcfe8 | Wed Apr 15 02:20:00 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * initial support for dm-validations
+
+    * this desperately needs specs! currently only basic not null
+      constraint specs pass (well, there are no other).
+    * saving a resource along with its associations should always
+      be done inside a transaction! figure out how to do that!
+    * validation errors from associated resources should be copied
+      to the parent resource. this currently happens, but it's not
+      specced at all so consider the behavior undefined.
+
+[fef1578 | Wed Apr 15 01:37:14 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * initialize dm logger before setting up dm adapter
+
+[8d7ede8 | Wed Apr 15 01:35:50 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * allow to call puth helper like puts without parameter
+
+[4e204a1 | Tue Apr 14 01:19:30 UTC 2009] Rupert Voelcker <rupert@rupespad.com>
+
+ * now works with 'renamed' has many relationships
+
+    Signed-off-by: Martin Gamsjaeger <gamsnjaga@gmail.com>
+
+[8f20aad | Mon Apr 13 00:33:40 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * build that gem\!
+
+[cc02415 | Sun Apr 12 22:57:26 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * updated manifest
+
+[d0f0dce | Sun Apr 12 22:57:08 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * use constants from Rakefile in tasks/install
+
+[b45ea52 | Fri Apr 10 16:12:11 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * added get_#{association_name} helper for (many/one)_to_one associations.
+
+    This is mainly to support common usecases in fields_for. This method
+    will return a new record if the associated object is nil at the time
+    it is accessed, and the associated object otherwise. This should help
+    fields_for to render the right id and name attributes for the input
+    fields. This method is not generated for (one/many)_to_many associations
+    since these return an Collection anyway and this allow to call build
+    or get on it. A possible use case would look something like this:
+    
+    <% fields_for @location.get_geo_point do %>
+     ...
+    <% end =%>
+    
+    The whole purpose of this commit is to provide something to fields_for
+    that is guaranteed to not be nil.
+
+[8acb396 | Fri Apr 10 02:28:48 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * no .rb extension in require statements
+
+[bd6dfe6 | Fri Apr 10 01:52:45 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * added passing specs for reject_if procs
+
+[2a1d309 | Thu Apr 09 19:55:52 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * updated README
+
+[b0fcf44 | Thu Apr 09 19:52:14 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * update now works for has(n, :through) -> all works now
+
+[a8ba5f6 | Thu Apr 09 19:44:48 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * destroy now works for has(n, :through)
+
+[2b5d583 | Thu Apr 09 19:11:35 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * explain what's going on when creating a new has(n, :through) child entry
+
+[b8a4be4 | Thu Apr 09 18:59:44 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * updated README to reflect latest changes
+
+[1efbb4c | Thu Apr 09 18:56:27 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * create now works for has(n, :through)
+
+[71d3d73 | Thu Apr 09 16:07:41 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * added a few spec helpers
+
+[2783be5 | Thu Apr 09 03:06:59 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * more robust (backwards compatible) monkeypatch.
+
+[c49516e | Thu Apr 09 01:42:23 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * README cosmetics
+
+[974d7b5 | Thu Apr 09 01:38:01 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Updated README to reflect the latest status.
+
+[69eb9ff | Thu Apr 09 01:28:10 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * reworked association saving. all except has(n,:through) work now
+
+[1200617 | Wed Apr 08 18:57:58 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * really minor README cosmetics
+
+[bda2607 | Wed Apr 08 17:44:34 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Push it
+
