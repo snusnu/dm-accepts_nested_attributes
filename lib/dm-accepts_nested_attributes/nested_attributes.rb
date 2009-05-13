@@ -3,9 +3,8 @@ module DataMapper
     
     module ClassMethods
       
-      def self.extended(base)
-        base.class_inheritable_accessor :autosave_associations
-        base.autosave_associations = {}
+      def autosave_associations
+        @autosave_associations ||= {}
       end
       
       # Defines an attributes reader and writer for the specified association(s).
