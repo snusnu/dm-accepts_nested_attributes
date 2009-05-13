@@ -1,3 +1,18 @@
+[b621475 | Wed May 13 04:29:30 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * bumped version to 0.0.6.
+
+[91923dd | Wed May 13 04:18:49 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * respect dm-is-remixable (thx Asher Van Brunt for pointing this out)
+
+    Since class_inheritable_accessor is not available on Module, dana
+    bailed out for dm-is-remixable. This should hopefully fix this issue.
+
+[ef8e1ca | Mon May 11 00:17:43 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * added CHANGELOG rake task and file (taken from manveru/ramaze)
+
 [52c55bc | Wed Apr 29 04:50:32 UTC 2009] snusnu <gamsnjaga@gmail.com>
 
  * bump tiny version for extlib/hook compatible gem.
