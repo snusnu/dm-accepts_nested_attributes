@@ -1,5 +1,4 @@
 require 'pathname'
-require 'rubygems'
 require 'rake'
 require 'rake/rdoctask'
  
@@ -16,8 +15,8 @@ GEM_NAME = "dm-accepts_nested_attributes"
 GEM_VERSION = DataMapper::NestedAttributes::VERSION
 
 GEM_DEPENDENCIES = [
-  ["dm-core",         '>=0.9.11'],
-  ['addressable',     '~>2.0.2' ]
+  ["dm-core",        '>=0.10.0'],
+  ["dm-validations", '>=0.10.0']
 ]
 
 GEM_CLEAN = %w[ log pkg coverage ]
