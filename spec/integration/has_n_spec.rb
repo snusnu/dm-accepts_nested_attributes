@@ -61,8 +61,8 @@ describe DataMapper::NestedAttributes do
       @project.tasks.should_not be_empty
       @project.tasks.first.name.should == 'write specs'
       @project.save
-      @project.should be_new_record
-      @project.tasks.all? { |t| t.should be_new_record }
+      @project.should be_new
+      @project.tasks.all? { |t| t.should be_new }
       Project.all.size.should == 0
       Task.all.size.should == 0
       
@@ -75,8 +75,8 @@ describe DataMapper::NestedAttributes do
       @project.tasks.should_not be_empty
       @project.tasks.first.name.should be_nil
       @project.save
-      @project.should be_new_record
-      @project.tasks.all? { |t| t.should be_new_record }
+      @project.should be_new
+      @project.tasks.all? { |t| t.should be_new }
       Project.all.size.should == 0
       Task.all.size.should == 0
     end

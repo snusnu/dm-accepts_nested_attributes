@@ -30,7 +30,7 @@ module DataMapper
     end
     
     def save_self
-      new_record? ? create : update
+      new? ? create : update
     end
     
     def save_parent_associations(saved, context)

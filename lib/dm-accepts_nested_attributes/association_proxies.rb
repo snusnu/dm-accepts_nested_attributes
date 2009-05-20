@@ -13,7 +13,7 @@ module DataMapper
           # return true unless parent.new_record?
           
           # and the backwards compatible extension to it (allows update of belongs_to model)
-          if !parent.new_record? && !@relationship.child_model.autosave_associations.key?(@relationship.name)
+          if !parent.new? && !@relationship.child_model.autosave_associations.key?(@relationship.name)
             return true
           end
 
