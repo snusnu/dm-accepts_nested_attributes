@@ -3,9 +3,6 @@ require 'rubygems'
  
 gem 'rspec', '>=1.1.12'
 require 'spec'
-
-gem 'dm-association_validator', '>=0.0.1'
-require 'dm-association_validator'
  
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-accepts_nested_attributes'
  

@@ -326,61 +326,6 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
     
     end
     
-    describe "a valid association_name pointing to a single resource", :shared => true do
-      
-      describe "and no options" do
-      
-        it "should create a get_\#{association_name} instance reader" do
-          p = @model.new
-          p.respond_to?("get_#{@association}").should be_false
-          @model.accepts_nested_attributes_for @association
-          p = @model.new
-          p.respond_to?("get_#{@association}").should be_true
-          p.send("get_#{@association}").should_not be_nil
-        end
-        
-      end
-      
-      describe "and empty options" do
-        
-        it "should create a get_\#{association_name} instance reader" do
-          p = @model.new
-          p.respond_to?("get_#{@association}").should be_false
-          @model.accepts_nested_attributes_for @association, {}
-          p = @model.new
-          p.respond_to?("get_#{@association}").should be_true
-          p.send("get_#{@association}").should_not be_nil
-        end
-        
-      end
-            
-      describe "and invalid options" do
-        
-        it "should not create a get_\#{association_name} instance reader" do
-          p = @model.new
-          p.respond_to?("get_#{@association}").should be_false
-          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error
-          p = @model.new
-          p.respond_to?("get_#{@association}").should be_false
-        end
-        
-      end
-                  
-      describe "and valid options" do
-        
-        it "should create a get_\#{association_name} instance reader" do
-          p = @model.new
-          p.respond_to?("get_#{@association}").should be_false
-          @model.accepts_nested_attributes_for @association, :allow_destroy => true
-          p = @model.new
-          p.respond_to?("get_#{@association}").should be_true
-          p.send("get_#{@association}").should_not be_nil
-        end
-        
-      end
-      
-    end
-    
     describe "a valid association_name pointing to multiple resources", :shared => true do
       
       describe "and no options" do
@@ -446,7 +391,6 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
       end
       
       it_should_behave_like "a valid association_name"
-      it_should_behave_like "a valid association_name pointing to a single resource"
       
     end
         
@@ -458,7 +402,6 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
       end
       
       it_should_behave_like "a valid association_name"
-      it_should_behave_like "a valid association_name pointing to a single resource"
       
     end
             

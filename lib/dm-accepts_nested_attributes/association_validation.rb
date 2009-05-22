@@ -3,44 +3,73 @@ module DataMapper
 
     module AssociationValidation
       
-      def save_child_associations(saved, context)
-        return super if context.nil? # preserve save! behavior
-        child_associations.each do |a|
-          if a.respond_to?(:valid?)
-            a.errors.each { |e| self.errors.add(:general, e) } unless a.valid?(context)
+      def save(context = :default)
+        unless save_parent_associations(context)
+          return false
+        end
+        unless save_self(context)
+          return false
+        end
+        save_child_associations(context)
+      end
+
+      private
+
+      def save_parent_associations(context)
+        parent_associations.all? do |a|
+          before_save_parent_association(a, context)
+          ret = a.save
+          puts "save_parent_associations: save returned #{ret.inspect}, saved object = #{a.inspect}"
+          ret
+        end
+      end
+
+      def save_self(context)
+        _save_self = lambda { new? ? _create : _update }
+        if context.nil?
+          _save_self.call
+        else
+          if self.valid?(context)
+            _save_self.call
           else
-            self.errors.add(:general, "child association is missing")
+            puts "save FAIL: save_self failed with errors = #{self.errors.inspect}" 
           end
-          saved |= a.save
         end
-        saved
       end
 
-      def save_self
-        self.valid? && super
+      def save_child_associations(context)
+        child_associations.all? do |a|
+          before_save_child_association(a, context)
+          ret = a.save
+          puts "save_child_associations: save returned #{ret.inspect}, saved object = #{a.inspect}"
+          ret
+        end
       end
 
-      def save_parent_associations(saved, context)
-        parent_associations.each do |a|
-          if a.respond_to?(:each) 
-            a.each do |r|
-              r.errors.each { |e| self.errors.add(:general, e) } unless r.valid?(context)
+      # collect errors on parent associations
+      def before_save_parent_association(association, context)
+        if association.respond_to?(:each) 
+          association.each do |r|
+            unless r.valid?(context)
+              r.errors.each { |e| self.errors.add(:general, e) }
             end
-          else                  
-            a.errors.each { |e| self.errors.add(:general, e) } unless a.valid?(context)
           end
-          saved |= a.save
+        else
+          unless association.valid?(context)
+            association.errors.each { |e| self.errors.add(:general, e) }
+          end
         end
-        saved
       end
 
-      # everything works the same if this method isn't overwritten with a no-op
-      # however, i suspect that this is the case because the registered before(:save) hook
-      # somehow gets lost when overwriting Resource#save here in this module.
-      # I'll leave it in for now, to make the purpose clear
-      
-      def check_validations(context = :default)
-        true # no-op, validations are checked inside #save
+      # collect errors on child associations
+      def before_save_child_association(association, context)
+        if association.respond_to?(:valid?)
+          unless association.valid?(context)
+            association.errors.each { |e| self.errors.add(:general, e) }
+          end
+        else
+          self.errors.add(:general, "child association is missing")
+        end
       end
 
     end
