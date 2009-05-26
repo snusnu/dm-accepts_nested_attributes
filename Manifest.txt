@@ -9,8 +9,9 @@ CHANGELOG
 lib/dm-accepts_nested_attributes.rb
 lib/dm-accepts_nested_attributes/association_proxies.rb
 lib/dm-accepts_nested_attributes/association_validation.rb
-lib/dm-accepts_nested_attributes/nested_attributes.rb
+lib/dm-accepts_nested_attributes/model.rb
 lib/dm-accepts_nested_attributes/resource.rb
+lib/dm-accepts_nested_attributes/support.rb
 lib/dm-accepts_nested_attributes/version.rb
 spec/fixtures/person.rb
 spec/fixtures/profile.rb

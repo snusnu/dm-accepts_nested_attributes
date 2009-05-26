@@ -3,49 +3,38 @@ module DataMapper
 
     module AssociationValidation
       
-      def save(context = :default)
-        unless save_parent_associations(context)
-          return false
-        end
-        unless save_self(context)
-          return false
-        end
-        save_child_associations(context)
-      end
-
-      private
-
-      def save_parent_associations(context)
-        parent_associations.all? do |a|
-          before_save_parent_association(a, context)
-          ret = a.save
-          puts "save_parent_associations: save returned #{ret.inspect}, saved object = #{a.inspect}"
-          ret
+      extend DataMapper::Chainable
+      
+      chainable do
+        def save(*args)
+          save_parents(*args) && super
         end
       end
-
-      def save_self(context)
-        _save_self = lambda { new? ? _create : _update }
-        if context.nil?
-          _save_self.call
-        else
-          if self.valid?(context)
-            _save_self.call
-          else
-            puts "save FAIL: save_self failed with errors = #{self.errors.inspect}" 
+      
+      def parent_relationships
+        parent_relationships = []
+ 
+        relationships.each_value do |relationship|
+          next unless relationship.respond_to?(:resource_for) && relationship.loaded?(self)
+          parent_relationships << relationship
+        end
+ 
+        parent_relationships
+      end
+ 
+      def save_parents(*args)
+        parent_relationships.all? do |relationship|
+          parent = relationship.get(self)
+          if parent.save(*args)
+            relationship.set(self, parent) # set the FK values
           end
         end
       end
 
-      def save_child_associations(context)
-        child_associations.all? do |a|
-          before_save_child_association(a, context)
-          ret = a.save
-          puts "save_child_associations: save returned #{ret.inspect}, saved object = #{a.inspect}"
-          ret
-        end
-      end
-
+    end
+    
+    module ErrorCollection
+      
       # collect errors on parent associations
       def before_save_parent_association(association, context)
         if association.respond_to?(:each) 
@@ -71,7 +60,7 @@ module DataMapper
           self.errors.add(:general, "child association is missing")
         end
       end
-
+      
     end
     
   end
