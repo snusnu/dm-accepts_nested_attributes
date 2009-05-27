@@ -14,7 +14,7 @@ module DataMapper
       # For now, this method basically is a no-op, but at least it provides a hook where
       # everyone can perform it's own sanitization (just overwrite this method) 
       def sanitize_nested_attributes(attrs)
-        attrs
+        attrs # noop
       end
     
       # returns nil if no resource has been associated yet
@@ -41,7 +41,7 @@ module DataMapper
       def assign_nested_attributes_for_one_to_one_association(association_name, attrs, allow_destroy)
         if attrs[:id].blank?
           unless reject_new_record?(association_name, attrs)
-            model = self.class.associated_model_for_name(association_name)
+            model = self.class.relationship!(association_name).target_model
             send("#{association_name}=", model.new(attrs.except(*UNASSIGNABLE_KEYS)))
           end
         else (existing_record = associated_instance_get(association_name)) && existing_record.id.to_s == attrs[:id].to_s
@@ -88,7 +88,7 @@ module DataMapper
         attributes_collection.each do |attributes|
           if attributes[:id].blank?
             unless reject_new_record?(association_name, attributes)
-              case association = self.class.association_for_name(association_name)
+              case association = self.class.relationship!(association_name)
               when DataMapper::Associations::OneToMany::Relationship
                 build_new_has_n_association(association_name, attributes)
               when DataMapper::Associations::ManyToMany::Relationship
@@ -108,16 +108,16 @@ module DataMapper
         
       def build_new_has_n_through_association(association_name, attributes)
         # fetch the association to have the information ready
-        association = self.class.association_for_name(association_name)
+        association = self.class.relationship!(association_name)
       
         # do what's done in dm-core/specs/integration/association_through_spec.rb
       
         # explicitly build the join entry and assign it to the join association
-        join_entry = self.class.associated_model_for_name(association.name).new
+        join_entry = self.class.relationship!(association_name).target_model.new
         self.send(association.name) << join_entry
         self.save
         # explicitly build the child entry and assign the join entry to its join association
-        child_entry = self.class.associated_model_for_name(association_name).new(attributes)
+        child_entry = self.class.relationship!(association_name).target_model.new(attributes)
         child_entry.send(association.name) << join_entry
         child_entry.save
       end
@@ -126,10 +126,10 @@ module DataMapper
       # +allow_destroy+ is +true+ and has_delete_flag? returns +true+.
       def assign_to_or_mark_for_destruction(association_name, record, attributes, allow_destroy)
         if has_delete_flag?(attributes) && allow_destroy
-          association = self.class.association_for_name(association_name)
+          association = self.class.relationship!(association_name)
           if association.is_a?(DataMapper::Associations::ManyToMany::Relationship)
             # destroy the join record
-            record.send(self.class.association_for_name(association_name).name).destroy!
+            record.send(self.class.relationship!(association_name).name).destroy!
             # destroy the child record
             record.destroy
           else
@@ -137,7 +137,7 @@ module DataMapper
           end
         else
           record.attributes = attributes.except(*UNASSIGNABLE_KEYS)
-          association = self.class.association_for_name(association_name)
+          association = self.class.relationship!(association_name)
           if association.is_a?(DataMapper::Associations::ManyToMany::Relationship)
             record.save
           end
@@ -155,16 +155,21 @@ module DataMapper
       # has_delete_flag? or if a <tt>:reject_if</tt> proc exists for this
       # association and evaluates to +true+.
       def reject_new_record?(association_name, attributes)
-        guard = self.class.reject_new_nested_attributes_proc_for(association_name)
-        has_delete_flag?(attributes) || (guard.respond_to?(:call) && guard.call(attributes))
+        guard = self.class.reject_new_nested_attributes_guard_for(association_name)
+        has_delete_flag?(attributes) || !evaluate_reject_new_record_guard(guard, attributes)
+      end
+      
+      def evaluate_reject_new_record_guard(guard, attributes)
+        return true if guard.nil?
+        (guard.is_a?(Symbol) || guard.is_a?(String)) ? send(guard) : guard.call(attributes)
       end
       
     end
     
     module CommonResourceSupport
 
-      # Reloads the attributes as usual 
-      # and removes a mark for destruction.
+      # remove mark for destruction if present
+      # before delegating reload behavior to super
       def reload
         @marked_for_destruction = false
         super
@@ -179,6 +184,9 @@ module DataMapper
       end
 
     end
+    
+    
+    DataMapper::Model.append_inclusions(CommonResourceSupport)
 
   end
 end

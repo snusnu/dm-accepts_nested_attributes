@@ -7,11 +7,12 @@ Rakefile
 TODO
 CHANGELOG
 lib/dm-accepts_nested_attributes.rb
-lib/dm-accepts_nested_attributes/association_proxies.rb
-lib/dm-accepts_nested_attributes/association_validation.rb
+lib/dm-accepts_nested_attributes/error_collection.rb
 lib/dm-accepts_nested_attributes/model.rb
 lib/dm-accepts_nested_attributes/resource.rb
-lib/dm-accepts_nested_attributes/support.rb
+lib/dm-accepts_nested_attributes/save.rb
+lib/dm-accepts_nested_attributes/save_or_destroy.rb
+lib/dm-accepts_nested_attributes/transactional_save.rb
 lib/dm-accepts_nested_attributes/version.rb
 spec/fixtures/person.rb
 spec/fixtures/profile.rb

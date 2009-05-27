@@ -1,11 +1,14 @@
 require 'pathname'
-require 'rubygems'
- 
-gem 'rspec', '>=1.1.12'
 require 'spec'
- 
+
+# require the plugin
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-accepts_nested_attributes'
- 
+
+# allow testing with dm-validations enabled
+# must be required after the plugin, since
+# dm-validations seems to need dm-core
+require 'dm-validations'
+
 ENV["SQLITE3_SPEC_URI"]  ||= 'sqlite3::memory:'
 ENV["MYSQL_SPEC_URI"]    ||= 'mysql://localhost/dm-accepts_nested_attributes_test'
 ENV["POSTGRES_SPEC_URI"] ||= 'postgres://postgres@localhost/dm-accepts_nested_attributes_test'

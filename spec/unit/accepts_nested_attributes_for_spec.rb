@@ -174,16 +174,16 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
           lambda { @model.accepts_nested_attributes_for @association }.should_not raise_error
         end
         
-        it "should store the accessible association in .autosave_associations" do
-          @model.autosave_associations[@association].should be_nil
+        it "should store the accessible association in .options_for_nested_attributes" do
+          @model.options_for_nested_attributes[@association].should be_nil
           @model.accepts_nested_attributes_for @association
-          @model.autosave_associations[@association].should_not be_nil
+          @model.options_for_nested_attributes[@association].should_not be_nil
         end
 
-        it "should store the default options under the association_name in .autosave_associations" do
-          @model.autosave_associations[@association].should be_nil
+        it "should store the default options under the association_name in .options_for_nested_attributes" do
+          @model.options_for_nested_attributes[@association].should be_nil
           @model.accepts_nested_attributes_for @association
-          @model.autosave_associations[@association].should == { :allow_destroy => false }
+          @model.options_for_nested_attributes[@association].should == { :allow_destroy => false }
         end
         
         it "should create a \#{association_name}_attributes instance reader" do
@@ -211,15 +211,15 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
         end
         
         it "should store the accessible association in .autosave_associations" do
-          @model.autosave_associations[@association].should be_nil
+          @model.options_for_nested_attributes[@association].should be_nil
           @model.accepts_nested_attributes_for @association, {}
-          @model.autosave_associations[@association].should_not be_nil
+          @model.options_for_nested_attributes[@association].should_not be_nil
         end
 
         it "should store the default options under the association_name in .autosave_associations" do
-          @model.autosave_associations[@association].should be_nil
+          @model.options_for_nested_attributes[@association].should be_nil
           @model.accepts_nested_attributes_for @association, {}
-          @model.autosave_associations[@association].should == { :allow_destroy => false }
+          @model.options_for_nested_attributes[@association].should == { :allow_destroy => false }
         end
         
         it "should create a \#{association_name}_attributes instance reader" do
@@ -247,9 +247,9 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
         end
         
         it "should not store the accessible association in .autosave_associations" do
-          @model.autosave_associations[@association].should be_nil
+          @model.options_for_nested_attributes[@association].should be_nil
           lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error
-          @model.autosave_associations[@association].should be_nil
+          @model.options_for_nested_attributes[@association].should be_nil
         end
         
         it "should not create a \#{association_name}_attributes instance reader" do
@@ -277,33 +277,33 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
         end
         
         it "should store the accessible association in .autosave_associations" do
-          @model.autosave_associations[@association].should be_nil
+          @model.options_for_nested_attributes[@association].should be_nil
           @model.accepts_nested_attributes_for @association, :allow_destroy => true
-          @model.autosave_associations[@association].should_not be_nil
+          @model.options_for_nested_attributes[@association].should_not be_nil
         end
                 
         it "should accept :allow_destroy as the only option (and thus overwrite the default option)" do
-          @model.autosave_associations[@association].should be_nil
+          @model.options_for_nested_attributes[@association].should be_nil
           @model.accepts_nested_attributes_for @association, :allow_destroy => true
-          @model.autosave_associations[@association].should == { :allow_destroy => true }
+          @model.options_for_nested_attributes[@association].should == { :allow_destroy => true }
         end
                         
         it "should accept :reject_if as the only option (and add :allow_destroy => false)" do
-          @model.autosave_associations[@association].should be_nil
+          @model.options_for_nested_attributes[@association].should be_nil
           @model.accepts_nested_attributes_for @association, :reject_if => lambda { |attributes| nil }
-          @model.autosave_associations[@association].should_not be_nil
-          @model.autosave_associations[@association][:allow_destroy].should be_false
-          @model.autosave_associations[@association][:reject_if].should be_kind_of(Proc)
-          @model.reject_new_nested_attributes_proc_for(@association).should be_kind_of(Proc)
+          @model.options_for_nested_attributes[@association].should_not be_nil
+          @model.options_for_nested_attributes[@association][:allow_destroy].should be_false
+          @model.options_for_nested_attributes[@association][:reject_if].should be_kind_of(Proc)
+          @model.reject_new_nested_attributes_guard_for(@association).should be_kind_of(Proc)
         end
                                 
         it "should accept both :allow_destroy and :reject_if as options" do
-          @model.autosave_associations[@association].should be_nil
+          @model.options_for_nested_attributes[@association].should be_nil
           @model.accepts_nested_attributes_for @association, :allow_destroy => true, :reject_if => lambda { |attributes| nil }
-          @model.autosave_associations[@association].should_not be_nil
-          @model.autosave_associations[@association][:allow_destroy].should be_true
-          @model.autosave_associations[@association][:reject_if].should be_kind_of(Proc)
-          @model.reject_new_nested_attributes_proc_for(@association).should be_kind_of(Proc)
+          @model.options_for_nested_attributes[@association].should_not be_nil
+          @model.options_for_nested_attributes[@association][:allow_destroy].should be_true
+          @model.options_for_nested_attributes[@association][:reject_if].should be_kind_of(Proc)
+          @model.reject_new_nested_attributes_guard_for(@association).should be_kind_of(Proc)
         end
         
         it "should create a \#{association_name}_attributes instance reader" do

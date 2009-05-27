@@ -158,13 +158,13 @@ describe DataMapper::NestedAttributes do
     describe "accepts_nested_attributes_for :profile, " do
       
       describe ":reject_if => :foo" do
-    
+          
         before(:each) do
           clear_data
           Person.accepts_nested_attributes_for :profile, :reject_if => :foo
           @person = Person.new :name => 'Martin'
         end
-    
+          
         it_should_behave_like "every accessible has(1) association with no reject_if proc"
         it_should_behave_like "every accessible has(1) association with :allow_destroy => false"
       
