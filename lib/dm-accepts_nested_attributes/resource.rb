@@ -76,9 +76,7 @@ module DataMapper
       # ])
       def assign_nested_attributes_for_collection_association(association_name, attributes_collection, allow_destroy)
       
-        if attributes_collection.is_a?(Hash)
-          attributes_collection = normalize_attributes_collection(attributes_collection)
-        end
+        attributes_collection = normalize_attributes_collection(attributes_collection)
        
         attributes_collection.each do |attributes|
           if attributes[:id].blank?
@@ -163,7 +161,11 @@ module DataMapper
       end
       
       def normalize_attributes_collection(attributes_collection)
-        attributes_collection.sort_by { |index, _| index.to_i }.map { |_, attributes| attributes }
+        if attributes_collection.is_a?(Hash)
+          attributes_collection.sort_by { |index, _| index.to_i }.map { |_, attributes| attributes }
+        else
+          attributes_collection
+        end
       end
       
     end
