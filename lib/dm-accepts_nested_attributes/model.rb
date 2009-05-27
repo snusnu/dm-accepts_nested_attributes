@@ -48,18 +48,18 @@ module DataMapper
         # add overriden save behavior that saves the complete loaded resource tree
         add_save_behavior(association_name, options)
         
-        # add error collection behavior if dm-validations are present
-        if DataMapper.const_defined?('Validate')
-          add_error_collection_behavior(association_name, options)
-        end
-        
         # add transactional_save if transactions are supported by the adapter in use
         if true # TODO find out how to ask if the adapter supports transactions
           add_transactional_save_behavior(association_name, options)
         end
+        
+        # add error collection behavior if dm-validations are present
+        if DataMapper.const_defined?('Validate')
+          add_error_collection_behavior(association_name, options)
+        end
       
         # find out if we want to assign to a to_one or a to_many association
-        type = relationship!(association_name).max > 1 ? :collection : :one_to_one
+        type = relationship(association_name).max > 1 ? :collection : :one_to_one
         
         
         # define accessors for the accepted nested attributes
@@ -83,8 +83,12 @@ module DataMapper
       end
       
       
-      # module only for structuring purposes
-      # it gets included right below
+      # module only for structuring purposes, it gets included right below
+      
+      # This module hides the implementation details that
+      # relationships are stored in a hash, which is bound to change anyway. 
+      # Also, it allows to *fail fast* when trying to access a relationship
+      # that is not defined in a model (via the relationship! method)
       
       module RelationshipAccess
 
@@ -140,8 +144,9 @@ module DataMapper
       
       def assert_valid_options_for_nested_attributes(association_name, options)
         
-        unless relationships[association_name]
-          raise(InvalidOptions, "Relationship #{name.inspect} does not exist in \#{self.name}")
+        # throw a more detailed exception than relationship! would do in this case
+        unless relationship(association_name)
+          raise InvalidOptions, "Relationship #{name.inspect} does not exist in \#{self.name}"
         end
 
         unless options.all? { |k,v| [ :allow_destroy, :reject_if ].include?(k) }
