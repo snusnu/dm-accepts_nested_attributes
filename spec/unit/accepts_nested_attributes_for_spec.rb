@@ -58,36 +58,8 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
     
     describe "no association_name" do
       
-      describe "and no options" do
-      
-        it "should raise" do
-          lambda { Branch.accepts_nested_attributes_for }.should raise_error(ArgumentError)
-        end
-      
-      end
-            
-      describe "and empty options" do
-      
-        it "should raise" do
-          lambda { Branch.accepts_nested_attributes_for({}) }.should raise_error(ArgumentError)
-        end
-      
-      end
-                  
-      describe "and invalid options" do
-      
-        it "should raise" do
-          lambda { Branch.accepts_nested_attributes_for({ :foo => :bar}) }.should raise_error(ArgumentError)
-        end
-      
-      end
-                        
-      describe "and valid options" do
-      
-        it "should raise" do
-          lambda { Branch.accepts_nested_attributes_for({ :allow_destroy => true}) }.should raise_error(ArgumentError)
-        end
-      
+      it "should raise" do
+        lambda { Branch.accepts_nested_attributes_for }.should raise_error(ArgumentError)
       end
       
     end
