@@ -76,9 +76,7 @@ module DataMapper
       # ])
       def assign_nested_attributes_for_collection_association(association_name, attributes_collection, allow_destroy)
       
-        attributes_collection = normalize_attributes_collection(attributes_collection)
-       
-        attributes_collection.each do |attributes|
+        normalize_attributes_collection(attributes_collection).each do |attributes|
           if attributes[:id].blank?
             unless reject_new_record?(association_name, attributes)
               case association = self.class.relationship(association_name)
