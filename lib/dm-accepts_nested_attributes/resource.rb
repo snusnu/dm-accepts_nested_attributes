@@ -44,8 +44,10 @@ module DataMapper
             model = self.class.relationship!(association_name).target_model
             send("#{association_name}=", model.new(attrs.except(*UNASSIGNABLE_KEYS)))
           end
-        else (existing_record = associated_instance_get(association_name)) && existing_record.id.to_s == attrs[:id].to_s
-          assign_to_or_mark_for_destruction(association_name, existing_record, attrs, allow_destroy)
+        else
+          if (existing_record = associated_instance_get(association_name)) && existing_record.id.to_s == attrs[:id].to_s
+            assign_to_or_mark_for_destruction(association_name, existing_record, attrs, allow_destroy)
+          end
         end
       end
     
