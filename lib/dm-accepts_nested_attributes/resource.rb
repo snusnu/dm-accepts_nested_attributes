@@ -36,7 +36,7 @@ module DataMapper
       def assign_nested_attributes_for_one_to_one_association(association_name, attrs, allow_destroy)
         if attrs[:id].blank?
           unless reject_new_record?(association_name, attrs)
-            model = self.class.relationship!(association_name).target_model
+            model = self.class.relationship(association_name).target_model
             send("#{association_name}=", model.new(attrs.except(*UNASSIGNABLE_KEYS)))
           end
         else
@@ -83,7 +83,7 @@ module DataMapper
         attributes_collection.each do |attributes|
           if attributes[:id].blank?
             unless reject_new_record?(association_name, attributes)
-              case association = self.class.relationship!(association_name)
+              case association = self.class.relationship(association_name)
               when DataMapper::Associations::OneToMany::Relationship
                 build_new_has_n_association(association_name, attributes)
               when DataMapper::Associations::ManyToMany::Relationship
@@ -106,16 +106,16 @@ module DataMapper
         
       def build_new_has_n_through_association(association_name, attributes)
         # fetch the association to have the information ready
-        association = self.class.relationship!(association_name)
+        association = self.class.relationship(association_name)
       
         # do what's done in dm-core/specs/integration/association_through_spec.rb
       
         # explicitly build the join entry and assign it to the join association
-        join_entry = self.class.relationship!(association_name).target_model.new
+        join_entry = self.class.relationship(association_name).target_model.new
         self.send(association.name) << join_entry
         self.save
         # explicitly build the child entry and assign the join entry to its join association
-        child_entry = self.class.relationship!(association_name).target_model.new(attributes)
+        child_entry = self.class.relationship(association_name).target_model.new(attributes)
         child_entry.send(association.name) << join_entry
         child_entry.save
       end
@@ -124,10 +124,10 @@ module DataMapper
       # +allow_destroy+ is +true+ and has_delete_flag? returns +true+.
       def assign_to_or_mark_for_destruction(association_name, record, attributes, allow_destroy)
         if has_delete_flag?(attributes) && allow_destroy
-          association = self.class.relationship!(association_name)
+          association = self.class.relationship(association_name)
           if association.is_a?(DataMapper::Associations::ManyToMany::Relationship)
             # destroy the join record
-            record.send(self.class.relationship!(association_name).name).destroy!
+            record.send(self.class.relationship(association_name).name).destroy!
             # destroy the child record
             record.destroy
           else
@@ -135,7 +135,7 @@ module DataMapper
           end
         else
           record.attributes = attributes.except(*UNASSIGNABLE_KEYS)
-          association = self.class.relationship!(association_name)
+          association = self.class.relationship(association_name)
           if association.is_a?(DataMapper::Associations::ManyToMany::Relationship)
             record.save
           end

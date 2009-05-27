@@ -31,26 +31,26 @@ describe DataMapper::Resource do
     
     end
   
-    describe "relationship!(name)" do
+    describe "relationship(name)" do
     
       it "should raise when passed no name" do
-        lambda { Person.relationship! }.should raise_error(ArgumentError)
+        lambda { Person.relationship }.should raise_error(ArgumentError)
       end
         
       it "should raise when passed nil as name" do
-        lambda { Person.relationship!(nil) }.should raise_error(ArgumentError)
+        lambda { Person.relationship(nil) }.should raise_error(ArgumentError)
       end
             
       it "should raise when there is no association named name" do
-        lambda { Person.relationship!(:foo) }.should raise_error(ArgumentError)
+        lambda { Person.relationship(:foo) }.should raise_error(ArgumentError)
       end
                     
       it "should not raise when there is an association named name" do
-        lambda { Person.relationship!(:profile) }.should_not raise_error
+        lambda { Person.relationship(:profile) }.should_not raise_error
       end
     
       it "should return an instance of DataMapper::Associations::Relationship when there is an association named name" do
-        Person.relationship!(:profile).is_a?(DataMapper::Associations::Relationship).should be_true
+        Person.relationship(:profile).is_a?(DataMapper::Associations::Relationship).should be_true
       end
     
     end

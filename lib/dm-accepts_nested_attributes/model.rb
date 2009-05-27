@@ -83,30 +83,14 @@ module DataMapper
       end
       
       
-      # module only for structuring purposes, it gets included right below
-      
-      # This module hides the implementation details that
-      # relationships are stored in a hash, which is bound to change anyway. 
-      # Also, it allows to *fail fast* when trying to access a relationship
-      # that is not defined in a model (via the relationship! method)
-      
-      module RelationshipAccess
-
-        def relationship(name, repository_name = default_repository_name)
-          relationships(repository_name)[name]
+      # This allows to *fail fast* when trying to access a relationship that's not defined
+      # Also, it hides the implementation detail how relationships are stored internally 
+      def relationship(name, repository_name = default_repository_name)
+        unless relationship = relationships(repository_name)[name]
+          raise(ArgumentError, "No relationship #{name.inspect} for #{self.name} in #{repository_name}")
         end
-
-        def relationship!(name, repository_name = default_repository_name)
-          unless relationship = relationship(name, repository_name)
-            raise(ArgumentError, "No relationship #{name.inspect} for #{self.name} in #{repository_name}")
-          end
-          relationship
-        end
-      
+        relationship
       end
-      
-      include RelationshipAccess
-    
       
       # options given to the accepts_nested_attributes method
       # guaranteed to be valid if they made it this far.
@@ -144,9 +128,11 @@ module DataMapper
       
       def assert_valid_options_for_nested_attributes(association_name, options)
         
-        # throw a more detailed exception than relationship! would do in this case
-        unless relationship(association_name)
-          raise InvalidOptions, "Relationship #{name.inspect} does not exist in \#{self.name}"
+        # raise a more precise exception than relationship alone would
+        begin
+          relationship(association_name)
+        rescue ArgumentError => e
+          raise InvalidOptions, e.message
         end
 
         unless options.all? { |k,v| [ :allow_destroy, :reject_if ].include?(k) }
