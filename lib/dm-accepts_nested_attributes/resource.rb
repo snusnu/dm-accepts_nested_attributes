@@ -76,11 +76,8 @@ module DataMapper
       # ])
       def assign_nested_attributes_for_collection_association(association_name, attributes_collection, allow_destroy)
       
-        assert_kind_of 'association_name',      association_name,      Symbol
-        assert_kind_of 'attributes_collection', attributes_collection, Hash, Array
-       
-        if attributes_collection.is_a? Hash
-          attributes_collection = attributes_collection.sort_by { |index, _| index.to_i }.map { |_, attributes| attributes }
+        if attributes_collection.is_a?(Hash)
+          attributes_collection = normalize_attributes_collection(attributes_collection)
         end
        
         attributes_collection.each do |attributes|
@@ -163,6 +160,10 @@ module DataMapper
       def evaluate_reject_new_record_guard(guard, attributes)
         return true if guard.nil?
         (guard.is_a?(Symbol) || guard.is_a?(String)) ? send(guard) : guard.call(attributes)
+      end
+      
+      def normalize_attributes_collection(attributes_collection)
+        attributes_collection.sort_by { |index, _| index.to_i }.map { |_, attributes| attributes }
       end
       
     end
