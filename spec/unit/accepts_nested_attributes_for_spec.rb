@@ -215,19 +215,19 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
       describe "and invalid options" do
       
         it "should raise" do
-          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error
+          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error(DataMapper::NestedAttributes::InvalidOptions)
         end
         
         it "should not store the accessible association in .autosave_associations" do
           @model.options_for_nested_attributes[@association].should be_nil
-          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error
+          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error(DataMapper::NestedAttributes::InvalidOptions)
           @model.options_for_nested_attributes[@association].should be_nil
         end
         
         it "should not create a \#{association_name}_attributes instance reader" do
           p = @model.new
           p.respond_to?("#{@association}_attributes").should be_false
-          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error
+          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error(DataMapper::NestedAttributes::InvalidOptions)
           p = @model.new
           p.respond_to?("#{@association}_attributes").should be_false
         end
@@ -235,7 +235,7 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
         it "should not create a \#{association_name}_attributes instance writer" do
           p = @model.new
           p.respond_to?("#{@association}_attributes=").should be_false
-          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error
+          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error(DataMapper::NestedAttributes::InvalidOptions)
           p = @model.new
           p.respond_to?("#{@association}_attributes=").should be_false
         end
@@ -329,7 +329,7 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
         it "should not create a get_\#{association_name} instance reader" do
           p = @model.new
           p.respond_to?("get_#{@association}").should be_false
-          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error
+          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error(DataMapper::NestedAttributes::InvalidOptions)
           p = @model.new
           p.respond_to?("get_#{@association}").should be_false
         end
