@@ -16,11 +16,6 @@ module DataMapper
       def sanitize_nested_attributes(attrs)
         attrs # noop
       end
-    
-      # returns nil if no resource has been associated yet
-      def associated_instance_get(association_name)
-        send(relationships[association_name].name)
-      end
       
       private
 
@@ -45,7 +40,8 @@ module DataMapper
             send("#{association_name}=", model.new(attrs.except(*UNASSIGNABLE_KEYS)))
           end
         else
-          if (existing_record = associated_instance_get(association_name)) && existing_record.id.to_s == attrs[:id].to_s
+          existing_record = self.class.relationship(association_name).get(self)
+          if existing_record && existing_record.id.to_s == attrs[:id].to_s
             assign_to_or_mark_for_destruction(association_name, existing_record, attrs, allow_destroy)
           end
         end
@@ -97,8 +93,11 @@ module DataMapper
                 build_new_has_n_through_association(association_name, attributes)
               end
             end
-          elsif existing_record = send(association_name).detect { |record| record.id.to_s == attributes[:id].to_s }
-            assign_to_or_mark_for_destruction(association_name, existing_record, attributes, allow_destroy)
+          else
+            collection = self.class.relationship(association_name).get(self)
+            if existing_record = collection.detect { |record| record.id.to_s == attributes[:id].to_s }
+              assign_to_or_mark_for_destruction(association_name, existing_record, attributes, allow_destroy)
+            end
           end
         end
       

@@ -57,38 +57,4 @@ describe DataMapper::Resource do
     
   end
   
-  describe "instance methods:" do
-  
-    describe "associated_instance_get(association_name)" do
-    
-      before(:each) do
-        @person = Person.create(:name => 'snusnu')
-        @person.profile = Profile.new
-        @person.save
-      end
-  
-      it "should raise when passed no association_name" do
-        lambda { @person.associated_instance_get }.should raise_error
-      end
-      
-      it "should raise when passed nil as association_name" do
-        lambda { @person.associated_instance_get(nil) }.should raise_error
-      end
-          
-      it "should raise when there is no association named association_name" do
-        lambda { @person.associated_instance_get(:foo) }.should raise_error
-      end
-    
-      it "should return an object that has the same class like the associated resource" do
-        @person.associated_instance_get(:profile).class.should == Profile
-      end
-                  
-      it "should return the associated object when there is an association named association_name" do
-        @person.associated_instance_get(:profile).should == @person.profile
-      end
-  
-    end
-    
-  end
-  
 end
