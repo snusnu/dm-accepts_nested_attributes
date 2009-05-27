@@ -195,19 +195,6 @@ describe DataMapper::NestedAttributes do
     end
     
     describe "accepts_nested_attributes_for :projects, " do
-      
-      describe ":reject_if => :foo" do
-    
-        before(:each) do
-          clear_data
-          Person.accepts_nested_attributes_for :projects, :reject_if => :foo
-          @person = Person.new :name => 'snusnu'
-        end
-    
-        it_should_behave_like "every accessible has(n, :through) association with no reject_if proc"
-        it_should_behave_like "every accessible has(n, :through) association with :allow_destroy => false"
-      
-      end
             
       describe ":reject_if => lambda { |attrs| true }" do
     

@@ -1,3 +1,4 @@
 TODO
 ====
 
+* add specs for :reject_if => :foo option, but think about _where_ first!
