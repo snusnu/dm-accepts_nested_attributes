@@ -77,21 +77,29 @@ module DataMapper
       def assign_nested_attributes_for_collection_association(association_name, attributes_collection, allow_destroy)
       
         normalize_attributes_collection(attributes_collection).each do |attributes|
+          
           if attributes[:id].blank?
-            unless reject_new_record?(association_name, attributes)
-              case association = self.class.relationship(association_name)
-              when DataMapper::Associations::OneToMany::Relationship
-                build_new_has_n_association(association_name, attributes)
-              when DataMapper::Associations::ManyToMany::Relationship
-                build_new_has_n_through_association(association_name, attributes)
-              end
+            
+            next if reject_new_record?(association_name, attributes)
+            
+            case association = self.class.relationship(association_name)
+            when DataMapper::Associations::OneToMany::Relationship
+              build_new_has_n_association(association_name, attributes)
+            when DataMapper::Associations::ManyToMany::Relationship
+              build_new_has_n_through_association(association_name, attributes)
+            else
+              # be prepared for the "impossible", every case wants an else branch!
+              # also, who knows who wants to use this method outside of the plugin?
+              raise ArgumentError, "#{association_name} must be a one_to_many or a many_to_many association"
             end
+            
           else
             collection = self.class.relationship(association_name).get(self)
             if existing_record = collection.detect { |record| record.id.to_s == attributes[:id].to_s }
               assign_to_or_mark_for_destruction(association_name, existing_record, attributes, allow_destroy)
             end
           end
+          
         end
       
       end
