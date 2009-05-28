@@ -54,6 +54,7 @@ module DataMapper
         
         define_method "#{association_name}_attributes=" do |attributes|
           attributes = sanitize_nested_attributes(attributes)
+          instance_variable_set("@#{association_name}_attributes", attributes)
           send("assign_nested_attributes_for_relationship_to_#{type}", relationship, attributes)
         end
       
