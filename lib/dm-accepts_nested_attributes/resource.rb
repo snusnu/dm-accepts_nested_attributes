@@ -33,7 +33,7 @@ module DataMapper
       # If the given attributes include a matching <tt>:id</tt> attribute _and_ a
       # <tt>:_delete</tt> key set to a truthy value, then the existing record
       # will be marked for destruction.
-      def assign_nested_attributes_for_relationship_to_resource(relationship, attributes)
+      def assign_nested_attributes_for_related_resource(relationship, attributes)
         if attributes[:id].blank?
           unless reject_new_record?(relationship, attributes)
             relationship.set(self, relationship.target_model.new(attributes.except(*UNASSIGNABLE_KEYS)))
@@ -73,7 +73,7 @@ module DataMapper
       # { :name => 'John' },
       # { :id => '2', :_delete => true }
       # ])
-      def assign_nested_attributes_for_relationship_to_collection(relationship, attributes_collection)
+      def assign_nested_attributes_for_related_collection(relationship, attributes_collection)
       
         normalize_attributes_collection(attributes_collection).each do |attributes|
           
