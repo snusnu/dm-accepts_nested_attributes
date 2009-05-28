@@ -7,7 +7,7 @@ describe DataMapper::NestedAttributes do
     
     it "should not allow to create a new person via Profile#person_attributes" do
       @profile.person_attributes = { :name => 'Martin' }
-      @profile.save.should be_false # fails because of validations (not null on belongs_to)
+      @profile.save.should be_false
       Profile.all.size.should == 0
       Person.all.size.should == 0
     end
