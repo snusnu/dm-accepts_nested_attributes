@@ -7,7 +7,11 @@ module DataMapper
       
       chainable do
         def save(*args)
-          save_parents(*args) && super
+          if marked_for_destruction?
+            destroy
+          else
+            save_parents(*args) && super
+          end
         end
       end
       
@@ -22,16 +26,10 @@ module DataMapper
  
       def save_parents(*args)
         parent_relationships.all? do |relationship|
-          save_parent_relationship(relationship, *args)
-        end
-      end
-
-      def save_parent_relationship(relationship, *args)
-        parent = relationship.get(self)
-        if parent.marked_for_destruction?
-          parent.destroy
-        else        
-          parent.save(*args) && relationship.set(self, parent)
+          parent = relationship.get(self)
+          if parent.save(*args)
+            relationship.set(self, parent)
+          end
         end
       end
 
