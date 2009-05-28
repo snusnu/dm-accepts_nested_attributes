@@ -25,14 +25,14 @@ module DataMapper
         #                      try to fail as early as posssible
         # ----------------------------------------------------------------------------------
       
-        assert_kind_of 'association_name', association_name, Symbol, String
-        assert_kind_of 'options',          options,          Hash
+        # raise ArgumentError if association_name identifies no valid relationship
+        relationship = relationship(association_name)
+
+        # raise InvalidOptions if the given options don't make sense
+        assert_valid_options_for_nested_attributes(options)
         
         # by default, nested attributes can't be destroyed
         options = { :allow_destroy => false }.update(options)
-        
-        # raise InvalidOptions if the given options don't make sense
-        assert_valid_options_for_nested_attributes(association_name, options)
         
         
         # ----------------------------------------------------------------------------------
@@ -126,16 +126,13 @@ module DataMapper
       end
       
       
-      def assert_valid_options_for_nested_attributes(association_name, options)
+      def assert_valid_options_for_nested_attributes(options)
         
-        # raise a more precise exception than relationship alone would
-        begin
-          relationship(association_name)
-        rescue ArgumentError => e
-          raise InvalidOptions, e.message
-        end
+        assert_kind_of 'options', options, Hash
 
-        unless options.all? { |k,v| [ :allow_destroy, :reject_if ].include?(k) }
+        valid_options = [ :allow_destroy, :reject_if ]
+
+        unless options.all? { |k,v| valid_options.include?(k) }
           raise InvalidOptions, 'options must be one of :allow_destroy or :reject_if'
         end
 
