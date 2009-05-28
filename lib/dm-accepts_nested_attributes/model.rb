@@ -24,8 +24,9 @@ module DataMapper
         #                      try to fail as early as possible
         # ----------------------------------------------------------------------------------
       
-        # raise ArgumentError if association_name identifies no valid relationship
-        relationship = relationship(association_name)
+        unless relationship = relationships(repository_name)[association_name]
+          raise(ArgumentError, "No relationship #{name.inspect} for #{self.name} in #{repository_name}")
+        end
 
         # raise InvalidOptions if the given options don't make sense
         assert_valid_options_for_nested_attributes(options)
@@ -33,49 +34,29 @@ module DataMapper
         # by default, nested attributes can't be destroyed
         options = { :allow_destroy => false }.update(options)
         
-        
         # ----------------------------------------------------------------------------------
         #                       should be safe to go from here
         # ----------------------------------------------------------------------------------
         
-        options_for_nested_attributes[association_name] = options
+        options_for_nested_attributes[relationship] = options
         
         include ::DataMapper::NestedAttributes::Resource
         
         add_save_behavior
-        
         add_transactional_save_behavior # TODO if repository.adapter.supports_transactions?
-
         add_error_collection_behavior if DataMapper.const_defined?('Validate')
         
-        type = relationship(association_name).max > 1 ? :collection : :one_to_one
-
-        class_eval %{
+        type = relationship.max > 1 ? :collection : :resource
         
-          def #{association_name}_attributes
-            @#{association_name}_attributes
-          end
-        
-          def #{association_name}_attributes=(attributes)
-            attributes = sanitize_nested_attributes(attributes)
-            @#{association_name}_attributes = attributes
-            assign_nested_attributes_for_#{type}_association(
-              :#{association_name}, attributes, #{options[:allow_destroy]}
-            )
-          end
-
-        }, __FILE__, __LINE__ + 1
-      
-      end
-      
-      
-      # This allows to *fail fast* when trying to access a relationship that's not defined
-      # Also, it hides the implementation detail how relationships are stored internally 
-      def relationship(name, repository_name = default_repository_name)
-        unless relationship = relationships(repository_name)[name]
-          raise(ArgumentError, "No relationship #{name.inspect} for #{self.name} in #{repository_name}")
+        define_method "#{association_name}_attributes" do
+          instance_variable_get("@#{association_name}_attributes")
         end
-        relationship
+        
+        define_method "#{association_name}_attributes=" do |attributes|
+          attributes = sanitize_nested_attributes(attributes)
+          send("assign_nested_attributes_for_#{type}_relationship", relationship, attributes)
+        end
+      
       end
       
       # options given to the accepts_nested_attributes method
@@ -83,16 +64,6 @@ module DataMapper
       def options_for_nested_attributes
         @options_for_nested_attributes ||= {}
       end
-    
-      # returns a Symbol, a String, or an object that responds_to :call
-      # if there is an association called association_name
-      # returns nil otherwise
-      def reject_new_nested_attributes_guard_for(association_name)
-        if options_for_nested_attributes[association_name]
-          options_for_nested_attributes[association_name][:reject_if]
-        end
-      end
-
 
       private
 

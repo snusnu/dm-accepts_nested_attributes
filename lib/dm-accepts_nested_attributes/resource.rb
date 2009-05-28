@@ -33,16 +33,15 @@ module DataMapper
       # If the given attributes include a matching <tt>:id</tt> attribute _and_ a
       # <tt>:_delete</tt> key set to a truthy value, then the existing record
       # will be marked for destruction.
-      def assign_nested_attributes_for_one_to_one_association(association_name, attrs, allow_destroy)
-        if attrs[:id].blank?
-          unless reject_new_record?(association_name, attrs)
-            model = self.class.relationship(association_name).target_model
-            send("#{association_name}=", model.new(attrs.except(*UNASSIGNABLE_KEYS)))
+      def assign_nested_attributes_for_resource_relationship(relationship, attributes)
+        if attributes[:id].blank?
+          unless reject_new_record?(relationship, attributes)
+            relationship.set(self, relationship.target_model.new(attributes.except(*UNASSIGNABLE_KEYS)))
           end
         else
-          existing_record = self.class.relationship(association_name).get(self)
-          if existing_record && existing_record.id.to_s == attrs[:id].to_s
-            assign_to_or_mark_for_destruction(association_name, existing_record, attrs, allow_destroy)
+          existing_record = relationship.get(self)
+          if existing_record && existing_record.id.to_s == attributes[:id].to_s
+            assign_to_or_mark_for_destruction(relationship, existing_record, attributes)
           end
         end
       end
@@ -74,29 +73,17 @@ module DataMapper
       # { :name => 'John' },
       # { :id => '2', :_delete => true }
       # ])
-      def assign_nested_attributes_for_collection_association(association_name, attributes_collection, allow_destroy)
+      def assign_nested_attributes_for_collection_relationship(relationship, attributes_collection)
       
         normalize_attributes_collection(attributes_collection).each do |attributes|
           
           if attributes[:id].blank?
-            
-            next if reject_new_record?(association_name, attributes)
-            
-            case association = self.class.relationship(association_name)
-            when DataMapper::Associations::OneToMany::Relationship
-              build_new_has_n_association(association_name, attributes)
-            when DataMapper::Associations::ManyToMany::Relationship
-              build_new_has_n_through_association(association_name, attributes)
-            else
-              # be prepared for the "impossible", every case wants an else branch!
-              # also, who knows who wants to use this method outside of the plugin?
-              raise ArgumentError, "#{association_name} must be a one_to_many or a many_to_many association"
-            end
-            
+            next if reject_new_record?(relationship, attributes)
+            relationship.get(self).new(attributes.except(*UNASSIGNABLE_KEYS))
           else
-            collection = self.class.relationship(association_name).get(self)
+            collection = relationship.get(self)
             if existing_record = collection.detect { |record| record.id.to_s == attributes[:id].to_s }
-              assign_to_or_mark_for_destruction(association_name, existing_record, attributes, allow_destroy)
+              assign_to_or_mark_for_destruction(relationship, existing_record, attributes)
             end
           end
           
@@ -104,45 +91,14 @@ module DataMapper
       
       end
     
-      def build_new_has_n_association(association_name, attributes)
-        send(association_name).new(attributes.except(*UNASSIGNABLE_KEYS))
-      end
-        
-      def build_new_has_n_through_association(association_name, attributes)
-        # fetch the association to have the information ready
-        association = self.class.relationship(association_name)
-      
-        # do what's done in dm-core/specs/integration/association_through_spec.rb
-      
-        # explicitly build the join entry and assign it to the join association
-        join_entry = self.class.relationship(association_name).target_model.new
-        self.send(association.name) << join_entry
-        self.save
-        # explicitly build the child entry and assign the join entry to its join association
-        child_entry = self.class.relationship(association_name).target_model.new(attributes)
-        child_entry.send(association.name) << join_entry
-        child_entry.save
-      end
-    
       # Updates a record with the +attributes+ or marks it for destruction if
       # +allow_destroy+ is +true+ and has_delete_flag? returns +true+.
-      def assign_to_or_mark_for_destruction(association_name, record, attributes, allow_destroy)
+      def assign_to_or_mark_for_destruction(relationship, resource, attributes)
+        allow_destroy = self.class.options_for_nested_attributes[relationship][:allow_destroy]
         if has_delete_flag?(attributes) && allow_destroy
-          association = self.class.relationship(association_name)
-          if association.is_a?(DataMapper::Associations::ManyToMany::Relationship)
-            # destroy the join record
-            record.send(self.class.relationship(association_name).name).destroy!
-            # destroy the child record
-            record.destroy
-          else
-            record.mark_for_destruction
-          end
+          resource.mark_for_destruction
         else
-          record.attributes = attributes.except(*UNASSIGNABLE_KEYS)
-          association = self.class.relationship(association_name)
-          if association.is_a?(DataMapper::Associations::ManyToMany::Relationship)
-            record.save
-          end
+          resource.update(attributes.except(*UNASSIGNABLE_KEYS))
         end
       end
     
@@ -156,8 +112,8 @@ module DataMapper
       # Determines if a new record should be build by checking for
       # has_delete_flag? or if a <tt>:reject_if</tt> proc exists for this
       # association and evaluates to +true+.
-      def reject_new_record?(association_name, attributes)
-        guard = self.class.reject_new_nested_attributes_guard_for(association_name)
+      def reject_new_record?(relationship, attributes)
+        guard = self.class.options_for_nested_attributes[relationship][:reject_if]
         has_delete_flag?(attributes) || !evaluate_reject_new_record_guard(guard, attributes)
       end
       
