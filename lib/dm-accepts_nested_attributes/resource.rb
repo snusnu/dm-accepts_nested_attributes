@@ -3,7 +3,8 @@ module DataMapper
     
     module Resource
       
-      # This method can be used to remove ambiguities from the passed attributes.
+      ##
+      # Can be used to remove ambiguities from the passed attributes.
       # Consider a situation with a belongs_to association where both a valid value
       # for the foreign_key attribute *and* nested_attributes for a new record are
       # present (i.e. item_type_id and item_type_attributes are present).
@@ -12,9 +13,11 @@ module DataMapper
       # exactly happens when such a situation occurs. I'm currently in favor for 
       # using the foreign_key if it is present, but this probably needs more thinking.
       # For now, this method basically is a no-op, but at least it provides a hook where
-      # everyone can perform it's own sanitization (just overwrite this method) 
-      def sanitize_nested_attributes(attrs)
-        attrs # noop
+      # everyone can perform it's own sanitization by overwriting this method.
+      #
+      # @return [Hash] The sanitized attributes
+      def sanitize_nested_attributes(attributes)
+        attributes # noop
       end
       
       private
@@ -24,7 +27,8 @@ module DataMapper
       UNASSIGNABLE_KEYS = [ :id, :_delete ]
     
     
-      # Assigns the given attributes to the association.
+      ##
+      # Assigns the given attributes to the resource association.
       #
       # If the given attributes include an <tt>:id</tt> that matches the existing
       # record’s id, then the existing record will be modified. Otherwise a new
@@ -33,6 +37,16 @@ module DataMapper
       # If the given attributes include a matching <tt>:id</tt> attribute _and_ a
       # <tt>:_delete</tt> key set to a truthy value, then the existing record
       # will be marked for destruction.
+      #
+      # @param relationship [DataMapper::Associations::Relationship]
+      #   The relationship backing the association. 
+      #   Assignment will happen on the target end of the relationship
+      #
+      # @param attributes [Hash]
+      #   The attributes to assign to the relationship's target end
+      #   All attributes except @see UNASSIGNABLE_KEYS will be assigned
+      #
+      # @return nil
       def assign_nested_attributes_for_related_resource(relationship, attributes)
         if attributes[:id].blank?
           unless reject_new_record?(relationship, attributes)
@@ -47,6 +61,7 @@ module DataMapper
         end
       end
     
+      ##
       # Assigns the given attributes to the collection association.
       #
       # Hashes with an <tt>:id</tt> value matching an existing associated record
@@ -74,6 +89,16 @@ module DataMapper
       # { :name => 'John' },
       # { :id => '2', :_delete => true }
       # ])
+      #
+      # @param relationship [DataMapper::Associations::Relationship]
+      #   The relationship backing the association. 
+      #   Assignment will happen on the target end of the relationship
+      #
+      # @param attributes [Hash]
+      #   The attributes to assign to the relationship's target end
+      #   All attributes except @see UNASSIGNABLE_KEYS will be assigned
+      #
+      # @return nil
       def assign_nested_attributes_for_related_collection(relationship, attributes_collection)
       
         normalize_attributes_collection(attributes_collection).each do |attributes|
@@ -92,8 +117,19 @@ module DataMapper
       
       end
     
+      ##
       # Updates a record with the +attributes+ or marks it for destruction if
       # +allow_destroy+ is +true+ and has_delete_flag? returns +true+.
+      #
+      # @param relationship [DataMapper::Associations::Relationship]
+      #   The relationship backing the association. 
+      #   Assignment will happen on the target end of the relationship
+      #
+      # @param attributes [Hash]
+      #   The attributes to assign to the relationship's target end
+      #   All attributes except @see UNASSIGNABLE_KEYS will be assigned
+      #
+      # @return nil
       def assign_to_or_mark_for_destruction(relationship, resource, attributes)
         allow_destroy = self.class.options_for_nested_attributes[relationship][:allow_destroy]
         if has_delete_flag?(attributes) && allow_destroy
@@ -103,16 +139,36 @@ module DataMapper
         end
       end
     
+      ##
       # Determines if a hash contains a truthy _delete key.
+      #
+      # @param hash [Hash] The hash to test
+      #
+      # @return [Boolean]
+      #   true, if hash containts a truthy _delete key
+      #   false, otherwise
       def has_delete_flag?(hash)
         # TODO find out if this activerecord code needs to be ported
         # ConnectionAdapters::Column.value_to_boolean hash['_delete']
         hash[:_delete]
       end
     
+      ##
       # Determines if a new record should be build by checking for
       # has_delete_flag? or if a <tt>:reject_if</tt> proc exists for this
       # association and evaluates to +true+.
+      #
+      # @param relationship [DataMapper::Associations::Relationship]
+      #   The relationship backing the association. 
+      #   Assignment will happen on the target end of the relationship
+      #
+      # @param attributes [Hash]
+      #   The attributes to assign to the relationship's target end
+      #   All attributes except @see UNASSIGNABLE_KEYS will be assigned
+      #
+      # @return [Boolean]
+      #   true, if the given attributes won't be rejected
+      #   false, otherwise
       def reject_new_record?(relationship, attributes)
         guard = self.class.options_for_nested_attributes[relationship][:reject_if]
         return false if guard.nil? # if relationship guard is nil, nothing will be rejected
@@ -142,17 +198,30 @@ module DataMapper
     
     module CommonResourceSupport
 
+      ##
       # remove mark for destruction if present
       # before delegating reload behavior to super
+      #
+      # @return The same value that super returns
       def reload
         @marked_for_destruction = false
         super
       end
 
+      ##
+      # Test if this resource is marked for destruction
+      #
+      # @return [Boolean]
+      #   true, if this resource is marked for destruction
+      #   false, otherwise
       def marked_for_destruction?
         @marked_for_destruction
       end
 
+      ##
+      # Mark this resource for destruction
+      #
+      # @return true
       def mark_for_destruction
         @marked_for_destruction = true
       end
