@@ -36,7 +36,8 @@ module DataMapper
       def assign_nested_attributes_for_related_resource(relationship, attributes)
         if attributes[:id].blank?
           unless reject_new_record?(relationship, attributes)
-            relationship.set(self, relationship.target_model.new(attributes.except(*UNASSIGNABLE_KEYS)))
+            new_record = relationship.target_model.new(attributes.except(*UNASSIGNABLE_KEYS))
+            relationship.set(self, new_record)
           end
         else
           existing_record = relationship.get(self)
