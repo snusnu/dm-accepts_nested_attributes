@@ -69,8 +69,12 @@ module DataMapper
       
       end
       
-      # options given to the accepts_nested_attributes method
-      # guaranteed to be valid if they made it this far.
+      ##
+      # The options given to the accepts_nested_attributes method
+      # They are guaranteed to be valid if they made it this far.
+      #
+      # @return [Hash] The options given to the accepts_nested_attributes method
+      # @see accepts_nested_attributes
       def options_for_nested_attributes
         @options_for_nested_attributes ||= {}
       end
