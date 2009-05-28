@@ -26,7 +26,6 @@ spec/shared/rspec_tmbundle_support.rb
 spec/spec.opts
 spec/spec_helper.rb
 spec/unit/accepts_nested_attributes_for_spec.rb
-spec/unit/resource_spec.rb
 tasks/gemspec.rb
 tasks/hoe.rb
 tasks/install.rb
