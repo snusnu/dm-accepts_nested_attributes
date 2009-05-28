@@ -114,12 +114,19 @@ module DataMapper
       # association and evaluates to +true+.
       def reject_new_record?(relationship, attributes)
         guard = self.class.options_for_nested_attributes[relationship][:reject_if]
-        has_delete_flag?(attributes) || !evaluate_reject_new_record_guard(guard, attributes)
+        return false if guard.nil? # if relationship guard is nil, nothing will be rejected
+        has_delete_flag?(attributes) || evaluate_reject_new_record_guard(guard, attributes)
       end
       
       def evaluate_reject_new_record_guard(guard, attributes)
-        return true if guard.nil?
-        (guard.is_a?(Symbol) || guard.is_a?(String)) ? send(guard) : guard.call(attributes)
+        if guard.is_a?(Symbol) || guard.is_a?(String)
+          send(guard)
+        elsif guard.respond_to?(:call)
+          guard.call(attributes)
+        else
+          # never reached when called from inside the plugin
+          raise ArgumentError, "guard must be a Symbol, a String, or respond_to?(:call)"
+        end
       end
       
       def normalize_attributes_collection(attributes_collection)
