@@ -4,7 +4,7 @@
 
 module RSpecTmBundleHelpers
   
-  class TextmateRspecLogger < DataMapper::Logger
+  class TextmateRspecLogger < Extlib::Logger
     def prep_msg(message, level)
       "#{super}<br />"
     end
