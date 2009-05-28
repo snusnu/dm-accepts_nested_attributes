@@ -11,7 +11,6 @@ lib/dm-accepts_nested_attributes/error_collection.rb
 lib/dm-accepts_nested_attributes/model.rb
 lib/dm-accepts_nested_attributes/resource.rb
 lib/dm-accepts_nested_attributes/save.rb
-lib/dm-accepts_nested_attributes/save_or_destroy.rb
 lib/dm-accepts_nested_attributes/transactional_save.rb
 lib/dm-accepts_nested_attributes/version.rb
 spec/fixtures/person.rb

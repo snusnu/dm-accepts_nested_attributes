@@ -30,8 +30,10 @@ module DataMapper
 
       def save_parent_relationship(relationship, *args)
         parent = relationship.get(self)
-        if parent.save(*args)
-          relationship.set(self, parent) # set the FK values
+        if parent.marked_for_destruction?
+          parent.destroy
+        else        
+          parent.save(*args) && relationship.set(self, parent)
         end
       end
 
