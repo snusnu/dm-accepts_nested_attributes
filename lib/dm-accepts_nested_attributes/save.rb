@@ -13,12 +13,10 @@ module DataMapper
       
       def parent_relationships
         parent_relationships = []
- 
         relationships.each_value do |relationship|
           next unless relationship.respond_to?(:resource_for) && relationship.loaded?(self)
           parent_relationships << relationship
         end
- 
         parent_relationships
       end
  
