@@ -2,20 +2,29 @@ module DataMapper
   module NestedAttributes
     
     ##
-    # This exception will only be thrown from
-    # the accepts_nested_attributes_for method
+    # raised by accepts_nested_attributes_for
     # if the passed options don't make sense
     class InvalidOptions < ArgumentError; end
     
     module Model
     
       ##
-      # Makes the named association accept nested attributes.
+      # Allows any association to accept nested attributes.
       #
-      # @param [Symbol|String] association_name
+      # @param association_name [Symbol, String]
       #   The name of the association that should accept nested attributes
-      # @param [Hash] options (optional)
+      #
+      # @param options [Hash, nil]
       #   List of resources to initialize the Collection with
+      #
+      # @option :reject_if [Symbol, String, #call]
+      #   An instance method name or an object that respond_to?(:call), which
+      #   stops a new record from being created, if it evaluates to true.
+      #
+      # @option :allow_destroy [true, false]
+      #   If true, allow destroying the association via the generated writer
+      #   If false, prevent destroying the association via the generated writer
+      #   defaults to false
       #
       # @return nil
       def accepts_nested_attributes_for(association_name, options = {})
