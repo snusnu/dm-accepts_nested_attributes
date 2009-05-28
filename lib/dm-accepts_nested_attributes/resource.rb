@@ -194,9 +194,6 @@ module DataMapper
       end
 
     end
-    
-    
-    DataMapper::Model.append_inclusions(CommonResourceSupport)
 
   end
 end

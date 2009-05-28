@@ -153,8 +153,4 @@ module DataMapper
     end
     
   end
-  
-  # Activate the plugin
-  Model.append_extensions NestedAttributes::Model
-  
 end
