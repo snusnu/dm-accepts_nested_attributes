@@ -1,6 +1,7 @@
 module DataMapper
   module NestedAttributes
     
+    ##
     # This exception will only be thrown from
     # the accepts_nested_attributes_for method
     # if the passed options don't make sense
@@ -17,8 +18,6 @@ module DataMapper
       #   List of resources to initialize the Collection with
       #
       # @return nil
-      #
-      # @api semipublic
       def accepts_nested_attributes_for(association_name, options = {})
         
         # ----------------------------------------------------------------------------------
@@ -39,31 +38,18 @@ module DataMapper
         #                       should be safe to go from here
         # ----------------------------------------------------------------------------------
         
-        # remember the given options
         options_for_nested_attributes[association_name] = options
         
-        # include Resource functionality needed to accept nested attributes
         include ::DataMapper::NestedAttributes::Resource
         
-        # add overriden save behavior that saves the complete loaded resource tree
-        add_save_behavior(association_name, options)
+        add_save_behavior
         
-        # add transactional_save if transactions are supported by the adapter in use
-        if true # TODO find out how to ask if the adapter supports transactions
-          add_transactional_save_behavior(association_name, options)
-        end
+        add_transactional_save_behavior # TODO if repository.adapter.supports_transactions?
+
+        add_error_collection_behavior if DataMapper.const_defined?('Validate')
         
-        # add error collection behavior if dm-validations are present
-        if DataMapper.const_defined?('Validate')
-          add_error_collection_behavior(association_name, options)
-        end
-      
-        # find out if we want to assign to a to_one or a to_many association
         type = relationship(association_name).max > 1 ? :collection : :one_to_one
-        
-        
-        # define accessors for the accepted nested attributes
-        
+
         class_eval %{
         
           def #{association_name}_attributes
@@ -110,17 +96,17 @@ module DataMapper
 
       private
 
-      def add_save_behavior(association_name, options)
+      def add_save_behavior
         require Pathname(__FILE__).dirname.expand_path + 'save'
         include ::DataMapper::NestedAttributes::Save
       end
 
-      def add_transactional_save_behavior(association_name, options)
+      def add_transactional_save_behavior
         require Pathname(__FILE__).dirname.expand_path + 'transactional_save'
         include ::DataMapper::NestedAttributes::TransactionalSave
       end
 
-      def add_error_collection_behavior(association_name, options)
+      def add_error_collection_behavior
         require Pathname(__FILE__).dirname.expand_path + 'error_collecting'
         include ::DataMapper::NestedAttributes::ValidationErrorCollecting
       end
