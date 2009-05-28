@@ -22,7 +22,7 @@ module DataMapper
       def accepts_nested_attributes_for(association_name, options = {})
         
         # ----------------------------------------------------------------------------------
-        #                      try to fail as early as posssible
+        #                      try to fail as early as possible
         # ----------------------------------------------------------------------------------
       
         # raise ArgumentError if association_name identifies no valid relationship
