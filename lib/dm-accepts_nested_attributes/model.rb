@@ -51,6 +51,8 @@ module DataMapper
         
         include ::DataMapper::NestedAttributes::Resource
         
+        add_save_behavior
+        
         # TODO i wonder if this is the best place here?
         # the transactional save behavior is definitely not needed for all resources,
         # but it's necessary for resources that accept nested attributes
