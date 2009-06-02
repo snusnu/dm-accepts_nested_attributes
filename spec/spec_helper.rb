@@ -50,7 +50,10 @@ end
 
 ENV['ADAPTER'] ||= 'sqlite3'
 setup_adapter(:default)
-Dir[Pathname(__FILE__).dirname.to_s + "/fixtures/**/*.rb"].each { |rb| require(rb) }
+
+spec_dir = Pathname(__FILE__).dirname.to_s
+Dir[ spec_dir + "/fixtures/**/*.rb" ].each { |rb| require(rb) }
+Dir[ spec_dir + "/shared/**/*.rb"   ].each { |rb| require(rb) }
 
 
 module XToOneHelpers
