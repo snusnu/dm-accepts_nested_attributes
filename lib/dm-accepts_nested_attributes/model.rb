@@ -51,7 +51,6 @@ module DataMapper
         
         include ::DataMapper::NestedAttributes::Resource
         
-        add_save_behavior
         add_transactional_save_behavior # TODO if repository.adapter.supports_transactions?
         add_error_collection_behavior if DataMapper.const_defined?('Validate')
         
