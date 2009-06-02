@@ -3,13 +3,13 @@ describe "every accessible has(n) association with a valid reject_if proc", :sha
   it "should not allow to create a new task via Project#tasks_attributes" do
     @project.save
     Project.all.size.should == 1
-    Task.all.size.should == 0
+    Task.all.size.should    == 0
     
     @project.tasks_attributes = { 'new_1' => { :name => 'write specs' } }
-    @project.tasks.should be_empty
-    @project.save
+    @project.save.should be_true
+    
     Project.all.size.should == 1
-    Task.all.size.should == 0
+    Task.all.size.should    == 0
   end
   
 end
@@ -19,61 +19,49 @@ describe "every accessible has(n) association with no reject_if proc", :shared =
   it "should allow to create a new task via Project#tasks_attributes" do
     @project.save
     Project.all.size.should == 1
-    Task.all.size.should == 0
+    Task.all.size.should    == 0
     
     @project.tasks_attributes = { 'new_1' => { :name => 'write specs' } }
-    @project.tasks.should_not be_empty
-    @project.tasks.first.name.should == 'write specs'
-    @project.save
-    @project.tasks.first.should == Task.first
+    @project.save.should be_true
+    
     Project.all.size.should == 1
-    Task.all.size.should == 1
-    Task.first.name.should == 'write specs'
+    Task.all.size.should    == 1
+    Task.first.name.should  == 'write specs'
   end
       
   it "should allow to update an existing task via Project#tasks_attributes" do
     @project.save
     task = Task.create(:project => @project, :name => 'write specs')
     Project.all.size.should == 1
-    Task.all.size.should == 1
+    Task.all.size.should    == 1
     
     @project.tasks_attributes = { task.id.to_s => { :id => task.id, :name => 'write more specs' } }
-    @project.tasks.should_not be_empty
-    @project.tasks.first.name.should == 'write more specs'
-    @project.save
+    @project.save.should be_true
     
     Project.all.size.should == 1
-    Task.all.size.should == 1
-    Task.first.name.should == 'write more specs'
+    Task.all.size.should    == 1
+    Task.first.name.should  == 'write more specs'
   end
   
   it "should perform atomic commits" do
     Project.all.size.should == 0
-    Task.all.size.should == 0
+    Task.all.size.should    == 0
     
+    # self is invalid
     @project.name = nil # will fail because of validations
     @project.tasks_attributes = { 'new_1' => { :name => 'write specs' } }
-    @project.tasks.should_not be_empty
-    @project.tasks.first.name.should == 'write specs'
     @project.save
-    @project.should be_new
-    @project.tasks.all? { |t| t.should be_new }
+    
     Project.all.size.should == 0
-    Task.all.size.should == 0
+    Task.all.size.should    == 0
     
-    # TODO write specs for xxx_attributes= method that test
-    # if same hash keys properly get overwritten and not end up being multiple records
-    # (which obviously is the case right now)
-    
+    # related resource is invalid
     @project.name = 'dm-accepts_nested_attributes'
     @project.tasks_attributes = { 'new_1' => { :name => nil } } # will fail because of validations
-    @project.tasks.should_not be_empty
-    @project.tasks.first.name.should be_nil
     @project.save
-    @project.should be_new
-    @project.tasks.all? { |t| t.should be_new }
+    
     Project.all.size.should == 0
-    Task.all.size.should == 0
+    Task.all.size.should    == 0
   end
   
 end
@@ -87,7 +75,6 @@ describe "every accessible has(n) association with :allow_destroy => false", :sh
     Project.all.size.should == 1
     Task.all.size.should    == 1
   
-    @project.reload
     @project.tasks_attributes = { '1' => { :id => task.id, :_delete => true } }
     @project.save
     
@@ -120,9 +107,7 @@ describe "every accessible has(n) association with a nested attributes reader", 
 
   it "should return the attributes written to Project#task_attributes from the Project#task_attributes reader" do
     @project.tasks_attributes.should be_nil
-
     @project.tasks_attributes = { 'new_1' => { :name => 'write specs' } }
-
     @project.tasks_attributes.should == { 'new_1' => { :name => 'write specs' } }
   end
 
