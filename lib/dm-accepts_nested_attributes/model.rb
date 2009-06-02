@@ -51,7 +51,14 @@ module DataMapper
         
         include ::DataMapper::NestedAttributes::Resource
         
+        # TODO i wonder if this is the best place here?
+        # the transactional save behavior is definitely not needed for all resources,
+        # but it's necessary for resources that accept nested attributes
+        # FIXME this leads to weird "no such table" errors when specs are run
         add_transactional_save_behavior # TODO if repository.adapter.supports_transactions?
+
+        # TODO make this do something
+        # it's only here now to remind me that this is probably the best place to put it
         add_error_collection_behavior if DataMapper.const_defined?('Validate')
         
         type = relationship.max > 1 ? :collection : :resource
