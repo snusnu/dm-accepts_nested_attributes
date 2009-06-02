@@ -36,7 +36,7 @@ USE_TEXTMATE_RSPEC_BUNDLE = true # set to false if not using textmate
 
 if USE_TEXTMATE_RSPEC_BUNDLE
 
-  require Pathname(__FILE__).dirname.expand_path + 'shared/rspec_tmbundle_support'
+  require Pathname(__FILE__).dirname.expand_path + 'lib/rspec_tmbundle_support'
 
   # use the tmbundle logger
   RSpecTmBundleHelpers::TextmateRspecLogger.new(STDOUT, :off)
