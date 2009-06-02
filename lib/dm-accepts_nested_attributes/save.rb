@@ -23,12 +23,8 @@ module DataMapper
       def save_parents(*args)
         parent_relationships.all? do |relationship|
           parent = relationship.get(self)
-          if parent.marked_for_destruction?
-            parent.destroy
-          else
-            if parent.save(*args)
-              relationship.set(self, parent)
-            end
+          if parent.save(*args)
+            relationship.set(self, parent)
           end
         end
       end
