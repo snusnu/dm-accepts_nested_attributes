@@ -3,10 +3,12 @@ module DataMapper
 
     module Save
       
-      extend DataMapper::Chainable
-      
-      chainable do
-        def save(*args)
+      def save(*args)
+        puts "[DANA] Resource#save class = #{self.class.name}, id = #{self.id}, object_id = #{object_id}<br />"
+        if marked_for_destruction?
+          puts "[DANA] calling destroy"
+          destroy
+        else
           save_parents(*args) && super
         end
       end

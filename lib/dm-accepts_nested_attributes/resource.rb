@@ -223,6 +223,7 @@ module DataMapper
       #
       # @return true
       def mark_for_destruction
+        puts "[DANA] Resource#mark_for_destruction object_id = #{object_id}, class = #{self.class.name}, id = #{self.id}<br />"
         @marked_for_destruction = true
       end
 
