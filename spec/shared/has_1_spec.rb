@@ -80,11 +80,17 @@ describe "every accessible has(1) association with :allow_destroy => true", :sha
   it "should allow to delete an existing profile via Person#profile_attributes" do
     @person.save
     profile = Profile.create(:person_id => @person.id, :nick => 'snusnu')
-    @person.reload
 
+    puts "XXXXXXXXXXXXXXXXXXXXX<br />"
+
+    @person.profile = profile
     @person.profile_attributes = { :id => profile.id, :_delete => true }
-    @person.save
     
+    @person.send(:child_associations).should_not be_empty
+    @person.send(:child_associations).any? { |a| a.should include(profile) }
+
+    @person.save
+
     Person.all.size.should  == 1
     Profile.all.size.should == 0
   end

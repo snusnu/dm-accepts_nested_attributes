@@ -93,7 +93,7 @@ describe "every accessible has(n) association with :allow_destroy => true", :sha
     Project.all.size.should == 1
     Task.all.size.should    == 1
   
-    @project.reload
+    @project.tasks << task
     @project.tasks_attributes = { '1' => { :id => task.id, :_delete => true } }
     @project.save
     
