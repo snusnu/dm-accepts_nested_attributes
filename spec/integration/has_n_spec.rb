@@ -18,7 +18,8 @@ describe DataMapper::NestedAttributes do
         Project.accepts_nested_attributes_for :tasks
         @project = Project.new :name => 'trippings'
       end
-      
+
+      it_should_behave_like "every accessible has(n) association"
       it_should_behave_like "every accessible has(n) association with no reject_if proc"
       it_should_behave_like "every accessible has(n) association with :allow_destroy => false"
       it_should_behave_like "every accessible has(n) association with a nested attributes reader"
@@ -32,9 +33,11 @@ describe DataMapper::NestedAttributes do
         Project.accepts_nested_attributes_for :tasks, :allow_destroy => false
         @project = Project.new :name => 'trippings'
       end
-      
+
+      it_should_behave_like "every accessible has(n) association"
       it_should_behave_like "every accessible has(n) association with no reject_if proc"
       it_should_behave_like "every accessible has(n) association with :allow_destroy => false"
+      it_should_behave_like "every accessible has(n) association with a nested attributes reader"
       
     end
         
@@ -45,9 +48,11 @@ describe DataMapper::NestedAttributes do
         Project.accepts_nested_attributes_for :tasks, :allow_destroy => true
         @project = Project.new :name => 'trippings'
       end
-      
+
+      it_should_behave_like "every accessible has(n) association"
       it_should_behave_like "every accessible has(n) association with no reject_if proc"
       it_should_behave_like "every accessible has(n) association with :allow_destroy => true"
+      it_should_behave_like "every accessible has(n) association with a nested attributes reader"
       
     end
     
@@ -60,9 +65,11 @@ describe DataMapper::NestedAttributes do
           Project.accepts_nested_attributes_for :tasks, :reject_if => lambda { |attrs| true }
           @project = Project.new :name => 'trippings'
         end
-    
+
+        it_should_behave_like "every accessible has(n) association"
         it_should_behave_like "every accessible has(n) association with a valid reject_if proc"
         it_should_behave_like "every accessible has(n) association with :allow_destroy => false"
+        it_should_behave_like "every accessible has(n) association with a nested attributes reader"
       
       end
                   
@@ -73,9 +80,11 @@ describe DataMapper::NestedAttributes do
           Project.accepts_nested_attributes_for :tasks, :reject_if => lambda { |attrs| false }
           @project = Project.new :name => 'trippings'
         end
-    
+
+        it_should_behave_like "every accessible has(n) association"
         it_should_behave_like "every accessible has(n) association with no reject_if proc"
         it_should_behave_like "every accessible has(n) association with :allow_destroy => false"
+        it_should_behave_like "every accessible has(n) association with a nested attributes reader"
       
       end
     
