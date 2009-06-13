@@ -70,7 +70,7 @@ describe "every accessible has(n, :through) association with no reject_if proc",
     @person.projects_attributes = { 'new_1' => { :name => nil } } # should fail because of validations
     @person.save
     
-    Person.all.size.should            == 1
+    Person.all.size.should            == 0 # TODO think more if this should be '1'
     ProjectMembership.all.size.should == 0
     Project.all.size.should           == 0
     
