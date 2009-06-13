@@ -18,7 +18,8 @@ describe DataMapper::NestedAttributes do
         Profile.accepts_nested_attributes_for :person
         @profile = Profile.new :nick => 'snusnu'
       end
-      
+
+      it_should_behave_like "every accessible belongs_to association"
       it_should_behave_like "every accessible belongs_to association with no reject_if proc"
       it_should_behave_like "every accessible belongs_to association with :allow_destroy => false"
       it_should_behave_like "every accessible belongs_to association with a nested attributes reader"
@@ -32,7 +33,8 @@ describe DataMapper::NestedAttributes do
         Profile.accepts_nested_attributes_for :person, :allow_destroy => false
         @profile = Profile.new :nick => 'snusnu'
       end
-      
+
+      it_should_behave_like "every accessible belongs_to association"
       it_should_behave_like "every accessible belongs_to association with no reject_if proc"
       it_should_behave_like "every accessible belongs_to association with :allow_destroy => false"
       it_should_behave_like "every accessible belongs_to association with a nested attributes reader"
@@ -46,7 +48,8 @@ describe DataMapper::NestedAttributes do
         Profile.accepts_nested_attributes_for :person, :allow_destroy => true
         @profile = Profile.new :nick => 'snusnu'
       end
-      
+
+      it_should_behave_like "every accessible belongs_to association"
       it_should_behave_like "every accessible belongs_to association with no reject_if proc"
       it_should_behave_like "every accessible belongs_to association with :allow_destroy => true"
       it_should_behave_like "every accessible belongs_to association with a nested attributes reader"
@@ -62,7 +65,8 @@ describe DataMapper::NestedAttributes do
           Profile.accepts_nested_attributes_for :person, :reject_if => lambda { |attrs| true }
           @profile = Profile.new :nick => 'snusnu'
         end
-        
+
+        it_should_behave_like "every accessible belongs_to association"
         it_should_behave_like "every accessible belongs_to association with a valid reject_if proc"
         it_should_behave_like "every accessible belongs_to association with :allow_destroy => false"
         it_should_behave_like "every accessible belongs_to association with a nested attributes reader"
@@ -76,7 +80,8 @@ describe DataMapper::NestedAttributes do
           Profile.accepts_nested_attributes_for :person, :reject_if => lambda { |attrs| false }
           @profile = Profile.new :nick => 'snusnu'
         end
-    
+
+        it_should_behave_like "every accessible belongs_to association"
         it_should_behave_like "every accessible belongs_to association with no reject_if proc"
         it_should_behave_like "every accessible belongs_to association with :allow_destroy => false"
         it_should_behave_like "every accessible belongs_to association with a nested attributes reader"

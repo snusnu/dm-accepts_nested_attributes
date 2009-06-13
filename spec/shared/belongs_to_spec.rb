@@ -1,32 +1,4 @@
-describe "every accessible belongs_to association with a valid reject_if proc", :shared => true do
-  
-  it "should not allow to create a new person via Profile#person_attributes" do
-    Profile.all.size.should == 0
-    Person.all.size.should  == 0
-    
-    @profile.person_attributes = { :name => 'Martin' }
-    @profile.save.should be_false
-    
-    Profile.all.size.should == 0
-    Person.all.size.should  == 0
-  end
-  
-end
-  
-describe "every accessible belongs_to association with no reject_if proc", :shared => true do
-
-  it "should allow to create a new person via Profile#person_attributes" do
-    Profile.all.size.should == 0
-    Person.all.size.should  == 0
-    
-    @profile.person_attributes = { :name => 'Martin' }
-    @profile.save.should be_true
-    
-    
-    Profile.all.size.should  == 1
-    Person.all.size.should   == 1
-    Person.first.name.should == 'Martin'
-  end
+describe "every accessible belongs_to association", :shared => true do
   
   it "should allow to update an existing person via Profile#person_attributes" do
     Profile.all.size.should == 0
@@ -68,6 +40,37 @@ describe "every accessible belongs_to association with no reject_if proc", :shar
     Person.all.size.should == 0
   end
   
+end
+
+describe "every accessible belongs_to association with a valid reject_if proc", :shared => true do
+
+  it "should not allow to create a new person via Profile#person_attributes" do
+    Profile.all.size.should == 0
+    Person.all.size.should  == 0
+
+    @profile.person_attributes = { :name => 'Martin' }
+    @profile.save.should be_false
+
+    Profile.all.size.should == 0
+    Person.all.size.should  == 0
+  end
+
+end
+
+describe "every accessible belongs_to association with no reject_if proc", :shared => true do
+
+  it "should allow to create a new person via Profile#person_attributes" do
+    Profile.all.size.should == 0
+    Person.all.size.should  == 0
+
+    @profile.person_attributes = { :name => 'Martin' }
+    @profile.save.should be_true
+
+    Profile.all.size.should  == 1
+    Person.all.size.should   == 1
+    Person.first.name.should == 'Martin'
+  end
+
 end
 
 describe "every accessible belongs_to association with :allow_destroy => false", :shared => true do
