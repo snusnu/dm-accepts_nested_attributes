@@ -31,6 +31,12 @@ describe "every accessible has(1) association", :shared => true do
     Profile.all.size.should == 0
   end
 
+  it "should return the attributes written to Person#profile_attributes from the Person#profile_attributes reader" do
+    @person.profile_attributes.should be_nil
+    @person.profile_attributes = { :nick => 'snusnu' }
+    @person.profile_attributes.should == { :nick => 'snusnu' }
+  end
+
 end
 
 describe "every accessible has(1) association with a valid reject_if proc", :shared => true do
@@ -97,14 +103,4 @@ describe "every accessible has(1) association with :allow_destroy => true", :sha
     Profile.all.size.should == 0
   end
   
-end
-
-describe "every accessible has(1) association with a nested attributes reader", :shared => true do
-
-  it "should return the attributes written to Person#profile_attributes from the Person#profile_attributes reader" do
-    @person.profile_attributes.should be_nil
-    @person.profile_attributes = { :nick => 'snusnu' }
-    @person.profile_attributes.should == { :nick => 'snusnu' }
-  end
-
 end

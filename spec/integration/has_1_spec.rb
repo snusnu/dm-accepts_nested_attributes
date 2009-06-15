@@ -22,7 +22,6 @@ describe DataMapper::NestedAttributes do
       it_should_behave_like "every accessible has(1) association"
       it_should_behave_like "every accessible has(1) association with no reject_if proc"
       it_should_behave_like "every accessible has(1) association with :allow_destroy => false"
-      it_should_behave_like "every accessible has(1) association with a nested attributes reader"
       
     end
         
@@ -37,7 +36,6 @@ describe DataMapper::NestedAttributes do
       it_should_behave_like "every accessible has(1) association"
       it_should_behave_like "every accessible has(1) association with no reject_if proc"
       it_should_behave_like "every accessible has(1) association with :allow_destroy => false"
-      it_should_behave_like "every accessible has(1) association with a nested attributes reader"
       
     end
     
@@ -52,7 +50,6 @@ describe DataMapper::NestedAttributes do
       it_should_behave_like "every accessible has(1) association"
       it_should_behave_like "every accessible has(1) association with no reject_if proc"
       it_should_behave_like "every accessible has(1) association with :allow_destroy => true"
-      it_should_behave_like "every accessible has(1) association with a nested attributes reader"
       
     end
     
@@ -70,7 +67,6 @@ describe DataMapper::NestedAttributes do
         it_should_behave_like "every accessible has(1) association"
         it_should_behave_like "every accessible has(1) association with a valid reject_if proc"
         it_should_behave_like "every accessible has(1) association with :allow_destroy => false"
-        it_should_behave_like "every accessible has(1) association with a nested attributes reader"
       
       end
       
@@ -85,7 +81,6 @@ describe DataMapper::NestedAttributes do
         it_should_behave_like "every accessible has(1) association"
         it_should_behave_like "every accessible has(1) association with no reject_if proc"
         it_should_behave_like "every accessible has(1) association with :allow_destroy => false"
-        it_should_behave_like "every accessible has(1) association with a nested attributes reader"
       
       end
     

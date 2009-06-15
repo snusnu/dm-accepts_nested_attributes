@@ -35,6 +35,12 @@ describe "every accessible has(n) association", :shared => true do
     Task.all.size.should    == 0
   end
 
+  it "should return the attributes written to Project#task_attributes from the Project#task_attributes reader" do
+    @project.tasks_attributes.should be_nil
+    @project.tasks_attributes = { 'new_1' => { :name => 'write specs' } }
+    @project.tasks_attributes.should == { 'new_1' => { :name => 'write specs' } }
+  end
+
 end
 
 describe "every accessible has(n) association with a valid reject_if proc", :shared => true do
@@ -105,14 +111,4 @@ describe "every accessible has(n) association with :allow_destroy => true", :sha
     Task.all.size.should    == 0
   end
   
-end
-
-describe "every accessible has(n) association with a nested attributes reader", :shared => true do
-
-  it "should return the attributes written to Project#task_attributes from the Project#task_attributes reader" do
-    @project.tasks_attributes.should be_nil
-    @project.tasks_attributes = { 'new_1' => { :name => 'write specs' } }
-    @project.tasks_attributes.should == { 'new_1' => { :name => 'write specs' } }
-  end
-
 end

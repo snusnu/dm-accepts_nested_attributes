@@ -42,6 +42,12 @@ describe "every accessible has(n, :through) association", :shared => true do
 
   end
 
+  it "should return the attributes written to Person#projects_attributes from the Person#projects_attributes reader" do
+    @person.projects_attributes.should be_nil
+    @person.projects_attributes = { 'new_1' => { :name => 'write specs' } }
+    @person.projects_attributes.should == { 'new_1' => { :name => 'write specs' } }
+  end
+
 end
 
 describe "every accessible has(n, :through) association with a valid reject_if proc", :shared => true do
@@ -130,14 +136,4 @@ describe "every accessible has(n, :through) association with :allow_destroy => t
     Project.all.size.should           == 0
   end
   
-end
-
-describe "every accessible has(n, :through) association with a nested attributes reader", :shared => true do
-
-  it "should return the attributes written to Person#projects_attributes from the Person#projects_attributes reader" do
-    @person.projects_attributes.should be_nil
-    @person.projects_attributes = { 'new_1' => { :name => 'write specs' } }
-    @person.projects_attributes.should == { 'new_1' => { :name => 'write specs' } }
-  end
-
 end

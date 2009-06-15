@@ -39,7 +39,13 @@ describe "every accessible belongs_to association", :shared => true do
     Profile.all.size.should == 0
     Person.all.size.should == 0
   end
-  
+
+  it "should return the attributes written to Profile#person_attributes from the Profile#person_attributes reader" do
+    @profile.person_attributes.should be_nil
+    @profile.person_attributes = { :name => 'Martin' }
+    @profile.person_attributes.should == { :name => 'Martin' }
+  end
+
 end
 
 describe "every accessible belongs_to association with a valid reject_if proc", :shared => true do
@@ -116,16 +122,6 @@ describe "every accessible belongs_to association with :allow_destroy => true", 
     
     # TODO also test this behavior in situations where setting the FK to nil is allowed
     
-  end
-
-end
-  
-describe "every accessible belongs_to association with a nested attributes reader", :shared => true do
-
-  it "should return the attributes written to Profile#person_attributes from the Profile#person_attributes reader" do
-    @profile.person_attributes.should be_nil
-    @profile.person_attributes = { :name => 'Martin' }
-    @profile.person_attributes.should == { :name => 'Martin' }
   end
 
 end
