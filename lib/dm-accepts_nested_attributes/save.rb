@@ -42,17 +42,16 @@ module DataMapper
       # a detailed stacktrace can be found at: http://pastie.org/510932
       def save_parents(*args)
         parent_relationships.all? do |relationship|
-          # TODO
-          # original dm-core code calls
-          # relationship.get!(self)
           parent = relationship.get!(self)
-          # TODO
-          # original dm-core code calls
-          # parent.save_self
-          if parent.save(*args)
+          if parent.save_self(*args)
             relationship.set(self, parent)
           end
         end
+      rescue DataObjects::IntegrityError => e
+        # TODO i don't know if that's the best way or simply a workaround, but
+        # respect save's protocol to return false in case something went wrong
+        DataMapper.logger.info e
+        false
       end
 
     end
