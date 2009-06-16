@@ -137,7 +137,7 @@ module DataMapper
           resource.update(attributes.except(*UNASSIGNABLE_KEYS))
         end
       end
-    
+
       ##
       # Determines if a hash contains a truthy _delete key.
       #
