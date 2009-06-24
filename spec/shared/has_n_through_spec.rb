@@ -23,25 +23,6 @@ describe "every accessible has(n, :through) association", :shared => true do
     Project.first.name.should == 'still dm-accepts_nested_attributes'
   end
 
-  it "should perform atomic commits" do
-
-    @person.projects_attributes = { 'new_1' => { :name => nil } } # should fail because of validations
-    @person.save
-
-    Person.all.size.should            == 0 # TODO think more if this should be '1'
-    ProjectMembership.all.size.should == 0
-    Project.all.size.should           == 0
-
-    @person.name = nil # should fail because of validations
-    @person.projects_attributes = { 'new_1' => { :name => nil } }
-    @person.save
-
-    Person.all.size.should            == 0
-    ProjectMembership.all.size.should == 0
-    Project.all.size.should           == 0
-
-  end
-
   it "should return the attributes written to Person#projects_attributes from the Person#projects_attributes reader" do
     @person.projects_attributes.should be_nil
     @person.projects_attributes = { 'new_1' => { :name => 'write specs' } }
@@ -92,6 +73,25 @@ describe "every accessible has(n, :through) association with no reject_if proc",
     Project.all.size.should           == 1
 
     Project.first.name.should == 'dm-accepts_nested_attributes'
+  end
+
+  it "should perform atomic commits" do
+
+    @person.projects_attributes = { 'new_1' => { :name => nil } } # should fail because of validations
+    @person.save
+
+    Person.all.size.should            == 0 # TODO think more if this should be '1'
+    ProjectMembership.all.size.should == 0
+    Project.all.size.should           == 0
+
+    @person.name = nil # should fail because of validations
+    @person.projects_attributes = { 'new_1' => { :name => nil } }
+    @person.save
+
+    Person.all.size.should            == 0
+    ProjectMembership.all.size.should == 0
+    Project.all.size.should           == 0
+
   end
 
 end

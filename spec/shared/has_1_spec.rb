@@ -13,24 +13,6 @@ describe "every accessible has(1) association", :shared => true do
     Profile.first.nick.should == 'still snusnu somehow'
   end
 
-  it "should perform atomic commits" do
-
-    # related resource is invalid
-    @person.profile_attributes = { :nick => nil } # will fail because of validations
-    @person.save.should be_false
-
-    Person.all.size.should == 0
-    Profile.all.size.should == 0
-
-    # self is invalid
-    @person.name = nil # will fail because of validations
-    @person.profile_attributes = { :nick => 'snusnu' }
-    @person.save.should be_false
-
-    Person.all.size.should  == 0
-    Profile.all.size.should == 0
-  end
-
   it "should return the attributes written to Person#profile_attributes from the Person#profile_attributes reader" do
     @person.profile_attributes.should be_nil
     @person.profile_attributes = { :nick => 'snusnu' }
@@ -66,6 +48,24 @@ describe "every accessible has(1) association with no reject_if proc", :shared =
     Person.all.size.should    == 1
     Profile.all.size.should   == 1
     Profile.first.nick.should == 'snusnu'
+  end
+
+  it "should perform atomic commits" do
+
+    # related resource is invalid
+    @person.profile_attributes = { :nick => nil } # will fail because of validations
+    @person.save.should be_false
+
+    Person.all.size.should == 0
+    Profile.all.size.should == 0
+
+    # self is invalid
+    @person.name = nil # will fail because of validations
+    @person.profile_attributes = { :nick => 'snusnu' }
+    @person.save.should be_false
+
+    Person.all.size.should  == 0
+    Profile.all.size.should == 0
   end
 
 end

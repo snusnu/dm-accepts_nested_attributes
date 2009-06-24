@@ -14,27 +14,6 @@ describe "every accessible has(n) association", :shared => true do
     Task.first.name.should  == 'write more specs'
   end
 
-  it "should perform atomic commits" do
-    Project.all.size.should == 0
-    Task.all.size.should    == 0
-
-    # self is invalid
-    @project.name = nil # will fail because of validations
-    @project.tasks_attributes = { 'new_1' => { :name => 'write specs' } }
-    @project.save
-
-    Project.all.size.should == 0
-    Task.all.size.should    == 0
-
-    # related resource is invalid
-    @project.name = 'dm-accepts_nested_attributes'
-    @project.tasks_attributes = { 'new_1' => { :name => nil } } # will fail because of validations
-    @project.save
-
-    Project.all.size.should == 0
-    Task.all.size.should    == 0
-  end
-
   it "should return the attributes written to Project#task_attributes from the Project#task_attributes reader" do
     @project.tasks_attributes.should be_nil
     @project.tasks_attributes = { 'new_1' => { :name => 'write specs' } }
@@ -72,6 +51,27 @@ describe "every accessible has(n) association with no reject_if proc", :shared =
     Project.all.size.should == 1
     Task.all.size.should    == 1
     Task.first.name.should  == 'write specs'
+  end
+
+  it "should perform atomic commits" do
+    Project.all.size.should == 0
+    Task.all.size.should    == 0
+
+    # self is invalid
+    @project.name = nil # will fail because of validations
+    @project.tasks_attributes = { 'new_1' => { :name => 'write specs' } }
+    @project.save
+
+    Project.all.size.should == 0
+    Task.all.size.should    == 0
+
+    # related resource is invalid
+    @project.name = 'dm-accepts_nested_attributes'
+    @project.tasks_attributes = { 'new_1' => { :name => nil } } # will fail because of validations
+    @project.save
+
+    Project.all.size.should == 0
+    Task.all.size.should    == 0
   end
 
 end
