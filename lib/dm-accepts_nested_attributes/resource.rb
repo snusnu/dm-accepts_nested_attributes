@@ -207,6 +207,15 @@ module DataMapper
     module CommonResourceSupport
 
       ##
+      # If self is marked for destruction, destroy self
+      # else, save self by delegating to super method.
+      #
+      # @return The same value that super returns
+      def save_self
+        marked_for_destruction? ? destroy : super
+      end
+
+      ##
       # remove mark for destruction if present
       # before delegating reload behavior to super
       #
