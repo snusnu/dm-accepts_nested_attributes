@@ -15,7 +15,12 @@ module DataMapper
       # For now, this method basically is a no-op, but at least it provides a hook where
       # everyone can perform it's own sanitization by overwriting this method.
       #
-      # @return [Hash] The sanitized attributes
+      # @param attributes [Hash]
+      #   The attributes to sanitize
+      #
+      # @return [Hash]
+      #   The sanitized attributes
+      #
       def sanitize_nested_attributes(attributes)
         attributes # noop
       end
@@ -139,35 +144,29 @@ module DataMapper
       end
 
       ##
-      # Determines if a hash contains a truthy _delete key.
+      # Determines if the given attributes hash contains a truthy :_delete key.
       #
-      # @param hash [Hash] The hash to test
+      # @param attributes [Hash] The attributes to test
       #
-      # @return [Boolean]
-      #   true, if hash containts a truthy _delete key
-      #   false, otherwise
-      def has_delete_flag?(hash)
-        # TODO find out if this activerecord code needs to be ported
-        # ConnectionAdapters::Column.value_to_boolean hash['_delete']
-        hash[:_delete]
+      # @return [TrueClass, FalseClass]
+      #   true, if attributes contains a truthy :_delete key
+      def has_delete_flag?(attributes)
+        !!attributes[:_delete]
       end
     
       ##
-      # Determines if a new record should be build by checking for
-      # has_delete_flag? or if a <tt>:reject_if</tt> proc exists for this
-      # association and evaluates to +true+.
+      # Determines if a new record should be built with the given attributes.
+      # Rejects a new record if @see has_delete_flag? returns true for the given attributes,
+      # or if a :reject_if guard exists for the passed relationship that evaluates to +true+.
       #
       # @param relationship [DataMapper::Associations::Relationship]
-      #   The relationship backing the association. 
-      #   Assignment will happen on the target end of the relationship
+      #   The relationship backing the association.
       #
       # @param attributes [Hash]
-      #   The attributes to assign to the relationship's target end
-      #   All attributes except @see UNASSIGNABLE_KEYS will be assigned
+      #   The attributes to test with @see has_delete_flag?
       #
-      # @return [Boolean]
-      #   true, if the given attributes won't be rejected
-      #   false, otherwise
+      # @return [TrueClass, FalseClass]
+      #   true, if the given attributes will be rejected
       def reject_new_record?(relationship, attributes)
         guard = self.class.options_for_nested_attributes[relationship][:reject_if]
         return false if guard.nil? # if relationship guard is nil, nothing will be rejected
@@ -185,9 +184,19 @@ module DataMapper
         end
       end
       
-      def normalize_attributes_collection(attributes_collection)
-        if attributes_collection.is_a?(Hash)
-          attributes_collection.sort_by { |index, _| index.to_i }.map { |_, attributes| attributes }
+      ##
+      # Make sure to return a collection of attribute hashes.
+      # If passed an attributes hash sort it by converting the keys to integers,
+      # then map it to its att
+      #
+      # @param attributes_collection [Hash, #each]
+      #   An attributes hash or a collection of attribute hashes
+      #
+      # @return [#each]
+      #   A collection of normalized attribute hashes
+      def normalize_attributes_collection(attributes)
+        if attributes.is_a?(Hash)
+          attributes.sort_by { |key_id, _| key_id.to_i }.map { |_, attributes| attributes }
         else
           attributes_collection
         end
@@ -210,9 +219,8 @@ module DataMapper
       ##
       # Test if this resource is marked for destruction
       #
-      # @return [Boolean]
-      #   true, if this resource is marked for destruction
-      #   false, otherwise
+      # @return [TrueClass, FalseClass]
+      #   true if this resource is marked for destruction
       def marked_for_destruction?
         @marked_for_destruction
       end
