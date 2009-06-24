@@ -145,6 +145,7 @@ module DataMapper
       def assign_or_mark_for_destruction(relationship, resource, attributes)
         allow_destroy = self.class.options_for_nested_attributes[relationship][:allow_destroy]
         if has_delete_flag?(attributes) && allow_destroy
+          puts "marking #{resource.inspect} for destruction"
           resource.mark_for_destruction
         else
           resource.update(attributes.except(*UNASSIGNABLE_KEYS))
@@ -244,6 +245,7 @@ module DataMapper
       #
       # @return The same value that super returns
       def save_self
+        puts "#{self.class.name}#save_self marked_for_destruction = #{marked_for_destruction?.inspect}"
         marked_for_destruction? ? destroy : super
       end
 
@@ -260,10 +262,10 @@ module DataMapper
       ##
       # Test if this resource is marked for destruction
       #
-      # @return [TrueClass, FalseClass]
+      # @return [true, false]
       #   true if this resource is marked for destruction
       def marked_for_destruction?
-        @marked_for_destruction
+        !!@marked_for_destruction
       end
 
       ##
