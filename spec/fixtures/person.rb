@@ -9,8 +9,13 @@ class Person
   
   # associations
   
-  has 1, :profile
-  has n, :project_memberships
-  has n, :projects, :through => :project_memberships
+  has 1, :profile,
+    :constraint => :destroy
+
+  has n, :project_memberships,
+    :constraint => :destroy
+
+  has n, :projects,
+    :through => :project_memberships
   
 end

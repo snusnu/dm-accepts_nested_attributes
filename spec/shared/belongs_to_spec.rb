@@ -117,8 +117,8 @@ describe "every accessible belongs_to association with :allow_destroy => true", 
     @profile.person_attributes = { :id => person.id, :_delete => true }
     @profile.save
     
-    Profile.all.size.should == 1 # project.person_id must not be nil
-    Person.all.size.should  == 1
+    Person.all.size.should  == 0
+    Profile.all.size.should == 0 # Person.has(1, :profile, :constraint => :destroy)
     
     # TODO also test this behavior in situations where setting the FK to nil is allowed
     

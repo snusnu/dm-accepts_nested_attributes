@@ -9,8 +9,13 @@ class Project
   
   # associations
   
-  has n, :tasks
-  has n, :project_memberships
-  has n, :people, :through => :project_memberships
-  
+  has n, :tasks,
+    :constraint => :destroy
+
+  has n, :project_memberships,
+    :constraint => :destroy
+
+  has n, :people,
+    :through => :project_memberships
+
 end

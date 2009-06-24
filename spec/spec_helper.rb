@@ -8,6 +8,7 @@ require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-accepts_nested_a
 # must be required after the plugin, since
 # dm-validations seems to need dm-core
 require 'dm-validations'
+require 'dm-constraints'
 
 ENV["SQLITE3_SPEC_URI"]  ||= 'sqlite3::memory:'
 ENV["MYSQL_SPEC_URI"]    ||= 'mysql://localhost/dm-accepts_nested_attributes_test'
