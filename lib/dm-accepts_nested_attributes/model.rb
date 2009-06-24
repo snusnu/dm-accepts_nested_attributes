@@ -2,7 +2,8 @@ module DataMapper
   module NestedAttributes
     
     ##
-    # raised by accepts_nested_attributes_for
+    # Named plugin exception that gets raised by
+    # @see accepts_nested_attributes_for
     # if the passed options don't make sense
     class InvalidOptions < ArgumentError; end
     
@@ -11,22 +12,26 @@ module DataMapper
       ##
       # Allows any association to accept nested attributes.
       #
-      # @param association_name [Symbol, String]
+      # @param [Symbol, String] association_name
       #   The name of the association that should accept nested attributes
       #
-      # @param options [Hash, nil]
+      # @param [Hash, nil] options
       #   List of resources to initialize the Collection with
       #
-      # @option :reject_if [Symbol, String, #call]
+      # @option [Symbol, String, #call] :reject_if
       #   An instance method name or an object that respond_to?(:call), which
       #   stops a new record from being created, if it evaluates to true.
       #
-      # @option :allow_destroy [true, false]
+      # @option [true, false] :allow_destroy
       #   If true, allow destroying the association via the generated writer
       #   If false, prevent destroying the association via the generated writer
       #   defaults to false
       #
+      # @raise [DataMapper::NestedAttributes::InvalidOptions]
+      #   A named exception class indicating invalid options
+      #
       # @return nil
+      #
       def accepts_nested_attributes_for(association_name, options = {})
         
         # ----------------------------------------------------------------------------------
@@ -76,28 +81,58 @@ module DataMapper
       end
       
       ##
-      # The options given to the accepts_nested_attributes method
-      # They are guaranteed to be valid if they made it this far.
+      # The options given to the accepts_nested_attributes method.
       #
-      # @return [Hash] The options given to the accepts_nested_attributes method
-      # @see accepts_nested_attributes
+      # @return [Hash]
+      #   The options given to the accepts_nested_attributes method
+      #
       def options_for_nested_attributes
         @options_for_nested_attributes ||= {}
       end
 
       private
 
+      ##
+      # Provides a hook to include or disable customized transactional save behavior.
+      # Override this method to customize the implementation or disable it altogether.
+      # The current implementation in @see DataMapper::NestedAttributes::TransactionalSave
+      # simply wraps the saving of the complete object tree inside a transaction
+      # and rolls back in case any exceptions are raised, or any of the calls to
+      # @see DataMapper::Resource#save returned false
+      #
+      # @return Not specified
+      #
       def add_transactional_save_behavior
         require Pathname(__FILE__).dirname.expand_path + 'transactional_save'
         include ::DataMapper::NestedAttributes::TransactionalSave
       end
 
+      ##
+      # Provides a hook to include or disable customized error collecting behavior.
+      # Overwrite this method to customize the implementation or disable it altogether.
+      # The current implementation in @see DataMapper::NestedAttributes::ValidationErrorCollecting
+      # simply attaches all errors of related resources to the object that was initially saved.
+      #
+      # @return Not specified
+      #
       def add_error_collection_behavior
         require Pathname(__FILE__).dirname.expand_path + 'error_collecting'
         include ::DataMapper::NestedAttributes::ValidationErrorCollecting
       end
-      
-      
+
+      ##
+      # Checks options passed to @see accepts_nested_attributes_for
+      # If any of the given options is invalid, this method will raise
+      # @see DataMapper::NestedAttributes::InvalidOptions
+      #
+      # @param [Hash, nil] options
+      #   The options passed to @see accepts_nested_attributes_for
+      #
+      # @raise [DataMapper::NestedAttributes::InvalidOptions]
+      #   A named exception class indicating invalid options
+      #
+      # @return [nil]
+      #
       def assert_valid_options_for_nested_attributes(options)
         
         assert_kind_of 'options', options, Hash

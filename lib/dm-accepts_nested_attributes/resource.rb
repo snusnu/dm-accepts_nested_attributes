@@ -1,6 +1,14 @@
 module DataMapper
   module NestedAttributes
     
+    ##
+    # Extensions and customizations for @see DataMapper::Resource
+    # that are needed if the @see DataMapper::Resource wants to
+    # accept nested attributes for any given relationship.
+    # Basically, this module provides functionality that allows
+    # either assignment or marking for destruction of related parent
+    # and child associations, based on the given attributes and what
+    # kind of relationship should be altered.
     module Resource
       
       ##
@@ -173,9 +181,25 @@ module DataMapper
         has_delete_flag?(attributes) || evaluate_reject_new_record_guard(guard, attributes)
       end
       
+      ##
+      # Evaluates the given guard by calling it with the given attributes
+      #
+      # @param [Symbol, String, #call] guard
+      #   An instance method name or an object that respond_to?(:call), which
+      #   would stop a new record from being created, if it evaluates to true.
+      #
+      # @param [Hash] attributes
+      #   The attributes to pass to the guard for evaluating if it should reject
+      #   the creation of a new resource
+      #
+      # @raise ArgumentError
+      #   If the given guard doesn't match [Symbol, String, #call]
+      #
+      # @return [true, false]
+      #   The value returned by evaluating the guard
       def evaluate_reject_new_record_guard(guard, attributes)
         if guard.is_a?(Symbol) || guard.is_a?(String)
-          send(guard)
+          send(guard, attributes)
         elsif guard.respond_to?(:call)
           guard.call(attributes)
         else
@@ -204,6 +228,14 @@ module DataMapper
       
     end
     
+    ##
+    # This module provides basic support for accepting nested attributes,
+    # that every @see DataMapper::Resource must include. It includes methods
+    # that allow a resource to be marked for destruction and it provides an
+    # overwritten version of @see DataMapper::Resource#save_self that either
+    # destroys a resource if it's @see marked_for_destruction? or performs
+    # an ordinary save by delegating to super
+    #
     module CommonResourceSupport
 
       ##
