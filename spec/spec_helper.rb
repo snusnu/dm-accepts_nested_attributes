@@ -49,7 +49,7 @@ if USE_TEXTMATE_RSPEC_BUNDLE
 
 end
 
-ENV['ADAPTER'] ||= 'sqlite3'
+ENV['ADAPTER'] ||= 'mysql'
 setup_adapter(:default)
 
 spec_dir = Pathname(__FILE__).dirname.to_s
