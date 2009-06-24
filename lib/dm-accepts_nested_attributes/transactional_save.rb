@@ -3,7 +3,7 @@ module DataMapper
     
     module TransactionalSave
       
-      def save(*args)
+      def save(*)
         saved = false
         transaction { |t| t.rollback unless saved = super }
         saved
