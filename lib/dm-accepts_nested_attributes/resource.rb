@@ -55,7 +55,7 @@ module DataMapper
         else
           existing_record = relationship.get(self)
           if existing_record && existing_record.id.to_s == attributes[:id].to_s
-            assign_to_or_mark_for_destruction(relationship, existing_record, attributes)
+            assign_or_mark_for_destruction(relationship, existing_record, attributes)
           end
         end
       end
@@ -108,7 +108,7 @@ module DataMapper
           else
             collection = relationship.get(self)
             if existing_record = collection.detect { |record| record.id.to_s == attributes[:id].to_s }
-              assign_to_or_mark_for_destruction(relationship, existing_record, attributes)
+              assign_or_mark_for_destruction(relationship, existing_record, attributes)
             end
           end
           
@@ -129,7 +129,7 @@ module DataMapper
       #   All attributes except @see UNASSIGNABLE_KEYS will be assigned
       #
       # @return nil
-      def assign_to_or_mark_for_destruction(relationship, resource, attributes)
+      def assign_or_mark_for_destruction(relationship, resource, attributes)
         allow_destroy = self.class.options_for_nested_attributes[relationship][:allow_destroy]
         if has_delete_flag?(attributes) && allow_destroy
           resource.mark_for_destruction
