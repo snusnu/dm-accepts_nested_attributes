@@ -86,10 +86,6 @@ h2. Current limitations
 
 There are some minor limitations at the moment but I'm sure these will resolve pretty soon.
 
-h3. dm-constraints
-
-Currently the spec suite runs with "dm-validations":http://github.com/datamapper/dm-more/tree/next and "dm-constraints":http://github.com/datamapper/dm-more/tree/next enabled to be able to catch all kinds of errors. However, if "dm-constraints":http://github.com/datamapper/dm-more/tree/next are disabled, there are currently a few problems, so expect the best results when you have "dm-constraints":http://github.com/datamapper/dm-more/tree/next enabled.
-
 h3. dm-validations
 
 Currently "my fork of dm-more":http://github.com/snusnu/dm-more/tree/validation_context_work is necessary for some of the features to work properly (mainly related to performing atomic commits and deleting nested models). I hope that this stuff gets merged into "dm-more":http://github.com/datamapper/dm-more/tree/next soon though.
