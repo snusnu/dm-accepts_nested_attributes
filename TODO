@@ -1,8 +1,6 @@
 TODO
 ====
 
-* add specs for :reject_if => :foo option, but think about _where_ first!
-* think about supporting :reject_unless in addition to :reject_if
-* think about generalizing :reject_if to not only work for new? resources
-* think about :allow_destroy accepting the same parameters like :reject_if
-  (Symbol, String, #call)
+* collect validation errors from related resources
+* update README to include more complete usecases
+* think about replacing :reject_if with :if and :unless

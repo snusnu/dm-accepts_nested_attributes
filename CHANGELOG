@@ -1,3 +1,516 @@
+[cd9eb87 | Thu Jun 25 01:57:03 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * added datamapper 0.10.0 compatibility information to README
+
+[bda6fbc | Thu Jun 25 01:53:38 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * cleaner code for many_to_many deletion
+
+    * also added TODO note about handling this with
+      mark_for_destruction like all the other
+      relationship kinds.
+
+[bce5322 | Thu Jun 25 00:58:11 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * support deleting of many_to_many associations (all specs pass)
+
+    * Deletion is currently triggered when calling the nested
+      attribute writer. This is most probably not desired and
+      is likely to change.
+    
+    * Example:
+    
+      Person.has(n, :projects, :through => :project_memberships)
+      @person.projects_attributes = {
+        :id => project.id, :_delete => true
+      }
+    
+      This will delete the associated project_membership
+      and then the project
+
+[a8f2a9a | Wed Jun 24 15:52:48 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * mark_for_destruction? now really returns true or false (not nil)
+
+[8127032 | Wed Jun 24 15:44:27 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * corrected specs for atomic commits
+
+    * those specs aren't really shared, but only valid
+      for situations with no :reject_if guard that returns
+      true.
+    
+    * only 1 spec failing now and that's deleting
+      has(n, :through)
+
+[226a5a6 | Wed Jun 24 04:00:41 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * added hopefully last missing documentation
+
+[51b5fdb | Wed Jun 24 03:54:41 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * finished documenting all modules and methods
+
+    * also fixed a bug where attributes weren't sent
+      to the :reject_if guard in case the guard was
+      specified as Symbol or String.
+
+[faeaf5b | Wed Jun 24 02:05:08 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * #save_self no overwritten on every resource
+
+    * this makes more deletion specs pass and is actually
+      really obvious. wonder why it took me so long.
+    
+    * still a few atomic commits related specs failing
+      but slowly getting there.
+    
+    * also, this needs my current dm-validations work
+      available at
+      http://github.com/snusnu/dm-more/commits/validation_context_work
+
+[2582c12 | Wed Jun 24 02:02:36 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * docfixes and a minor internal implementation change
+
+[097bf9d | Wed Jun 24 02:01:13 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * minor internal method renaming.
+
+    * actually, i'm considering refactoring this method
+    * i don't like the name, it already indicates that
+      this methods serves 2 purposes which isn't good.
+
+[5cd44f9 | Wed Jun 24 01:58:52 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * no need to name useless rest arguments
+
+    * in fact, it may very well be safe to remove them
+      altogether. think more about this.
+
+[666ee63 | Wed Jun 24 01:57:56 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * use mysql in specs since dm-constraints are broken for sqlite3
+
+[92d25ff | Wed Jun 24 01:57:37 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * use dm-constraints in specs for more safety
+
+[9c5f2af | Wed Jun 17 16:16:00 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * updated Manifext.txt and gemspec to reflect the current structure
+
+[717d870 | Tue Jun 16 13:17:34 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * adapted to latest dm-core
+
+    * still the same specs failing
+
+[0ae2f1a | Mon Jun 15 15:02:02 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * less invasive dm-core overwrite in Resource#save_parents
+
+    * i don't know if that's the best way, but it works for now
+
+[dc188ee | Mon Jun 15 15:01:06 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * minor spec refactoring to run the shared examples all the time
+
+[178c99b | Sat Jun 13 20:20:44 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * added comments about what goes wrong
+
+[9f2279e | Sat Jun 13 18:52:47 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * styles matter, i like this better
+
+[123c70f | Sat Jun 13 18:26:21 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * refactored shared specs for has(n, :through) associations
+
+    * factored out real shared behavior and run it from
+      all examples
+    
+    * causes 1 failure in "should perform atomic commits"
+
+[2393d0d | Sat Jun 13 18:25:57 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * refactored shared specs for has(n) associations
+
+    * factored out real shared behavior and run it from
+      all examples
+    
+    * causes 1 failure in "should perform atomic commits"
+
+[f786acd | Sat Jun 13 18:25:11 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * refactored shared specs for has(1) associations
+
+    * factored out real shared behavior and run it from
+      all examples
+    
+    * causes 1 failure in "should perform atomic commits"
+
+[ad7d968 | Sat Jun 13 17:45:58 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * refactored shared specs for belongs_to associations
+
+    * factored out real shared behavior and run it from
+      all examples
+
+[a14e6fd | Sat Jun 13 16:07:36 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * made all but 3 specs pass
+
+    * this means that all specs except those that test
+      destroying of an associated resource via the
+      nested attribute accessors, works.
+    
+    * TODO this spec change needs more thinking. I'm
+      not yet sure if not creating a Person in this case
+      is the right behavior.
+
+[8de57d1 | Sat Jun 13 16:05:44 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * adapt overwritten save behavior to latest dm-core changes
+
+[e3837fe | Sat Jun 13 16:05:18 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * don't use chainable in client code
+
+    * it should be sufficient that dm-core declared
+      the method as chainable
+
+[4121c57 | Sat Jun 13 16:04:26 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * removed debug statements
+
+[80b9774 | Fri Jun 12 20:59:12 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * added debug statements
+
+[3d316f8 | Fri Jun 12 20:58:56 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * specs now explicitly assign related resources to the association
+
+[04a87ad | Thu Jun 04 15:44:20 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * removed unneeded assertions
+
+    * deleting a related resource still not working
+    * transactions still not working
+    
+    * other than that, it seems quite fine
+
+[6a2e07f | Tue Jun 02 20:17:56 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * include save behavior only if a resource accepts nested attributes
+
+[d2c27c6 | Tue Jun 02 19:59:41 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * spec formatting and useless assertion removal
+
+[5f8d0e1 | Tue Jun 02 19:39:28 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * added a few TODO and FIXME comments
+
+[a317852 | Tue Jun 02 19:05:20 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * moved shared specs to spec/shared directory.
+
+    * this reduces clutter from the main specs
+    * also it will hopefully help with refactoring
+      the specs to provide better shared specs that
+      can be used for all integrations specs
+
+[3ab51dc | Tue Jun 02 18:24:23 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * moved rspec_tmbundle_support to spec/lib
+
+[3579f97 | Tue Jun 02 18:19:03 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * formatting and some assertion changes for belongs_to specs
+
+[7752b87 | Tue Jun 02 18:06:08 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * nice formatting for spec fixtures.
+
+[4c18a35 | Tue Jun 02 17:55:25 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * use parent saving behavior for *all* resources.
+
+    * breaks lots of specs that were already passing
+    * i don't know why this is, but nevertheless i think
+      that this is probably the way to go.
+
+[653f615 | Tue Jun 02 17:33:15 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * disabled mark_for_destruction for now
+
+[15a5174 | Thu May 28 18:06:23 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * docs for the resource extensions
+
+[22dea73 | Thu May 28 17:40:55 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * more docs for the model extensions
+
+[a109f10 | Thu May 28 16:19:29 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * allow deletion of many_to_one target via generated writer
+
+    * this makes all belongs_to_specs pass, however it doesn't
+      work for has_1_specs.
+    
+    * before this changeset, both belongs_to and has_1 failed
+      at the same spec (deleting the related resource). i wonder
+      why that is ...
+
+[81eda71 | Thu May 28 16:16:50 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * docs for one method to have yard style in place
+
+[b50b192 | Thu May 28 16:01:00 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * added a few TODO notes
+
+[8652a89 | Thu May 28 16:00:49 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * readability ftw
+
+[89d02cf | Thu May 28 14:52:14 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * better names for internal methods
+
+    * accepts_nested_attributes_for_relationship_to_#{type}
+      is now
+      accepts_nested_attributes_for_related_#{type}
+
+[04e39ed | Thu May 28 14:41:03 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * fixed reject_new_record guards (gone bad while refactoring)
+
+    * belongs_to and has_1 specs only have 1 failure
+      related to deleting the record
+    
+    * TODO: find out why mark_as_destruction doesn't
+      do the right thing when called from #save
+
+[7052c72 | Thu May 28 14:39:23 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * removed comment in shared spec that doesn't apply to every usage
+
+[8479ee6 | Thu May 28 13:32:39 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * fixed nested_attributes reader (gone bad in the refactoring)
+
+[b72f510 | Thu May 28 13:16:24 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * better formatting for save methods
+
+[d8535cc | Thu May 28 13:05:05 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * changed internal method name convention
+
+    * accepts_nested_attributes_for_#{type}_relationship
+      is now
+      accepts_nested_attributes_for_relationship_to_#{type}
+
+[1fdf6b5 | Thu May 28 12:37:35 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * rspec_tmbundle_support now uses Extlib::Logger
+
+    * DataMapper::Logger is now Extlib::Logger
+
+[a2d4f4e | Thu May 28 04:29:58 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * removed resource_spec from Manifest and gemspec
+
+[2e89d38 | Thu May 28 04:29:29 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * no need to expect explicitly ordered spec files
+
+[76c06a3 | Thu May 28 04:28:53 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * i guess whitespace isn't necessary there
+
+[0e309e1 | Thu May 28 04:16:56 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * bypass needless calls to association_name all the time
+
+    * key options_for_nested_attributes by relationship
+      instead of association_name. this eliminates the
+      need to repeatedly fetch the relationship by its
+      name and provides more concise codes in general.
+    
+    * removed the relationship method since it's not
+      needed anymore
+    
+    * removed the reject_new_nested_attributes_guard_for
+      method since it's not needed anymore
+    
+    * number of passing specs is still the same
+
+[dd859c3 | Thu May 28 04:12:44 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * include save_or_destroy in save, no need to separate it
+
+[fdd29b0 | Thu May 28 02:36:01 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * removed dead meaningless parameters
+
+    * also, let the code speak for itself if it can.
+      in this case, the comments didn't offer any
+      additional value
+
+[da8747c | Thu May 28 02:23:00 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * typo
+
+[8c6a061 | Thu May 28 02:22:16 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * methods should have a single task
+
+    * don't validate the association_name inside
+      assert_valid_options_for_nested_attributes
+
+[da2d474 | Thu May 28 02:21:15 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * explicitly include plugin functionality
+
+    * don't alter existing datamapper api by simply
+      requiring files. instead, do it explicitly as
+      this also serves a documentation puropose since
+      it's more obvious what's going on.
+
+[ae50006 | Wed May 27 23:31:47 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * every case statement wants an else branch
+
+    * although the plugin will guarantee not to enter
+      this code path, who knows what people try to do.
+      it's a (private) method, so someone could use
+      it in a possibly wrong way so why not inform
+      him/her if that happens.
+    
+    * also, i think that the use of 'next' instead of
+      deeply nested if/unless/case reads nicer
+
+[38ece56 | Wed May 27 23:17:36 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * avoid mutating parameters when it's not necessary
+
+[38225d6 | Wed May 27 23:15:32 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * made normalize_attributes_collection self contained
+
+[b42cf92 | Wed May 27 21:50:16 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * removed specs for ':reject_if => :foo' for now
+
+    * added a TODO note to remind me to add them back again,
+      once i have decided where to best put them.
+
+[57ccf94 | Wed May 27 21:41:59 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * check proper exception class in specs
+
+[6fa76ee | Wed May 27 21:11:54 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * replaced meaningless specs with one that makes sense
+
+[361a5d1 | Wed May 27 21:01:04 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * don't use bang! methods when not appropriate.
+
+    * see http://is.gd/HqLo for a detailed explanation
+
+[4e8014b | Wed May 27 20:52:07 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * extracted method mainly for documentation purposes
+
+[5e22497 | Wed May 27 20:51:04 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * replaced explicitly defined helper with dm-core api access
+
+[e981ce6 | Wed May 27 19:10:46 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * cleaned up weird condition syntax
+
+[9a6318c | Wed May 27 19:10:20 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * better usage of RelationshipAccess
+
+    * it's not necessary to call relationship! from
+      inside accepts_nested_attributes_for.
+      The association_name is *definitely* valid at
+      this time.
+
+[6e8c49f | Wed May 27 18:20:47 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * model extension now less invasive and easier to extend
+
+    * Added relationship/relationship! methods to
+      provide a cleaner interface to the relationships
+      defined on a model. This hides the implementation
+      detail that relationships are stored in a hash
+      which is bound to change anyway. Also, it allows
+      to *fail fast* when trying to access a relationship
+      that is not defined in a model (via relationship!)
+    
+    * restructured the files to better encapsulate and
+      communicate what's in them.
+    
+    * better use of dm-core methods allowed previously
+      explicitly declared methods to be removed.
+
+[5084804 | Tue May 26 18:55:12 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * imported dkubb's version of Resource#save for dana
+
+    * unit specs all pass
+    * belongs_to specs pass except for deletion (not yet integrated)
+    * all has_x specs still have failures
+
+[44fd13d | Fri May 22 20:52:53 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * having serious troubles trying to get 0.10.0 to work :-(
+
+[aed8d1e | Wed May 20 02:53:32 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * NOT compatible with datamapper 0.10.0
+
+    * a list of errors when running unmodified specs:
+    
+      uninitialized constant
+      DataMapper::Associations::RelationshipChain
+    
+      undefined method `transaction'
+      for #<Person @id=nil @name="snusnu"
+    
+      undefined local variable or method `create'
+      for #<Person @id=nil @name="Martin">
+      (probably extlib related?)
+    
+      The property 'name' is not accessible in Profile
+      (probably transaction related)
+
+[eecfa47 | Wed May 20 02:45:48 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * updated version to 0.10.0
+
+[55d6029 | Wed May 20 02:40:51 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * removed usage of rubygems
+
+[9ae06e1 | Wed May 20 02:40:39 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * upgraded datamapper dependencies to 0.10.0
+
+[b704849 | Wed May 13 04:30:18 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * updated CHANGELOG
+
 [b621475 | Wed May 13 04:29:30 UTC 2009] snusnu <gamsnjaga@gmail.com>
 
  * bumped version to 0.0.6.
