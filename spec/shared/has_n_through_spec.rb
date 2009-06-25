@@ -127,7 +127,7 @@ describe "every accessible has(n, :through) association with :allow_destroy => t
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 1
     Project.all.size.should           == 1
-  
+
     @person.projects_attributes = { '1' => { :id => project.id, :_delete => true } }
     @person.save
     
