@@ -146,9 +146,18 @@ module DataMapper
         allow_destroy = self.class.options_for_nested_attributes[relationship][:allow_destroy]
         if has_delete_flag?(attributes) && allow_destroy
           if relationship.is_a?(DataMapper::Associations::ManyToMany::Relationship)
-            intermediary = relationship.links.last.inverse.get(resource)
-            destroyed = intermediary.destroy
+
+            # TODO think about how this should work with mark_for_destruction
+            # The current behavior deletes the associated resource immediately
+            # when calling the nested attribute writer, which is in contrast to
+            # the behavior of all other relationship kinds. They only get deleted
+            # when a call to DataMapper::Resource#save is issued. This needs more
+            # thinking. Is it desired to have deletion delayed?
+
+            intermediary_collection = relationship.through.get(self)
+            intermediary_collection.destroy
             relationship.get(self).destroy
+
           else
             resource.mark_for_destruction
           end
