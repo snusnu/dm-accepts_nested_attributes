@@ -1,6 +1,7 @@
 class Person
   
   include DataMapper::Resource
+  extend ConstraintSupport
   
   # properties
   
@@ -10,10 +11,10 @@ class Person
   # associations
   
   has 1, :profile,
-    :constraint => :destroy
+    constraint_options(:destroy)
 
   has n, :project_memberships,
-    :constraint => :destroy
+    constraint_options(:destroy)
 
   has n, :projects,
     :through => :project_memberships

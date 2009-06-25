@@ -1,6 +1,7 @@
 class Project
   
   include DataMapper::Resource
+  extend ConstraintSupport
   
   # properties
   
@@ -10,10 +11,10 @@ class Project
   # associations
   
   has n, :tasks,
-    :constraint => :destroy
+    constraint_options(:destroy)
 
   has n, :project_memberships,
-    :constraint => :destroy
+    constraint_options(:destroy)
 
   has n, :people,
     :through => :project_memberships

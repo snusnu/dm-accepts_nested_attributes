@@ -52,6 +52,8 @@ end
 ENV['ADAPTER'] ||= 'mysql'
 setup_adapter(:default)
 
+require Pathname(__FILE__).dirname.expand_path + 'lib/constraint_support'
+
 spec_dir = Pathname(__FILE__).dirname.to_s
 Dir[ spec_dir + "/fixtures/**/*.rb" ].each { |rb| require(rb) }
 Dir[ spec_dir + "/shared/**/*.rb"   ].each { |rb| require(rb) }
