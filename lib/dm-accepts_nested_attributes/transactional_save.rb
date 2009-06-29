@@ -9,7 +9,7 @@ module DataMapper
       # inside a transaction and rolls back in case any exceptions are raised,
       # or any of the calls to
       #
-      # @see DataMapper::Resource#save returned false
+      # @see DataMapper::Resource#save
       #
       # @return [true, false]
       #   true if all related resources were saved properly
