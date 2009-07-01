@@ -150,12 +150,14 @@ module DataMapper
             target_query      = relationship.target_key.zip(resource.key).to_hash
             target_collection = relationship.get(self, target_query)
 
-            target_collection.send(:intermediaries, target_collection).each do |intermediary|
-              intermediary.mark_for_destruction
-            end
-
             unless target_collection.empty?
+
+              target_collection.send(:intermediaries, target_collection).each do |intermediary|
+                intermediary.mark_for_destruction
+              end
+
               target_collection.first.mark_for_destruction
+
             end
 
           else
