@@ -147,7 +147,7 @@ module DataMapper
         if has_delete_flag?(attributes) && allow_destroy
           if relationship.is_a?(DataMapper::Associations::ManyToMany::Relationship)
 
-            target_query      = { relationship.child_key.first => resource.key }
+            target_query      = relationship.target_key.zip(resource.key).to_hash
             target_collection = relationship.get(self, target_query)
 
             target_collection.send(:intermediaries, target_collection.first).each do |intermediary|
