@@ -156,7 +156,7 @@ module DataMapper
                 intermediary.mark_for_destruction
               end
 
-              target_collection.first.mark_for_destruction
+              target_collection.each { |r| r.mark_for_destruction }
 
             end
 
