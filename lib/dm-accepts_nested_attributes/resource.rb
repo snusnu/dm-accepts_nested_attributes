@@ -147,16 +147,16 @@ module DataMapper
         if has_delete_flag?(attributes) && allow_destroy
           if relationship.is_a?(DataMapper::Associations::ManyToMany::Relationship)
 
-            # TODO think about how this should work with mark_for_destruction
-            # The current behavior deletes the associated resource immediately
-            # when calling the nested attribute writer, which is in contrast to
-            # the behavior of all other relationship kinds. They only get deleted
-            # when a call to DataMapper::Resource#save is issued. This needs more
-            # thinking. Is it desired to have deletion delayed?
+            target_query      = { relationship.child_key.first => resource.key }
+            target_collection = relationship.get(self, target_query)
 
-            intermediary_collection = relationship.through.get(self)
-            intermediary_collection.destroy
-            relationship.get(self).destroy
+            target_collection.send(:intermediaries, target_collection.first).each do |intermediary|
+              intermediary.mark_for_destruction
+            end
+
+            unless target_collection.empty?
+              target_collection.first.mark_for_destruction
+            end
 
           else
             resource.mark_for_destruction
