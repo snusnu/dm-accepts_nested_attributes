@@ -120,7 +120,7 @@ module DataMapper
             relationship.get(self).new(attributes.except(*UNASSIGNABLE_KEYS))
           else
             collection = relationship.get(self)
-            if existing_record = collection.detect { |record| record.id.to_s == attributes[:id].to_s }
+            if existing_record = collection.get(attributes[:id])
               assign_or_mark_for_destruction(relationship, existing_record, attributes)
             end
           end
