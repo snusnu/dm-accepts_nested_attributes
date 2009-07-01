@@ -238,7 +238,7 @@ module DataMapper
         if attributes.is_a?(Hash)
           attributes.map { |_, attributes| attributes }
         else
-          attributes_collection
+          attributes
         end
       end
       
