@@ -227,17 +227,16 @@ module DataMapper
       
       ##
       # Make sure to return a collection of attribute hashes.
-      # If passed an attributes hash sort it by converting the keys to integers,
-      # then map it to its att
+      # If passed an attributes hash, map it to its attributes
       #
-      # @param attributes_collection [Hash, #each]
+      # @param attributes [Hash, #each]
       #   An attributes hash or a collection of attribute hashes
       #
       # @return [#each]
-      #   A collection of normalized attribute hashes
+      #   A collection of attribute hashes
       def normalize_attributes_collection(attributes)
         if attributes.is_a?(Hash)
-          attributes.sort_by { |key_id, _| key_id.to_i }.map { |_, attributes| attributes }
+          attributes.map { |_, attributes| attributes }
         else
           attributes_collection
         end
