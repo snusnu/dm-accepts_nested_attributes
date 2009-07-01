@@ -35,9 +35,15 @@ module DataMapper
       
       private
 
+      ##
       # Attribute hash keys that should not be assigned as normal attributes.
-      # These hash keys are nested attributes implementation details.
-      UNASSIGNABLE_KEYS = [ :id, :_delete ]
+      #
+      # @return [#each]
+      #   The model key and :_delete, the latter being a special value
+      #   used to mark a resource for destruction
+      def unassignable_keys
+        model.key.to_a << :_delete
+      end
     
     
       ##
@@ -63,7 +69,7 @@ module DataMapper
       def assign_nested_attributes_for_related_resource(relationship, attributes)
         if attributes[:id].blank?
           return if reject_new_record?(relationship, attributes)
-          new_record = relationship.target_model.new(attributes.except(*UNASSIGNABLE_KEYS))
+          new_record = relationship.target_model.new(attributes.except(*unassignable_keys))
           relationship.set(self, new_record)
         else
           existing_record = relationship.get(self)
@@ -117,7 +123,7 @@ module DataMapper
           
           if attributes[:id].blank?
             next if reject_new_record?(relationship, attributes)
-            relationship.get(self).new(attributes.except(*UNASSIGNABLE_KEYS))
+            relationship.get(self).new(attributes.except(*unassignable_keys))
           else
             collection = relationship.get(self)
             if existing_record = collection.get(attributes[:id])
@@ -164,7 +170,7 @@ module DataMapper
             resource.mark_for_destruction
           end
         else
-          resource.update(attributes.except(*UNASSIGNABLE_KEYS))
+          resource.update(attributes.except(*unassignable_keys))
         end
       end
 
