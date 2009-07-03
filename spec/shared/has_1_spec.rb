@@ -5,6 +5,9 @@ describe "every accessible has(1) association", :shared => true do
     profile = Profile.create(:person_id => @person.id, :nick => 'snusnu')
     @person.reload
 
+    Person.all.size.should    == 1
+    Profile.all.size.should   == 1
+
     @person.profile_attributes = { :id => profile.id, :nick => 'still snusnu somehow' }
     @person.save.should be_true
 
@@ -43,6 +46,10 @@ describe "every accessible has(1) association with no reject_if proc", :shared =
     Profile.all.size.should   == 0
 
     @person.profile_attributes = { :nick => 'snusnu' }
+
+    Person.all.size.should    == 0
+    Profile.all.size.should   == 0
+
     @person.save.should be_true
 
     Person.all.size.should    == 1
@@ -76,9 +83,17 @@ describe "every accessible has(1) association with :allow_destroy => false", :sh
     @person.save
     profile = Profile.create(:person_id => @person.id, :nick => 'snusnu')
     @person.reload
-  
+
+    Person.all.size.should  == 1
+    Profile.all.size.should == 1
+
     @person.profile_attributes = { :id => profile.id, :_delete => true }
+
+    Person.all.size.should  == 1
+    Profile.all.size.should == 1
+
     @person.save
+
     Person.all.size.should  == 1
     Profile.all.size.should == 1
   end
@@ -90,9 +105,15 @@ describe "every accessible has(1) association with :allow_destroy => true", :sha
   it "should allow to delete an existing profile via Person#profile_attributes" do
     @person.save
     profile = Profile.create(:person_id => @person.id, :nick => 'snusnu')
-
     @person.profile = profile
+
+    Person.all.size.should  == 1
+    Profile.all.size.should == 1
+
     @person.profile_attributes = { :id => profile.id, :_delete => true }
+
+    Person.all.size.should  == 1
+    Profile.all.size.should == 1
 
     @person.save
 

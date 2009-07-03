@@ -46,6 +46,10 @@ describe "every accessible has(n) association with no reject_if proc", :shared =
     Task.all.size.should    == 0
 
     @project.tasks_attributes = { 'new_1' => { :name => 'write specs' } }
+
+    Project.all.size.should == 1
+    Task.all.size.should    == 0
+
     @project.save.should be_true
 
     Project.all.size.should == 1
@@ -99,14 +103,18 @@ describe "every accessible has(n) association with :allow_destroy => true", :sha
   it "should allow to delete an existing task via Profile#tasks_attributes" do
     @project.save
     task = Task.create(:project => @project, :name => 'write specs')
+    @project.tasks.reload
     
     Project.all.size.should == 1
     Task.all.size.should    == 1
-  
-    @project.tasks << task
+
     @project.tasks_attributes = { '1' => { :id => task.id, :_delete => true } }
+
+    Project.all.size.should == 1
+    Task.all.size.should    == 1
+
     @project.save
-    
+
     Project.all.size.should == 1
     Task.all.size.should    == 0
   end

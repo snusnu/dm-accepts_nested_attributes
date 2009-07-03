@@ -55,6 +55,10 @@ describe "every accessible belongs_to association with a valid reject_if proc", 
     Person.all.size.should  == 0
 
     @profile.person_attributes = { :name => 'Martin' }
+
+    Profile.all.size.should == 0
+    Person.all.size.should  == 0
+
     @profile.save.should be_false
 
     Profile.all.size.should == 0
@@ -70,6 +74,10 @@ describe "every accessible belongs_to association with no reject_if proc", :shar
     Person.all.size.should  == 0
 
     @profile.person_attributes = { :name => 'Martin' }
+
+    Profile.all.size.should == 0
+    Person.all.size.should  == 0
+
     @profile.save.should be_true
 
     Profile.all.size.should  == 1
@@ -87,12 +95,16 @@ describe "every accessible belongs_to association with :allow_destroy => false",
     
     person = Person.create(:name => 'Martin')
     @profile.person = person
-    @profile.save.should be_true
+    @profile.save
     
     Profile.all.size.should == 1
     Person.all.size.should  == 1
   
     @profile.person_attributes = { :id => person.id, :_delete => true }
+
+    Profile.all.size.should == 1
+    Person.all.size.should  == 1
+
     @profile.save
     
     Profile.all.size.should == 1
@@ -115,6 +127,10 @@ describe "every accessible belongs_to association with :allow_destroy => true", 
     Person.all.size.should  == 1
   
     @profile.person_attributes = { :id => person.id, :_delete => true }
+
+    Profile.all.size.should == 1
+    Person.all.size.should  == 1
+
     @profile.save
     
     Person.all.size.should  == 0

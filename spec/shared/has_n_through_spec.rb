@@ -66,6 +66,11 @@ describe "every accessible has(n, :through) association with no reject_if proc",
     Project.all.size.should           == 0
 
     @person.projects_attributes = { 'new_1' => { :name => 'dm-accepts_nested_attributes' } }
+
+    Person.all.size.should            == 1
+    ProjectMembership.all.size.should == 0
+    Project.all.size.should           == 0
+
     @person.save
 
     Person.all.size.should            == 1
@@ -108,6 +113,11 @@ describe "every accessible has(n, :through) association with :allow_destroy => f
     Project.all.size.should           == 1
   
     @person.projects_attributes = { '1' => { :id => project.id, :_delete => true } }
+
+    Person.all.size.should            == 1
+    ProjectMembership.all.size.should == 1
+    Project.all.size.should           == 1
+
     @person.save
     
     Person.all.size.should            == 1
@@ -131,8 +141,13 @@ describe "every accessible has(n, :through) association with :allow_destroy => t
     Project.all.size.should           == 2
 
     @person.projects_attributes = { '1' => { :id => project_1.id, :_delete => true } }
+
+    Person.all.size.should            == 1
+    ProjectMembership.all.size.should == 2
+    Project.all.size.should           == 2
+
     @person.save
-    
+
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 1
     Project.all.size.should           == 1
