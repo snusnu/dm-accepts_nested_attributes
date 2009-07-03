@@ -13,4 +13,6 @@ class Profile
   
   belongs_to :person
   
+  has 1, :address
+
 end
