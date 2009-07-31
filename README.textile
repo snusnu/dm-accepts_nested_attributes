@@ -84,11 +84,7 @@ DataMapper.auto_migrate!
 
 h2. Current limitations
 
-There are some minor limitations at the moment but I'm sure these will resolve pretty soon.
-
-h3. dm-validations
-
-Currently "my fork of dm-more":http://github.com/snusnu/dm-more/tree/validation_context_work is necessary for some of the features to work properly (mainly related to performing atomic commits and deleting nested models). I hope that this stuff gets merged into "dm-more":http://github.com/datamapper/dm-more/tree/next soon though.
+There are some minor limitations at the moment but I hope that these will be resolved some time soon.
 
 h3. marking for destruction
 
