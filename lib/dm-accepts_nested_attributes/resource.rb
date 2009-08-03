@@ -170,7 +170,8 @@ module DataMapper
             resource.mark_for_destruction
           end
         else
-          resource.update(attributes.except(*unassignable_keys))
+          resource.attributes = attributes.except(*unassignable_keys)
+          resource.save
         end
       end
 
