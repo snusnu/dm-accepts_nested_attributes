@@ -8,7 +8,14 @@ module DataMapper
     class InvalidOptions < ArgumentError; end
     
     module Model
-    
+
+      def self.extended(host)
+        host.class_eval do
+          @options_for_nested_attributes = {}
+          class_inheritable_reader :options_for_nested_attributes
+        end
+      end
+
       ##
       # Allows any association to accept nested attributes.
       #
@@ -51,9 +58,9 @@ module DataMapper
         # ----------------------------------------------------------------------------------
         #                       should be safe to go from here
         # ----------------------------------------------------------------------------------
-        
+
         options_for_nested_attributes[relationship] = options
-        
+
         include ::DataMapper::NestedAttributes::Resource
         
         # TODO i wonder if this is the best place here?
@@ -79,16 +86,7 @@ module DataMapper
         end
       
       end
-      
-      ##
-      # The options given to the accepts_nested_attributes method.
-      #
-      # @return [Hash]
-      #   The options given to the accepts_nested_attributes method
-      #
-      def options_for_nested_attributes
-        @options_for_nested_attributes ||= {}
-      end
+
 
       private
 
