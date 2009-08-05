@@ -1,6 +1,6 @@
 module DataMapper
   module NestedAttributes
-    
+
     ##
     # Extensions and customizations for @see DataMapper::Resource
     # that are needed if the @see DataMapper::Resource wants to
@@ -10,7 +10,7 @@ module DataMapper
     # and child associations, based on the given attributes and what
     # kind of relationship should be altered.
     module Resource
-      
+
       ##
       # Can be used to remove ambiguities from the passed attributes.
       # Consider a situation with a belongs_to association where both a valid value
@@ -18,7 +18,7 @@ module DataMapper
       # present (i.e. item_type_id and item_type_attributes are present).
       # Also see http://is.gd/sz2d on the rails-core ml for a discussion on this.
       # The basic idea is, that there should be a well defined behavior for what
-      # exactly happens when such a situation occurs. I'm currently in favor for 
+      # exactly happens when such a situation occurs. I'm currently in favor for
       # using the foreign_key if it is present, but this probably needs more thinking.
       # For now, this method basically is a no-op, but at least it provides a hook where
       # everyone can perform it's own sanitization by overwriting this method.
@@ -32,7 +32,7 @@ module DataMapper
       def sanitize_nested_attributes(attributes)
         attributes # noop
       end
-      
+
       private
 
       ##
@@ -44,8 +44,8 @@ module DataMapper
       def unassignable_keys
         model.key.to_a << :_delete
       end
-    
-    
+
+
       ##
       # Assigns the given attributes to the resource association.
       #
@@ -58,7 +58,7 @@ module DataMapper
       # will be marked for destruction.
       #
       # @param relationship [DataMapper::Associations::Relationship]
-      #   The relationship backing the association. 
+      #   The relationship backing the association.
       #   Assignment will happen on the target end of the relationship
       #
       # @param attributes [Hash]
@@ -78,7 +78,7 @@ module DataMapper
           end
         end
       end
-    
+
       ##
       # Assigns the given attributes to the collection association.
       #
@@ -109,7 +109,7 @@ module DataMapper
       # ])
       #
       # @param relationship [DataMapper::Associations::Relationship]
-      #   The relationship backing the association. 
+      #   The relationship backing the association.
       #   Assignment will happen on the target end of the relationship
       #
       # @param attributes [Hash]
@@ -118,9 +118,9 @@ module DataMapper
       #
       # @return nil
       def assign_nested_attributes_for_related_collection(relationship, attributes_collection)
-      
+
         normalize_attributes_collection(attributes_collection).each do |attributes|
-          
+
           if attributes[:id].blank?
             next if reject_new_record?(relationship, attributes)
             relationship.get(self).new(attributes.except(*unassignable_keys))
@@ -130,17 +130,17 @@ module DataMapper
               assign_or_mark_for_destruction(relationship, existing_record, attributes)
             end
           end
-          
+
         end
-      
+
       end
-    
+
       ##
       # Updates a record with the +attributes+ or marks it for destruction if
       # +allow_destroy+ is +true+ and has_delete_flag? returns +true+.
       #
       # @param relationship [DataMapper::Associations::Relationship]
-      #   The relationship backing the association. 
+      #   The relationship backing the association.
       #   Assignment will happen on the target end of the relationship
       #
       # @param attributes [Hash]
@@ -185,7 +185,7 @@ module DataMapper
       def has_delete_flag?(attributes)
         !!attributes[:_delete]
       end
-    
+
       ##
       # Determines if a new record should be built with the given attributes.
       # Rejects a new record if @see has_delete_flag? returns true for the given attributes,
@@ -204,7 +204,7 @@ module DataMapper
         return false if guard.nil? # if relationship guard is nil, nothing will be rejected
         has_delete_flag?(attributes) || evaluate_reject_new_record_guard(guard, attributes)
       end
-      
+
       ##
       # Evaluates the given guard by calling it with the given attributes
       #
@@ -231,7 +231,7 @@ module DataMapper
           raise ArgumentError, "guard must be a Symbol, a String, or respond_to?(:call)"
         end
       end
-      
+
       ##
       # Make sure to return a collection of attribute hashes.
       # If passed an attributes hash, map it to its attributes
@@ -248,9 +248,9 @@ module DataMapper
           attributes
         end
       end
-      
+
     end
-    
+
     ##
     # This module provides basic support for accepting nested attributes,
     # that every @see DataMapper::Resource must include. It includes methods

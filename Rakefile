@@ -1,14 +1,14 @@
 require 'pathname'
 require 'rake'
 require 'rake/rdoctask'
- 
+
 ROOT = Pathname(__FILE__).dirname.expand_path
 JRUBY = RUBY_PLATFORM =~ /java/
 WINDOWS = Gem.win_platform?
 SUDO = (WINDOWS || JRUBY) ? '' : ('sudo' unless ENV['SUDOLESS'])
- 
+
 require ROOT + 'lib/dm-accepts_nested_attributes/version'
- 
+
 AUTHOR = "Martin Gamsjäger"
 EMAIL  = "gamsnjaga [a] gmail [d] com"
 GEM_NAME = "dm-accepts_nested_attributes"
@@ -27,5 +27,5 @@ PROJECT_URL  = "http://github.com/snusnu/dm-accepts_nested_attributes/tree/maste
 PROJECT_DESCRIPTION = PROJECT_SUMMARY = %{
 A DataMapper plugin that adds the possibility to perform nested model attribute assignment
 }
- 
+
 Pathname.glob(ROOT.join('tasks/**/*.rb').to_s).each { |f| require f }

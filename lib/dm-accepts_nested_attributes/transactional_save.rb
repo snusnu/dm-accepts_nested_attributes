@@ -1,8 +1,8 @@
 module DataMapper
   module NestedAttributes
-    
+
     module TransactionalSave
-      
+
       ##
       # Overrides @see DataMapper::Resource#save to perform inside a transaction.
       # The current implementation simply wraps the saving of the complete object tree
@@ -19,8 +19,8 @@ module DataMapper
         transaction { |t| t.rollback unless saved = super }
         saved
       end
-      
+
     end
-    
+
   end
 end

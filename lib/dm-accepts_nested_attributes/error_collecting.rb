@@ -1,11 +1,11 @@
 module DataMapper
   module NestedAttributes
-    
+
     module ValidationErrorCollecting
-      
+
       # collect errors on parent associations
       def before_save_parent_association(association, context)
-        if association.respond_to?(:each) 
+        if association.respond_to?(:each)
           association.each do |r|
             unless r.valid?(context)
               r.errors.each { |e| self.errors.add(:general, e) }
@@ -28,8 +28,8 @@ module DataMapper
           self.errors.add(:general, "child association is missing")
         end
       end
-      
+
     end
-    
+
   end
 end

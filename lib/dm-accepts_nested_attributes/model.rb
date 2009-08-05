@@ -1,12 +1,12 @@
 module DataMapper
   module NestedAttributes
-    
+
     ##
     # Named plugin exception that gets raised by
     # @see accepts_nested_attributes_for
     # if the passed options don't make sense
     class InvalidOptions < ArgumentError; end
-    
+
     module Model
 
       def self.extended(host)
@@ -40,21 +40,21 @@ module DataMapper
       # @return nil
       #
       def accepts_nested_attributes_for(association_name, options = {})
-        
+
         # ----------------------------------------------------------------------------------
         #                      try to fail as early as possible
         # ----------------------------------------------------------------------------------
-      
+
         unless relationship = relationships(repository_name)[association_name]
           raise(ArgumentError, "No relationship #{name.inspect} for #{self.name} in #{repository_name}")
         end
 
         # raise InvalidOptions if the given options don't make sense
         assert_valid_options_for_nested_attributes(options)
-        
+
         # by default, nested attributes can't be destroyed
         options = { :allow_destroy => false }.update(options)
-        
+
         # ----------------------------------------------------------------------------------
         #                       should be safe to go from here
         # ----------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ module DataMapper
         options_for_nested_attributes[relationship] = options
 
         include ::DataMapper::NestedAttributes::Resource
-        
+
         # TODO i wonder if this is the best place here?
         # the transactional save behavior is definitely not needed for all resources,
         # but it's necessary for resources that accept nested attributes
@@ -72,19 +72,19 @@ module DataMapper
         # TODO make this do something
         # it's only here now to remind me that this is probably the best place to put it
         add_error_collection_behavior if DataMapper.const_defined?('Validate')
-        
+
         type = relationship.max > 1 ? :collection : :resource
-        
+
         define_method "#{association_name}_attributes" do
           instance_variable_get("@#{association_name}_attributes")
         end
-        
+
         define_method "#{association_name}_attributes=" do |attributes|
           attributes = sanitize_nested_attributes(attributes)
           instance_variable_set("@#{association_name}_attributes", attributes)
           send("assign_nested_attributes_for_related_#{type}", relationship, attributes)
         end
-      
+
       end
 
 
@@ -132,7 +132,7 @@ module DataMapper
       # @return [nil]
       #
       def assert_valid_options_for_nested_attributes(options)
-        
+
         assert_kind_of 'options', options, Hash
 
         valid_options = [ :allow_destroy, :reject_if ]
@@ -149,10 +149,10 @@ module DataMapper
           msg = ":reject_if must be a Symbol|String or respond_to?(:call) "
           raise InvalidOptions, msg unless guard.nil? || guard.respond_to?(:call)
         end
-        
+
       end
-  
+
     end
-    
+
   end
 end

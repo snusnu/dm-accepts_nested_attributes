@@ -17,14 +17,14 @@
     * Deletion is currently triggered when calling the nested
       attribute writer. This is most probably not desired and
       is likely to change.
-    
+
     * Example:
-    
+
       Person.has(n, :projects, :through => :project_memberships)
       @person.projects_attributes = {
         :id => project.id, :_delete => true
       }
-    
+
       This will delete the associated project_membership
       and then the project
 
@@ -39,7 +39,7 @@
     * those specs aren't really shared, but only valid
       for situations with no :reject_if guard that returns
       true.
-    
+
     * only 1 spec failing now and that's deleting
       has(n, :through)
 
@@ -61,10 +61,10 @@
 
     * this makes more deletion specs pass and is actually
       really obvious. wonder why it took me so long.
-    
+
     * still a few atomic commits related specs failing
       but slowly getting there.
-    
+
     * also, this needs my current dm-validations work
       available at
       http://github.com/snusnu/dm-more/commits/validation_context_work
@@ -130,7 +130,7 @@
 
     * factored out real shared behavior and run it from
       all examples
-    
+
     * causes 1 failure in "should perform atomic commits"
 
 [2393d0d | Sat Jun 13 18:25:57 UTC 2009] snusnu <gamsnjaga@gmail.com>
@@ -139,7 +139,7 @@
 
     * factored out real shared behavior and run it from
       all examples
-    
+
     * causes 1 failure in "should perform atomic commits"
 
 [f786acd | Sat Jun 13 18:25:11 UTC 2009] snusnu <gamsnjaga@gmail.com>
@@ -148,7 +148,7 @@
 
     * factored out real shared behavior and run it from
       all examples
-    
+
     * causes 1 failure in "should perform atomic commits"
 
 [ad7d968 | Sat Jun 13 17:45:58 UTC 2009] snusnu <gamsnjaga@gmail.com>
@@ -165,7 +165,7 @@
     * this means that all specs except those that test
       destroying of an associated resource via the
       nested attribute accessors, works.
-    
+
     * TODO this spec change needs more thinking. I'm
       not yet sure if not creating a Person in this case
       is the right behavior.
@@ -199,7 +199,7 @@
 
     * deleting a related resource still not working
     * transactions still not working
-    
+
     * other than that, it seems quite fine
 
 [6a2e07f | Tue Jun 02 20:17:56 UTC 2009] snusnu <gamsnjaga@gmail.com>
@@ -261,7 +261,7 @@
 
     * this makes all belongs_to_specs pass, however it doesn't
       work for has_1_specs.
-    
+
     * before this changeset, both belongs_to and has_1 failed
       at the same spec (deleting the related resource). i wonder
       why that is ...
@@ -292,7 +292,7 @@
 
     * belongs_to and has_1 specs only have 1 failure
       related to deleting the record
-    
+
     * TODO: find out why mark_as_destruction doesn't
       do the right thing when called from #save
 
@@ -342,13 +342,13 @@
       instead of association_name. this eliminates the
       need to repeatedly fetch the relationship by its
       name and provides more concise codes in general.
-    
+
     * removed the relationship method since it's not
       needed anymore
-    
+
     * removed the reject_new_nested_attributes_guard_for
       method since it's not needed anymore
-    
+
     * number of passing specs is still the same
 
 [dd859c3 | Thu May 28 04:12:44 UTC 2009] snusnu <gamsnjaga@gmail.com>
@@ -392,7 +392,7 @@
       it's a (private) method, so someone could use
       it in a possibly wrong way so why not inform
       him/her if that happens.
-    
+
     * also, i think that the use of 'next' instead of
       deeply nested if/unless/case reads nicer
 
@@ -457,10 +457,10 @@
       which is bound to change anyway. Also, it allows
       to *fail fast* when trying to access a relationship
       that is not defined in a model (via relationship!)
-    
+
     * restructured the files to better encapsulate and
       communicate what's in them.
-    
+
     * better use of dm-core methods allowed previously
       explicitly declared methods to be removed.
 
@@ -481,17 +481,17 @@
  * NOT compatible with datamapper 0.10.0
 
     * a list of errors when running unmodified specs:
-    
+
       uninitialized constant
       DataMapper::Associations::RelationshipChain
-    
+
       undefined method `transaction'
       for #<Person @id=nil @name="snusnu"
-    
+
       undefined local variable or method `create'
       for #<Person @id=nil @name="Martin">
       (probably extlib related?)
-    
+
       The property 'name' is not accessible in Profile
       (probably transaction related)
 
@@ -676,11 +676,11 @@
     fields. This method is not generated for (one/many)_to_many associations
     since these return an Collection anyway and this allow to call build
     or get on it. A possible use case would look something like this:
-    
+
     <% fields_for @location.get_geo_point do %>
      ...
     <% end =%>
-    
+
     The whole purpose of this commit is to provide something to fields_for
     that is guaranteed to not be nil.
 
@@ -743,4 +743,3 @@
 [bda2607 | Wed Apr 08 17:44:34 UTC 2009] snusnu <gamsnjaga@gmail.com>
 
  * Push it
-

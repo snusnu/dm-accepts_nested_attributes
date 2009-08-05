@@ -8,7 +8,7 @@ task :changelog do
       author = author[/Author: (.*)/, 1].strip
       time = Time.parse(time[/Date: (.*)/, 1]).utc
       title.strip!
- 
+
       changelog.puts "[#{ref} | #{time}] #{author}"
       changelog.puts '', " * #{title}"
       changelog.puts '', message.rstrip if message

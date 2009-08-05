@@ -2,13 +2,13 @@ begin
   gem 'rspec', '>=1.1.12'
   require 'spec'
   require 'spec/rake/spectask'
- 
+
   task :default => [ :spec ]
- 
+
   desc 'Run specifications'
   Spec::Rake::SpecTask.new(:spec) do |t|
     t.spec_opts << '--options' << 'spec/spec.opts' if File.exists?('spec/spec.opts')
- 
+
     begin
       gem 'rcov', '~>0.8'
       t.rcov = JRUBY ? false : (ENV.has_key?('NO_RCOV') ? ENV['NO_RCOV'] != 'true' : true)

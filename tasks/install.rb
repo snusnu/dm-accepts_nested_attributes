@@ -1,7 +1,7 @@
 def sudo_gem(cmd)
   sh "#{SUDO} #{RUBY} -S gem #{cmd}", :verbose => false
 end
- 
+
 if WINDOWS
   desc "Install #{GEM_NAME}"
   task :install => :gem do

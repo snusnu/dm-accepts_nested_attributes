@@ -14,8 +14,8 @@ require 'dm-constraints'
 ENV["SQLITE3_SPEC_URI"]  ||= 'sqlite3::memory:'
 ENV["MYSQL_SPEC_URI"]    ||= 'mysql://localhost/dm-accepts_nested_attributes_test'
 ENV["POSTGRES_SPEC_URI"] ||= 'postgres://postgres@localhost/dm-accepts_nested_attributes_test'
- 
- 
+
+
 def setup_adapter(name, default_uri = nil)
   begin
     DataMapper.setup(name, ENV["#{ENV['ADAPTER'].to_s.upcase}_SPEC_URI"] || default_uri)
@@ -40,29 +40,29 @@ Dir[ spec_dir + "/shared/**/*.rb"   ].each { |rb| require(rb) }
 
 
 module XToOneHelpers
-  
+
   def clear_data
     Profile.all.destroy!
     Person.all.destroy!
   end
-  
+
 end
 
 module OneToManyHelpers
-  
+
   def clear_data
     Task.all.destroy!
     Project.all.destroy!
   end
-  
+
 end
 
 module ManyToManyHelpers
-  
+
   def clear_data
     ProjectMembership.all.destroy!
     Project.all.destroy!
     Person.all.destroy!
   end
-  
+
 end

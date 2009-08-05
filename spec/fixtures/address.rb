@@ -7,10 +7,8 @@ class Address
   property :body,       String,  :nullable => false
 
   belongs_to :profile
-  
+
   has 1, :person,
     :through => :profile
 
 end
-
-  

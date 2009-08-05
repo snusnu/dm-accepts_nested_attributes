@@ -102,16 +102,16 @@ describe "every accessible has(n, :through) association with no reject_if proc",
 end
 
 describe "every accessible has(n, :through) association with :allow_destroy => false", :shared => true do
-  
+
   it "should not allow to delete an existing project via Person#projects_attributes" do
     @person.save
     project = Project.create(:name => 'dm-accepts_nested_attributes')
     project_membership = ProjectMembership.create(:person => @person, :project => project)
-    
+
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 1
     Project.all.size.should           == 1
-  
+
     @person.projects_attributes = { '1' => { :id => project.id, :_delete => true } }
 
     Person.all.size.should            == 1
@@ -119,23 +119,23 @@ describe "every accessible has(n, :through) association with :allow_destroy => f
     Project.all.size.should           == 1
 
     @person.save
-    
+
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 1
     Project.all.size.should           == 1
   end
-  
+
 end
 
 describe "every accessible has(n, :through) association with :allow_destroy => true", :shared => true do
-  
+
   it "should allow to delete an existing project via Person#projects_attributes" do
     @person.save
     project_1 = Project.create(:name => 'dm-accepts_nested_attributes')
     project_2 = Project.create(:name => 'dm-is-localizable')
     project_membership_1 = ProjectMembership.create(:person => @person, :project => project_1)
     project_membership_2 = ProjectMembership.create(:person => @person, :project => project_2)
-    
+
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 2
     Project.all.size.should           == 2
@@ -152,5 +152,5 @@ describe "every accessible has(n, :through) association with :allow_destroy => t
     ProjectMembership.all.size.should == 1
     Project.all.size.should           == 1
   end
-  
+
 end
