@@ -5,8 +5,8 @@ class ProjectMembership
   # properties
 
   property :id,         Serial
-  property :person_id,  Integer, :nullable => false
-  property :project_id, Integer, :nullable => false
+  property :person_id,  Integer, :nullable => false, :min => 0
+  property :project_id, Integer, :nullable => false, :min => 0
 
   # associations
 

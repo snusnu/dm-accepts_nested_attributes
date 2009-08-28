@@ -5,7 +5,7 @@ class Profile
   # properties
 
   property :id,        Serial
-  property :person_id, Integer, :nullable => false
+  property :person_id, Integer, :nullable => false, :min => 0
 
   property :nick,      String,  :nullable => false
 

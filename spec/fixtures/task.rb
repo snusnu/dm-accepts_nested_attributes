@@ -5,7 +5,7 @@ class Task
   # properties
 
   property :id,         Serial
-  property :project_id, Integer, :nullable => false
+  property :project_id, Integer, :nullable => false, :min => 0
 
   property :name,       String,  :nullable => false
 
