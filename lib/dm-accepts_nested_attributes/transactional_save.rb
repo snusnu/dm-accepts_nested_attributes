@@ -11,13 +11,11 @@ module DataMapper
       #
       # @see DataMapper::Resource#save
       #
-      # @return [true, false]
+      # @return [Boolean]
       #   true if all related resources were saved properly
       #
-      def save(*)
-        saved = false
-        transaction { |t| t.rollback unless saved = super }
-        saved
+      def save
+        transaction { |t| super || t.rollback && false }
       end
 
     end

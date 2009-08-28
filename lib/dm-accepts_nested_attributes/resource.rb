@@ -74,7 +74,7 @@ module DataMapper
         else
           existing_record = relationship.get(self)
           if existing_record && existing_record.id.to_s == attributes[:id].to_s
-            assign_or_mark_for_destruction(relationship, existing_record, attributes)
+            update_or_mark_as_destroyable(relationship, existing_record, attributes)
           end
         end
       end
@@ -127,7 +127,7 @@ module DataMapper
           else
             collection = relationship.get(self)
             if existing_record = collection.get(attributes[:id])
-              assign_or_mark_for_destruction(relationship, existing_record, attributes)
+              update_or_mark_as_destroyable(relationship, existing_record, attributes)
             end
           end
 
@@ -148,30 +148,16 @@ module DataMapper
       #   All attributes except @see UNASSIGNABLE_KEYS will be assigned
       #
       # @return nil
-      def assign_or_mark_for_destruction(relationship, resource, attributes)
+      def update_or_mark_as_destroyable(relationship, resource, attributes)
         allow_destroy = self.class.options_for_nested_attributes[relationship][:allow_destroy]
         if has_delete_flag?(attributes) && allow_destroy
           if relationship.is_a?(DataMapper::Associations::ManyToMany::Relationship)
-
-            target_query      = relationship.target_key.zip(resource.key).to_hash
-            target_collection = relationship.get(self, target_query)
-
-            unless target_collection.empty?
-
-              target_collection.send(:intermediaries, target_collection).each do |intermediary|
-                intermediary.mark_for_destruction
-              end
-
-              target_collection.each { |r| r.mark_for_destruction }
-
-            end
-
-          else
-            resource.mark_for_destruction
+            intermediaries = relationship.through.get(self).all(relationship.via => resource)
+            intermediaries.each { |intermediate| destroyables << intermediate }
           end
+          destroyables << resource
         else
-          resource.attributes = attributes.except(*unassignable_keys)
-          resource.save
+          resource.update(attributes.except(*unassignable_keys))
         end
       end
 
@@ -249,56 +235,14 @@ module DataMapper
         end
       end
 
-    end
 
-    ##
-    # This module provides basic support for accepting nested attributes,
-    # that every @see DataMapper::Resource must include. It includes methods
-    # that allow a resource to be marked for destruction and it provides an
-    # overwritten version of @see DataMapper::Resource#save_self that either
-    # destroys a resource if it's @see marked_for_destruction? or performs
-    # an ordinary save by delegating to super
-    #
-    module CommonResourceSupport
-
-      ##
-      # If self is marked for destruction, destroy self
-      # else, save self by delegating to super method.
-      #
-      # @return The same value that super returns
-      def save_self
-        if marked_for_destruction?
-          saved? ? destroy : true
-        else
-          super
-        end
+      def destroyables
+        @destroyables ||= []
       end
 
-      ##
-      # remove mark for destruction if present
-      # before delegating reload behavior to super
-      #
-      # @return The same value that super returns
-      def reload
-        @marked_for_destruction = false
-        super
-      end
-
-      ##
-      # Test if this resource is marked for destruction
-      #
-      # @return [true, false]
-      #   true if this resource is marked for destruction
-      def marked_for_destruction?
-        !!@marked_for_destruction
-      end
-
-      ##
-      # Mark this resource for destruction
-      #
-      # @return true
-      def mark_for_destruction
-        @marked_for_destruction = true
+      def remove_destroyables
+        destroyables.each { |r| r.destroy if r.saved? }
+        @destroyables.clear
       end
 
     end

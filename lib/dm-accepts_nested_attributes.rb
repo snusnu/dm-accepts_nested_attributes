@@ -8,4 +8,3 @@ require dir / 'resource'
 
 # Activate the plugin
 DataMapper::Model.append_extensions(DataMapper::NestedAttributes::Model)
-DataMapper::Model.append_inclusions(DataMapper::NestedAttributes::CommonResourceSupport)

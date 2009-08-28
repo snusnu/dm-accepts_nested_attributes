@@ -85,6 +85,8 @@ module DataMapper
           send("assign_nested_attributes_for_related_#{type}", relationship, attributes)
         end
 
+        after :save, :remove_destroyables
+
       end
 
 
