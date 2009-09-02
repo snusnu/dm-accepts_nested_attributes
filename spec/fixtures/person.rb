@@ -13,8 +13,8 @@ class Person
   has 1, :profile,
     constraint_options(:destroy)
 
-  # has 1, :address,
-  #   :through => :profile
+  has 1, :address,
+   :through => :profile
 
   has n, :project_memberships,
     constraint_options(:destroy)
@@ -22,7 +22,7 @@ class Person
   has n, :projects,
     :through => :project_memberships
 
-  # has n, :tasks,
-  #   :through => :projects
+  has n, :tasks,
+    :through => :projects
 
 end
