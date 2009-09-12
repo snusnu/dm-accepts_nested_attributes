@@ -245,6 +245,12 @@ module DataMapper
         @destroyables.clear
       end
 
+      def save(*)
+        saved = super
+        remove_destroyables
+        saved
+      end
+
     end
 
   end
