@@ -31,7 +31,9 @@ class Person
   accepts_nested_attributes_for :projects
 
   # adds the following instance methods
+  # #profile_attributes=
   # #profile_attributes
+  # #projects_attributes=
   # #projects_attributes
 end
 
@@ -44,6 +46,7 @@ class Profile
   accepts_nested_attributes_for :person
 
   # adds the following instance methods
+  # #person_attributes=
   # #person_attributes
 end
 
@@ -58,7 +61,9 @@ class Project
   accepts_nested_attributes_for :people
   
   # adds the following instance methods
+  # #tasks_attributes=
   # #tasks_attributes
+  # #people_attributes=
   # #people_attributes
 end
 
@@ -79,22 +84,6 @@ class Task
 end
 
 DataMapper.auto_migrate!
-</code>
-</pre>
-
-h2. Current limitations
-
-There are some minor limitations at the moment but I hope that these will be resolved some time soon.
-
-h3. marking for destruction
-
-@many_to_one, one_to_one and one_to_many@ relationships all perform the deleting of nested models by _marking them for destruction_. This means, that as long as you don't call #save on your resource, the nested models won't get destroyed. However, this is currently _not_ the case for @many_to_many@ relationships. The @join and target resources@ both get destroyed immediately when calling the nested attributes writer.
-
-For the above example this would mean that when you issue the code below, it would result in immediate deletion of the intermediate @ProjectMembership@ and the @Project@ resource.
-
-<pre>
-<code>
-person.projects_attributes = { :id => valid_project_id, :_delete => true }
 </code>
 </pre>
 
