@@ -9,13 +9,6 @@ module DataMapper
 
     module Model
 
-      def self.extended(host)
-        host.class_eval do
-          @options_for_nested_attributes = {}
-          class_inheritable_reader :options_for_nested_attributes
-        end
-      end
-
       ##
       # Allows any association to accept nested attributes.
       #
@@ -85,6 +78,10 @@ module DataMapper
           send("assign_nested_attributes_for_related_#{type}", relationship, attributes)
         end
 
+      end
+
+      def options_for_nested_attributes
+        @options_for_nested_attributes ||= {}
       end
 
 
