@@ -39,7 +39,7 @@ module DataMapper
         # ----------------------------------------------------------------------------------
 
         unless relationship = relationships(repository_name)[association_name]
-          raise(ArgumentError, "No relationship #{name.inspect} for #{self.name} in #{repository_name}")
+          raise(ArgumentError, "No relationship #{association_name.inspect} for '#{name}' in :#{repository_name} repository")
         end
 
         # raise InvalidOptions if the given options don't make sense
