@@ -5,9 +5,9 @@ class Profile
   # properties
 
   property :id,        Serial
-  property :person_id, Integer, :nullable => false, :min => 0
+  property :person_id, Integer, :required => true, :min => 0
 
-  property :nick,      String,  :nullable => false
+  property :nick,      String,  :required => true
 
   # associations
 

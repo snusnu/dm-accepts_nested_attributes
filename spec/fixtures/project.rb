@@ -6,7 +6,7 @@ class Project
   # properties
 
   property :id,   Serial
-  property :name, String, :nullable => false
+  property :name, String, :required => true
 
   # associations
 
