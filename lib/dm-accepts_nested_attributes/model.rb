@@ -98,7 +98,7 @@ module DataMapper
       # @return Not specified
       #
       def add_transactional_save_behavior
-        require Pathname(__FILE__).dirname.expand_path + 'transactional_save'
+        require 'dm-accepts_nested_attributes/transactional_save'
         include ::DataMapper::NestedAttributes::TransactionalSave
       end
 
@@ -111,7 +111,7 @@ module DataMapper
       # @return Not specified
       #
       def add_error_collection_behavior
-        require Pathname(__FILE__).dirname.expand_path + 'error_collecting'
+        require 'dm-accepts_nested_attributes/error_collecting'
         include ::DataMapper::NestedAttributes::ValidationErrorCollecting
       end
 
