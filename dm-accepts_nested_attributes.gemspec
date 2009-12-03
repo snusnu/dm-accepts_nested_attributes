@@ -20,7 +20,6 @@ Gem::Specification.new do |s|
   s.files = [
     ".gitignore",
      "CHANGELOG",
-     "History.txt",
      "LICENSE",
      "Manifest.txt",
      "README.textile",
@@ -44,13 +43,20 @@ Gem::Specification.new do |s|
      "spec/integration/has_n_spec.rb",
      "spec/integration/has_n_through_spec.rb",
      "spec/lib/constraint_support.rb",
+     "spec/rcov.opts",
      "spec/shared/belongs_to_spec.rb",
      "spec/shared/has_1_spec.rb",
      "spec/shared/has_n_spec.rb",
      "spec/shared/has_n_through_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
-     "spec/unit/accepts_nested_attributes_for_spec.rb"
+     "spec/unit/accepts_nested_attributes_for_spec.rb",
+     "tasks/changelog.rake",
+     "tasks/ci.rake",
+     "tasks/metrics.rake",
+     "tasks/spec.rake",
+     "tasks/yard.rake",
+     "tasks/yardstick.rake"
   ]
   s.homepage = %q{http://github.com/snusnu/dm-accepts_nested_attributes}
   s.rdoc_options = ["--charset=UTF-8"]
