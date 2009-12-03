@@ -1,6 +1,230 @@
-[cd9eb87 | Thu Jun 25 01:57:03 UTC 2009] snusnu <gamsnjaga@gmail.com>
+[47b2757 | Thu Dec 03 13:42:02 UTC 2009] snusnu <gamsnjaga@gmail.com>
 
- * added datamapper 0.10.0 compatibility information to README
+ * Use jeweler, add standard dm-more tasks and bump to 0.12.0
+
+[2a08a89 | Mon Nov 23 16:46:40 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Simplified require statements
+
+[e24cefe | Mon Nov 23 16:53:50 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Use :required => true instead of :nullable => false
+
+    This means that dm-accepts_nested_attributes now
+    depends on dm-core >= 0.10.2
+
+[4c30792 | Mon Sep 21 17:06:53 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Fixed error message in case no appropriate relationship was found
+
+[41f43e8 | Thu Sep 17 12:19:11 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Simplified code doesn't depend on class_inheritable_reader
+
+    This means that dana is now usable inside modules,
+    which is necessary for proper dm-is-remixable suppport
+    and my dm-is-localizable plugin in particular.
+
+[95041df | Sat Sep 12 20:02:37 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Removed current limitations section from README
+
+    This no longer applies.
+
+[780f8a0 | Sat Sep 12 14:15:05 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Refactored to support ruby 1.9
+
+    This should fix the following error that was
+    previously thrown on ruby 1.9.1
+    
+      implicit argument passing of super from method
+      defined by define_method is not supported
+    
+    Also, it really should have been this way from
+    the beginning. Using define_method was completely
+    unnecessary.
+
+[95ab6bf | Thu Sep 03 15:42:08 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Finally, all specs pass!
+
+    * I'm not really pleased with the way it works now
+      though. If anyone has better suggestions, I'd be
+      glad to hear them.
+
+[503e6d9 | Wed Sep 02 13:00:56 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Removed now unnecessary workaround
+
+[f47516a | Fri Aug 28 15:22:56 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Destroying m:n now works, 1:1 and 1:n don't :)
+
+    * Getting weird can't modify frozen object errors
+      in has_1_spec and has_n_spec when running specs
+      for destroy.
+
+[07122e4 | Fri Aug 28 15:20:24 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Allow dm-constraints to migrate the constraints
+
+[e0d017a | Wed Aug 05 17:21:45 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Strip whitespace
+
+[19d1871 | Wed Aug 05 17:13:16 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Support STI scenarios
+
+    * Previously, calling accepts_nested_attributes_for
+      on an STI subclass resulted in errors because
+      options_for_nested_attributes wasn't inherited.
+    
+    * Hopefully this commit fixes that. No specs to prove
+      that though, so far.
+
+[d36e7ee | Wed Aug 05 17:11:15 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Enable 'rake spec' without errors saying dm-core can't be found
+
+    * However, rake spec still yields weird transaction errors like
+    
+      Lock wait timeout exceeded; try restarting transaction
+
+[1d51f5b | Tue Aug 04 13:08:41 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Bumped version
+
+[2fa2de4 | Mon Aug 03 07:53:51 UTC 2009] Angel N. Sciortino <contact@angeliccomputing.com>
+
+ * update operations now perform validations too
+
+    * This is achieved by calling resource.attributes = ...
+      followed by resource.save under the hood.
+    
+    * Once Resource#update calls Resource#save inside dm-core
+      this shouldn't be necessary anymore (but wouldn't hurt
+      either)
+
+[286ac11 | Mon Aug 03 18:19:02 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Commented currently unspecced relationship declarations
+
+    * These introduce lots of spec failures because dm-core
+      seems to establish not nullable FK properties on the
+      target end of the relationship.
+    
+    * For reference, the specs started failing with
+      http://is.gd/20SH8
+
+[571ba2e | Fri Jul 31 16:20:25 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * Removed obsolete section from README
+
+[9a9bbe1 | Fri Jul 03 14:26:21 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * spec fixtures for has_1_through and has_n_through with n intermediaries
+
+[ae1acfa | Fri Jul 03 13:55:32 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * added additional spec expectations for nested attribute writers
+
+    * Added explicit expectations to prove that calling
+      nested attribute writers never alters the state
+      of the storage engine directly. Persistence will
+      only happen when #save is called.
+
+[7b0194f | Wed Jul 01 19:41:38 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * support composite keys when creating new nested resources
+
+    * refactored the previous constant into it's own method
+      to support composite keys and also allow overwriting
+
+[a9efa26 | Wed Jul 01 18:45:49 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * no assumptions on the length of the m:m target collection
+
+    * Maybe this will never be necessary, but I'm still thinking
+      about how this whole #assign_or_mark_for_destruction method
+      could be refactored. I don't like the fact the name itself
+      already implies that this method has 2 different purposes.
+
+[d2e0a9d | Wed Jul 01 18:20:36 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * fixed renaming regression in #normalize_attributes_collection
+
+[34efa0f | Wed Jul 01 18:19:57 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * don't sort attributes in #normalize_attributes_collection
+
+    * I can see no real advantage in doing so, let's keep it simple
+
+[5a17003 | Wed Jul 01 18:18:11 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * idiomatic datamapper usage
+
+    * this changes the spec error to a simple unmet expectation
+      compared to an fk violation error before
+    
+    * this is kind of weird, since existing_record is the same
+      in both cases
+
+[fa4edde | Wed Jul 01 16:46:47 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * no need to do anything if the m:m target collection is empty
+
+[599da7f | Wed Jul 01 16:45:20 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * don't expect the target_collection to always be of length 1
+
+    * actually this is the case in the current implementation,
+      but that may change, and the code is simpler that way
+
+[2ce2b3f | Wed Jul 01 16:40:22 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * respect composite keys at the target end of m:m relationships
+
+[0331a9f | Wed Jul 01 16:05:04 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * mark the correct resources for destruction in m:m scenario
+
+    * However, it doesn't work, because the target resource always
+      gets destroyed before the intermediaries
+
+[a1e8da4 | Mon Jun 29 15:39:19 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * removed meaningless documentation
+
+[a07dcef | Thu Jun 25 03:26:08 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * added spec that proves that m2m deletion wipes out all intermediaries
+
+    * this is bad bad behavior and needs to be fixed
+
+[c8d21a0 | Thu Jun 25 03:04:20 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * all specs pass with or without dm-constraints
+
+    * deleted an invalid spec that expected dm-constraints
+      to be present
+
+[6913c23 | Thu Jun 25 02:42:13 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * allow github to build a datamapper 0.10 compatible gem
+
+[d6abeb1 | Thu Jun 25 02:39:03 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * removed rspec tmbundle logger support
+
+[bc119f9 | Thu Jun 25 02:34:45 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * support running specs with or without dm-constraints
+
+[84609fb | Thu Jun 25 01:57:03 UTC 2009] snusnu <gamsnjaga@gmail.com>
+
+ * updated datamapper 0.10.0 compatibility information
 
 [bda6fbc | Thu Jun 25 01:53:38 UTC 2009] snusnu <gamsnjaga@gmail.com>
 
@@ -17,14 +241,14 @@
     * Deletion is currently triggered when calling the nested
       attribute writer. This is most probably not desired and
       is likely to change.
-
+    
     * Example:
-
+    
       Person.has(n, :projects, :through => :project_memberships)
       @person.projects_attributes = {
         :id => project.id, :_delete => true
       }
-
+    
       This will delete the associated project_membership
       and then the project
 
@@ -39,7 +263,7 @@
     * those specs aren't really shared, but only valid
       for situations with no :reject_if guard that returns
       true.
-
+    
     * only 1 spec failing now and that's deleting
       has(n, :through)
 
@@ -61,10 +285,10 @@
 
     * this makes more deletion specs pass and is actually
       really obvious. wonder why it took me so long.
-
+    
     * still a few atomic commits related specs failing
       but slowly getting there.
-
+    
     * also, this needs my current dm-validations work
       available at
       http://github.com/snusnu/dm-more/commits/validation_context_work
@@ -130,7 +354,7 @@
 
     * factored out real shared behavior and run it from
       all examples
-
+    
     * causes 1 failure in "should perform atomic commits"
 
 [2393d0d | Sat Jun 13 18:25:57 UTC 2009] snusnu <gamsnjaga@gmail.com>
@@ -139,7 +363,7 @@
 
     * factored out real shared behavior and run it from
       all examples
-
+    
     * causes 1 failure in "should perform atomic commits"
 
 [f786acd | Sat Jun 13 18:25:11 UTC 2009] snusnu <gamsnjaga@gmail.com>
@@ -148,7 +372,7 @@
 
     * factored out real shared behavior and run it from
       all examples
-
+    
     * causes 1 failure in "should perform atomic commits"
 
 [ad7d968 | Sat Jun 13 17:45:58 UTC 2009] snusnu <gamsnjaga@gmail.com>
@@ -165,7 +389,7 @@
     * this means that all specs except those that test
       destroying of an associated resource via the
       nested attribute accessors, works.
-
+    
     * TODO this spec change needs more thinking. I'm
       not yet sure if not creating a Person in this case
       is the right behavior.
@@ -199,7 +423,7 @@
 
     * deleting a related resource still not working
     * transactions still not working
-
+    
     * other than that, it seems quite fine
 
 [6a2e07f | Tue Jun 02 20:17:56 UTC 2009] snusnu <gamsnjaga@gmail.com>
@@ -261,7 +485,7 @@
 
     * this makes all belongs_to_specs pass, however it doesn't
       work for has_1_specs.
-
+    
     * before this changeset, both belongs_to and has_1 failed
       at the same spec (deleting the related resource). i wonder
       why that is ...
@@ -292,7 +516,7 @@
 
     * belongs_to and has_1 specs only have 1 failure
       related to deleting the record
-
+    
     * TODO: find out why mark_as_destruction doesn't
       do the right thing when called from #save
 
@@ -342,13 +566,13 @@
       instead of association_name. this eliminates the
       need to repeatedly fetch the relationship by its
       name and provides more concise codes in general.
-
+    
     * removed the relationship method since it's not
       needed anymore
-
+    
     * removed the reject_new_nested_attributes_guard_for
       method since it's not needed anymore
-
+    
     * number of passing specs is still the same
 
 [dd859c3 | Thu May 28 04:12:44 UTC 2009] snusnu <gamsnjaga@gmail.com>
@@ -392,7 +616,7 @@
       it's a (private) method, so someone could use
       it in a possibly wrong way so why not inform
       him/her if that happens.
-
+    
     * also, i think that the use of 'next' instead of
       deeply nested if/unless/case reads nicer
 
@@ -457,10 +681,10 @@
       which is bound to change anyway. Also, it allows
       to *fail fast* when trying to access a relationship
       that is not defined in a model (via relationship!)
-
+    
     * restructured the files to better encapsulate and
       communicate what's in them.
-
+    
     * better use of dm-core methods allowed previously
       explicitly declared methods to be removed.
 
@@ -481,17 +705,17 @@
  * NOT compatible with datamapper 0.10.0
 
     * a list of errors when running unmodified specs:
-
+    
       uninitialized constant
       DataMapper::Associations::RelationshipChain
-
+    
       undefined method `transaction'
       for #<Person @id=nil @name="snusnu"
-
+    
       undefined local variable or method `create'
       for #<Person @id=nil @name="Martin">
       (probably extlib related?)
-
+    
       The property 'name' is not accessible in Profile
       (probably transaction related)
 
@@ -676,11 +900,11 @@
     fields. This method is not generated for (one/many)_to_many associations
     since these return an Collection anyway and this allow to call build
     or get on it. A possible use case would look something like this:
-
+    
     <% fields_for @location.get_geo_point do %>
      ...
     <% end =%>
-
+    
     The whole purpose of this commit is to provide something to fields_for
     that is guaranteed to not be nil.
 
@@ -743,3 +967,4 @@
 [bda2607 | Wed Apr 08 17:44:34 UTC 2009] snusnu <gamsnjaga@gmail.com>
 
  * Push it
+
