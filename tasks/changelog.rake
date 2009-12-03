@@ -1,3 +1,5 @@
+require 'time'
+
 desc 'update changelog'
 task :changelog do
   File.open('CHANGELOG', 'w+') do |changelog|

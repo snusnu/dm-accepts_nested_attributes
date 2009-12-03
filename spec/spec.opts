@@ -1,2 +1,4 @@
---format specdoc
 --colour
+--loadby random
+--format profile
+--backtrace

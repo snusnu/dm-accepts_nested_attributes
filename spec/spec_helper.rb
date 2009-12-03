@@ -3,7 +3,7 @@ require 'pathname'
 require 'spec'
 
 # require the plugin
-require 'lib/dm-accepts_nested_attributes'
+require 'dm-accepts_nested_attributes'
 
 # allow testing with dm-validations enabled
 # must be required after the plugin, since
