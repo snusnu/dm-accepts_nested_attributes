@@ -202,7 +202,7 @@ module DataMapper
       #   The attributes to pass to the guard for evaluating if it should reject
       #   the creation of a new resource
       #
-      # @raise ArgumentError
+      # @raise [ArgumentError]
       #   If the given guard doesn't match [Symbol, String, #call]
       #
       # @return [true, false]
