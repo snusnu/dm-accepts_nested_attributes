@@ -4,17 +4,17 @@ describe "every accessible many_to_one association", :shared => true do
     Profile.all.size.should == 0
     Person.all.size.should  == 0
 
-    @profile = Profile.new :nick => 'snusnu'
+    profile = Profile.new :nick => 'snusnu'
     person = Person.create(:name => 'Martin')
-    @profile.person = person
-    @profile.save.should be_true
+    profile.person = person
+    profile.save.should be_true
 
     Profile.all.size.should  == 1
     Person.all.size.should   == 1
     Person.first.name.should == 'Martin'
 
-    @profile.person_attributes = { :id => person.id, :name => 'Martin Gamsjaeger' }
-    @profile.save.should be_true
+    profile.person_attributes = { :id => person.id, :name => 'Martin Gamsjaeger' }
+    profile.save.should be_true
 
     Profile.all.size.should  == 1
     Person.all.size.should   == 1
@@ -26,27 +26,27 @@ describe "every accessible many_to_one association", :shared => true do
     Person.all.size.should  == 0
 
     # related resource is invalid
-    @profile = Profile.new :nick => 'snusnu'
-    @profile.person_attributes = { :name => nil }
-    @profile.save.should be_false
+    profile = Profile.new :nick => 'snusnu'
+    profile.person_attributes = { :name => nil }
+    profile.save.should be_false
 
     Profile.all.size.should == 0
     Person.all.size.should  == 0
 
     # self is invalid
-    @profile.nick = nil
-    @profile.person_attributes = { :name => 'Martin' }
-    @profile.save.should be_false
+    profile.nick = nil
+    profile.person_attributes = { :name => 'Martin' }
+    profile.save.should be_false
 
     Profile.all.size.should == 0
     Person.all.size.should  == 0
   end
 
   it "should return the attributes written to Profile#person_attributes from the Profile#person_attributes reader" do
-    @profile = Profile.new :nick => 'snusnu'
-    @profile.person_attributes.should be_nil
-    @profile.person_attributes = { :name => 'Martin' }
-    @profile.person_attributes.should == { :name => 'Martin' }
+    profile = Profile.new :nick => 'snusnu'
+    profile.person_attributes.should be_nil
+    profile.person_attributes = { :name => 'Martin' }
+    profile.person_attributes.should == { :name => 'Martin' }
   end
 
 end
@@ -57,13 +57,13 @@ describe "every accessible many_to_one association with a valid reject_if proc",
     Profile.all.size.should == 0
     Person.all.size.should  == 0
 
-    @profile = Profile.new :nick => 'snusnu'
-    @profile.person_attributes = { :name => 'Martin' }
+    profile = Profile.new :nick => 'snusnu'
+    profile.person_attributes = { :name => 'Martin' }
 
     Profile.all.size.should == 0
     Person.all.size.should  == 0
 
-    @profile.save.should be_false
+    profile.save.should be_false
 
     Profile.all.size.should == 0
     Person.all.size.should  == 0
@@ -77,13 +77,13 @@ describe "every accessible many_to_one association with no reject_if proc", :sha
     Profile.all.size.should == 0
     Person.all.size.should  == 0
 
-    @profile = Profile.new :nick => 'snusnu'
-    @profile.person_attributes = { :name => 'Martin' }
+    profile = Profile.new :nick => 'snusnu'
+    profile.person_attributes = { :name => 'Martin' }
 
     Profile.all.size.should == 0
     Person.all.size.should  == 0
 
-    @profile.save.should be_true
+    profile.save.should be_true
 
     Profile.all.size.should  == 1
     Person.all.size.should   == 1
@@ -99,19 +99,19 @@ describe "every accessible many_to_one association with :allow_destroy => false"
     Person.all.size.should  == 0
 
     person = Person.create(:name => 'Martin')
-    @profile = Profile.new :nick => 'snusnu'
-    @profile.person = person
-    @profile.save
+    profile = Profile.new :nick => 'snusnu'
+    profile.person = person
+    profile.save
 
     Profile.all.size.should == 1
     Person.all.size.should  == 1
 
-    @profile.person_attributes = { :id => person.id, :_delete => true }
+    profile.person_attributes = { :id => person.id, :_delete => true }
 
     Profile.all.size.should == 1
     Person.all.size.should  == 1
 
-    @profile.save
+    profile.save
 
     Profile.all.size.should == 1
     Person.all.size.should  == 1
@@ -127,19 +127,19 @@ describe "every accessible many_to_one association with :allow_destroy => true",
 
     person = Person.create(:name => 'Martin')
 
-    @profile = Profile.new :nick => 'snusnu'
-    @profile.person = person
-    @profile.save.should be_true
+    profile = Profile.new :nick => 'snusnu'
+    profile.person = person
+    profile.save.should be_true
 
     Profile.all.size.should == 1
     Person.all.size.should  == 1
 
-    @profile.person_attributes = { :id => person.id, :_delete => true }
+    profile.person_attributes = { :id => person.id, :_delete => true }
 
     Profile.all.size.should == 1
     Person.all.size.should  == 1
 
-    @profile.save
+    profile.save
 
     Person.all.size.should  == 0
 

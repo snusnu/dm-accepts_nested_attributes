@@ -5,17 +5,16 @@ describe "every accessible many_to_many association", :shared => true do
     Project.all.size.should           == 0
     ProjectMembership.all.size.should == 0
 
-    @person = Person.new :name => 'snusnu'
-    @person.save
+    person = Person.create :name => 'snusnu'
     project = Project.create(:name => 'dm-accepts_nested_attributes')
-    project_membership = ProjectMembership.create(:person => @person, :project => project)
+    project_membership = ProjectMembership.create(:person => person, :project => project)
 
     Person.all.size.should            == 1
     Project.all.size.should           == 1
     ProjectMembership.all.size.should == 1
 
-    @person.projects_attributes = { project.id.to_s => { :id => project.id, :name => 'still dm-accepts_nested_attributes' } }
-    @person.save
+    person.projects_attributes = [{ :id => project.id, :name => 'still dm-accepts_nested_attributes' }]
+    person.save
 
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 1
@@ -25,10 +24,10 @@ describe "every accessible many_to_many association", :shared => true do
   end
 
   it "should return the attributes written to Person#projects_attributes from the Person#projects_attributes reader" do
-    @person = Person.new :name => 'snusnu'
-    @person.projects_attributes.should be_nil
-    @person.projects_attributes = { 'new_1' => { :name => 'write specs' } }
-    @person.projects_attributes.should == { 'new_1' => { :name => 'write specs' } }
+    person = Person.new :name => 'snusnu'
+    person.projects_attributes.should be_nil
+    person.projects_attributes = [{ :name => 'write specs' }]
+    person.projects_attributes.should == [{ :name => 'write specs' }]
   end
 
 end
@@ -40,14 +39,14 @@ describe "every accessible many_to_many association with a valid reject_if proc"
     Project.all.size.should           == 0
     ProjectMembership.all.size.should == 0
 
-    @person = Person.new :name => 'snusnu'
-    @person.save
+    person = Person.create :name => 'snusnu'
+
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 0
     Project.all.size.should           == 0
 
-    @person.projects_attributes = { 'new_1' => { :name => 'dm-accepts_nested_attributes' } }
-    @person.save
+    person.projects_attributes = [{ :name => 'dm-accepts_nested_attributes' }]
+    person.save
 
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 0
@@ -63,19 +62,19 @@ describe "every accessible many_to_many association with no reject_if proc", :sh
     Project.all.size.should           == 0
     ProjectMembership.all.size.should == 0
 
-    @person = Person.new :name => 'snusnu'
-    @person.save
-    Person.all.size.should            == 1
-    ProjectMembership.all.size.should == 0
-    Project.all.size.should           == 0
-
-    @person.projects_attributes = { 'new_1' => { :name => 'dm-accepts_nested_attributes' } }
+    person = Person.create :name => 'snusnu'
 
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 0
     Project.all.size.should           == 0
 
-    @person.save
+    person.projects_attributes = [{ :name => 'dm-accepts_nested_attributes' }]
+
+    Person.all.size.should            == 1
+    ProjectMembership.all.size.should == 0
+    Project.all.size.should           == 0
+
+    person.save
 
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 1
@@ -86,17 +85,17 @@ describe "every accessible many_to_many association with no reject_if proc", :sh
 
   it "should perform atomic commits" do
 
-    @person = Person.new :name => 'snusnu'
-    @person.projects_attributes = { 'new_1' => { :name => nil } } # should fail because of validations
-    @person.save
+    person = Person.new :name => 'snusnu'
+    person.projects_attributes = [{ :name => nil }] # should fail because of validations
+    person.save
 
     Person.all.size.should            == 0 # TODO think more if this should be '1'
     ProjectMembership.all.size.should == 0
     Project.all.size.should           == 0
 
-    @person.name = nil # should fail because of validations
-    @person.projects_attributes = { 'new_1' => { :name => nil } }
-    @person.save
+    person.name = nil # should fail because of validations
+    person.projects_attributes = [{ :name => nil }]
+    person.save
 
     Person.all.size.should            == 0
     ProjectMembership.all.size.should == 0
@@ -109,22 +108,22 @@ end
 describe "every accessible many_to_many association with :allow_destroy => false", :shared => true do
 
   it "should not allow to delete an existing project via Person#projects_attributes" do
-    @person = Person.new :name => 'snusnu'
-    @person.save
+    person = Person.create :name => 'snusnu'
+
     project = Project.create(:name => 'dm-accepts_nested_attributes')
-    project_membership = ProjectMembership.create(:person => @person, :project => project)
+    project_membership = ProjectMembership.create(:person => person, :project => project)
 
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 1
     Project.all.size.should           == 1
 
-    @person.projects_attributes = { '1' => { :id => project.id, :_delete => true } }
+    person.projects_attributes = [{ :id => project.id, :_delete => true }]
 
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 1
     Project.all.size.should           == 1
 
-    @person.save
+    person.save
 
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 1
@@ -136,24 +135,24 @@ end
 describe "every accessible many_to_many association with :allow_destroy => true", :shared => true do
 
   it "should allow to delete an existing project via Person#projects_attributes" do
-    @person = Person.new :name => 'snusnu'
-    @person.save
+    person = Person.create :name => 'snusnu'
+
     project_1 = Project.create(:name => 'dm-accepts_nested_attributes')
     project_2 = Project.create(:name => 'dm-is-localizable')
-    project_membership_1 = ProjectMembership.create(:person => @person, :project => project_1)
-    project_membership_2 = ProjectMembership.create(:person => @person, :project => project_2)
+    project_membership_1 = ProjectMembership.create(:person => person, :project => project_1)
+    project_membership_2 = ProjectMembership.create(:person => person, :project => project_2)
 
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 2
     Project.all.size.should           == 2
 
-    @person.projects_attributes = { '1' => { :id => project_1.id, :_delete => true } }
+    person.projects_attributes = [{ :id => project_1.id, :_delete => true }]
 
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 2
     Project.all.size.should           == 2
 
-    @person.save
+    person.save
 
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 1
