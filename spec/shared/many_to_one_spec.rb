@@ -1,9 +1,10 @@
-describe "every accessible belongs_to association", :shared => true do
+describe "every accessible many_to_one association", :shared => true do
 
   it "should allow to update an existing person via Profile#person_attributes" do
     Profile.all.size.should == 0
     Person.all.size.should  == 0
 
+    @profile = Profile.new :nick => 'snusnu'
     person = Person.create(:name => 'Martin')
     @profile.person = person
     @profile.save.should be_true
@@ -25,6 +26,7 @@ describe "every accessible belongs_to association", :shared => true do
     Person.all.size.should  == 0
 
     # related resource is invalid
+    @profile = Profile.new :nick => 'snusnu'
     @profile.person_attributes = { :name => nil }
     @profile.save.should be_false
 
@@ -37,10 +39,11 @@ describe "every accessible belongs_to association", :shared => true do
     @profile.save.should be_false
 
     Profile.all.size.should == 0
-    Person.all.size.should == 0
+    Person.all.size.should  == 0
   end
 
   it "should return the attributes written to Profile#person_attributes from the Profile#person_attributes reader" do
+    @profile = Profile.new :nick => 'snusnu'
     @profile.person_attributes.should be_nil
     @profile.person_attributes = { :name => 'Martin' }
     @profile.person_attributes.should == { :name => 'Martin' }
@@ -48,12 +51,13 @@ describe "every accessible belongs_to association", :shared => true do
 
 end
 
-describe "every accessible belongs_to association with a valid reject_if proc", :shared => true do
+describe "every accessible many_to_one association with a valid reject_if proc", :shared => true do
 
   it "should not allow to create a new person via Profile#person_attributes" do
     Profile.all.size.should == 0
     Person.all.size.should  == 0
 
+    @profile = Profile.new :nick => 'snusnu'
     @profile.person_attributes = { :name => 'Martin' }
 
     Profile.all.size.should == 0
@@ -67,12 +71,13 @@ describe "every accessible belongs_to association with a valid reject_if proc", 
 
 end
 
-describe "every accessible belongs_to association with no reject_if proc", :shared => true do
+describe "every accessible many_to_one association with no reject_if proc", :shared => true do
 
   it "should allow to create a new person via Profile#person_attributes" do
     Profile.all.size.should == 0
     Person.all.size.should  == 0
 
+    @profile = Profile.new :nick => 'snusnu'
     @profile.person_attributes = { :name => 'Martin' }
 
     Profile.all.size.should == 0
@@ -87,13 +92,14 @@ describe "every accessible belongs_to association with no reject_if proc", :shar
 
 end
 
-describe "every accessible belongs_to association with :allow_destroy => false", :shared => true do
+describe "every accessible many_to_one association with :allow_destroy => false", :shared => true do
 
   it "should not allow to delete an existing person via Profile#person_attributes" do
     Profile.all.size.should == 0
     Person.all.size.should  == 0
 
     person = Person.create(:name => 'Martin')
+    @profile = Profile.new :nick => 'snusnu'
     @profile.person = person
     @profile.save
 
@@ -113,13 +119,15 @@ describe "every accessible belongs_to association with :allow_destroy => false",
 
 end
 
-describe "every accessible belongs_to association with :allow_destroy => true", :shared => true do
+describe "every accessible many_to_one association with :allow_destroy => true", :shared => true do
 
   it "should allow to delete an existing person via Profile#person_attributes" do
     Profile.all.size.should == 0
     Person.all.size.should  == 0
 
     person = Person.create(:name => 'Martin')
+
+    @profile = Profile.new :nick => 'snusnu'
     @profile.person = person
     @profile.save.should be_true
 

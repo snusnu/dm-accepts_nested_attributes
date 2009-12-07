@@ -1,6 +1,7 @@
-describe "every accessible has(1) association", :shared => true do
+describe "every accessible one_to_one association", :shared => true do
 
   it "should allow to update an existing profile via Person#profile_attributes" do
+    @person = Person.new :name => 'Martin'
     @person.save.should be_true
     profile = Profile.create(:person_id => @person.id, :nick => 'snusnu')
     @person.reload
@@ -17,6 +18,7 @@ describe "every accessible has(1) association", :shared => true do
   end
 
   it "should return the attributes written to Person#profile_attributes from the Person#profile_attributes reader" do
+    @person = Person.new :name => 'Martin'
     @person.profile_attributes.should be_nil
     @person.profile_attributes = { :nick => 'snusnu' }
     @person.profile_attributes.should == { :nick => 'snusnu' }
@@ -24,12 +26,13 @@ describe "every accessible has(1) association", :shared => true do
 
 end
 
-describe "every accessible has(1) association with a valid reject_if proc", :shared => true do
+describe "every accessible one_to_one association with a valid reject_if proc", :shared => true do
 
   it "should not allow to create a new profile via Person#profile_attributes" do
     Person.all.size.should  == 0
     Profile.all.size.should == 0
 
+    @person = Person.new :name => 'Martin'
     @person.profile_attributes = { :nick => 'snusnu' }
     @person.save
 
@@ -39,12 +42,13 @@ describe "every accessible has(1) association with a valid reject_if proc", :sha
 
 end
 
-describe "every accessible has(1) association with no reject_if proc", :shared => true do
+describe "every accessible one_to_one association with no reject_if proc", :shared => true do
 
   it "should allow to create a new profile via Person#profile_attributes" do
     Person.all.size.should    == 0
     Profile.all.size.should   == 0
 
+    @person = Person.new :name => 'Martin'
     @person.profile_attributes = { :nick => 'snusnu' }
 
     Person.all.size.should    == 0
@@ -60,6 +64,7 @@ describe "every accessible has(1) association with no reject_if proc", :shared =
   it "should perform atomic commits" do
 
     # related resource is invalid
+    @person = Person.new :name => 'Martin'
     @person.profile_attributes = { :nick => nil } # will fail because of validations
     @person.save.should be_false
 
@@ -77,9 +82,10 @@ describe "every accessible has(1) association with no reject_if proc", :shared =
 
 end
 
-describe "every accessible has(1) association with :allow_destroy => false", :shared => true do
+describe "every accessible one_to_one association with :allow_destroy => false", :shared => true do
 
   it "should not allow to delete an existing profile via Person#profile_attributes" do
+    @person = Person.new :name => 'Martin'
     @person.save
     profile = Profile.create(:person_id => @person.id, :nick => 'snusnu')
     @person.reload
@@ -100,9 +106,10 @@ describe "every accessible has(1) association with :allow_destroy => false", :sh
 
 end
 
-describe "every accessible has(1) association with :allow_destroy => true", :shared => true do
+describe "every accessible one_to_one association with :allow_destroy => true", :shared => true do
 
   it "should allow to delete an existing profile via Person#profile_attributes" do
+    @person = Person.new :name => 'Martin'
     @person.save
     profile = Profile.create(:person_id => @person.id, :nick => 'snusnu')
     @person.profile = profile

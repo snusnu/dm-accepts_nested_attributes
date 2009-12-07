@@ -33,36 +33,21 @@ end
 ENV['ADAPTER'] ||= 'mysql'
 setup_adapter(:default)
 
-spec_dir = Pathname(__FILE__).dirname.to_s
-Dir[ spec_dir + "/lib/**/*.rb"      ].each { |rb| require(rb) }
-Dir[ spec_dir + "/fixtures/**/*.rb" ].each { |rb| require(rb) }
-Dir[ spec_dir + "/shared/**/*.rb"   ].each { |rb| require(rb) }
+
+require 'shared/many_to_many_spec'
+require 'shared/many_to_one_spec'
+require 'shared/one_to_many_spec'
+require 'shared/one_to_one_spec'
 
 
-module XToOneHelpers
+module ConstraintSupport
 
-  def clear_data
-    Profile.all.destroy!
-    Person.all.destroy!
-  end
-
-end
-
-module OneToManyHelpers
-
-  def clear_data
-    Task.all.destroy!
-    Project.all.destroy!
-  end
-
-end
-
-module ManyToManyHelpers
-
-  def clear_data
-    ProjectMembership.all.destroy!
-    Project.all.destroy!
-    Person.all.destroy!
+  def constraint(type)
+    if DataMapper.const_defined?('Constraints')
+      { :constraint => type }
+    else
+      {}
+    end
   end
 
 end

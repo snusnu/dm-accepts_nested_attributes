@@ -1,10 +1,11 @@
-describe "every accessible has(n, :through) association", :shared => true do
+describe "every accessible many_to_many association", :shared => true do
 
   it "should allow to update an existing project via Person#projects_attributes" do
     Person.all.size.should            == 0
     Project.all.size.should           == 0
     ProjectMembership.all.size.should == 0
 
+    @person = Person.new :name => 'snusnu'
     @person.save
     project = Project.create(:name => 'dm-accepts_nested_attributes')
     project_membership = ProjectMembership.create(:person => @person, :project => project)
@@ -24,6 +25,7 @@ describe "every accessible has(n, :through) association", :shared => true do
   end
 
   it "should return the attributes written to Person#projects_attributes from the Person#projects_attributes reader" do
+    @person = Person.new :name => 'snusnu'
     @person.projects_attributes.should be_nil
     @person.projects_attributes = { 'new_1' => { :name => 'write specs' } }
     @person.projects_attributes.should == { 'new_1' => { :name => 'write specs' } }
@@ -31,13 +33,14 @@ describe "every accessible has(n, :through) association", :shared => true do
 
 end
 
-describe "every accessible has(n, :through) association with a valid reject_if proc", :shared => true do
+describe "every accessible many_to_many association with a valid reject_if proc", :shared => true do
 
   it "should not allow to create a new project via Person#projects_attributes" do
     Person.all.size.should            == 0
     Project.all.size.should           == 0
     ProjectMembership.all.size.should == 0
 
+    @person = Person.new :name => 'snusnu'
     @person.save
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 0
@@ -53,13 +56,14 @@ describe "every accessible has(n, :through) association with a valid reject_if p
 
 end
 
-describe "every accessible has(n, :through) association with no reject_if proc", :shared => true do
+describe "every accessible many_to_many association with no reject_if proc", :shared => true do
 
   it "should allow to create a new project via Person#projects_attributes" do
     Person.all.size.should            == 0
     Project.all.size.should           == 0
     ProjectMembership.all.size.should == 0
 
+    @person = Person.new :name => 'snusnu'
     @person.save
     Person.all.size.should            == 1
     ProjectMembership.all.size.should == 0
@@ -82,6 +86,7 @@ describe "every accessible has(n, :through) association with no reject_if proc",
 
   it "should perform atomic commits" do
 
+    @person = Person.new :name => 'snusnu'
     @person.projects_attributes = { 'new_1' => { :name => nil } } # should fail because of validations
     @person.save
 
@@ -101,9 +106,10 @@ describe "every accessible has(n, :through) association with no reject_if proc",
 
 end
 
-describe "every accessible has(n, :through) association with :allow_destroy => false", :shared => true do
+describe "every accessible many_to_many association with :allow_destroy => false", :shared => true do
 
   it "should not allow to delete an existing project via Person#projects_attributes" do
+    @person = Person.new :name => 'snusnu'
     @person.save
     project = Project.create(:name => 'dm-accepts_nested_attributes')
     project_membership = ProjectMembership.create(:person => @person, :project => project)
@@ -127,9 +133,10 @@ describe "every accessible has(n, :through) association with :allow_destroy => f
 
 end
 
-describe "every accessible has(n, :through) association with :allow_destroy => true", :shared => true do
+describe "every accessible many_to_many association with :allow_destroy => true", :shared => true do
 
   it "should allow to delete an existing project via Person#projects_attributes" do
+    @person = Person.new :name => 'snusnu'
     @person.save
     project_1 = Project.create(:name => 'dm-accepts_nested_attributes')
     project_2 = Project.create(:name => 'dm-is-localizable')

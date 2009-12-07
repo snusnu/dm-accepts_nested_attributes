@@ -15,14 +15,12 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
     class Shop
       include DataMapper::Resource
       property :id,        Serial
-      property :branch_id, Integer
       belongs_to :branch
     end
 
     class Item
       include DataMapper::Resource
       property :id,        Serial
-      property :branch_id, Integer
       belongs_to :branch
       has n, :bookings
     end
@@ -30,7 +28,6 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
     class Booking
       include DataMapper::Resource
       property :id,      Serial
-      property :item_id, Integer
       belongs_to :item
     end
 

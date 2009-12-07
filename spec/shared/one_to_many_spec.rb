@@ -1,6 +1,7 @@
-describe "every accessible has(n) association", :shared => true do
+describe "every accessible one_to_many association", :shared => true do
 
   it "should allow to update an existing task via Project#tasks_attributes" do
+    @project = Project.new :name => 'trippings'
     @project.save
     task = Task.create(:project => @project, :name => 'write specs')
     Project.all.size.should == 1
@@ -15,6 +16,7 @@ describe "every accessible has(n) association", :shared => true do
   end
 
   it "should return the attributes written to Project#task_attributes from the Project#task_attributes reader" do
+    @project = Project.new :name => 'trippings'
     @project.tasks_attributes.should be_nil
     @project.tasks_attributes = { 'new_1' => { :name => 'write specs' } }
     @project.tasks_attributes.should == { 'new_1' => { :name => 'write specs' } }
@@ -22,9 +24,10 @@ describe "every accessible has(n) association", :shared => true do
 
 end
 
-describe "every accessible has(n) association with a valid reject_if proc", :shared => true do
+describe "every accessible one_to_many association with a valid reject_if proc", :shared => true do
 
   it "should not allow to create a new task via Project#tasks_attributes" do
+    @project = Project.new :name => 'trippings'
     @project.save
     Project.all.size.should == 1
     Task.all.size.should    == 0
@@ -38,9 +41,10 @@ describe "every accessible has(n) association with a valid reject_if proc", :sha
 
 end
 
-describe "every accessible has(n) association with no reject_if proc", :shared => true do
+describe "every accessible one_to_many association with no reject_if proc", :shared => true do
 
   it "should allow to create a new task via Project#tasks_attributes" do
+    @project = Project.new :name => 'trippings'
     @project.save
     Project.all.size.should == 1
     Task.all.size.should    == 0
@@ -62,6 +66,7 @@ describe "every accessible has(n) association with no reject_if proc", :shared =
     Task.all.size.should    == 0
 
     # self is invalid
+    @project = Project.new :name => 'trippings'
     @project.name = nil # will fail because of validations
     @project.tasks_attributes = { 'new_1' => { :name => 'write specs' } }
     @project.save
@@ -80,9 +85,10 @@ describe "every accessible has(n) association with no reject_if proc", :shared =
 
 end
 
-describe "every accessible has(n) association with :allow_destroy => false", :shared => true do
+describe "every accessible one_to_many association with :allow_destroy => false", :shared => true do
 
   it "should not allow to delete an existing task via Profile#tasks_attributes" do
+    @project = Project.new :name => 'trippings'
     @project.save
     task = Task.create(:project => @project, :name => 'write specs')
 
@@ -98,9 +104,10 @@ describe "every accessible has(n) association with :allow_destroy => false", :sh
 
 end
 
-describe "every accessible has(n) association with :allow_destroy => true", :shared => true do
+describe "every accessible one_to_many association with :allow_destroy => true", :shared => true do
 
   it "should allow to delete an existing task via Profile#tasks_attributes" do
+    @project = Project.new :name => 'trippings'
     @project.save
     task = Task.create(:project => @project, :name => 'write specs')
     @project.tasks.reload
