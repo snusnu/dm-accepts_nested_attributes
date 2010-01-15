@@ -33,6 +33,14 @@ module DataMapper
         attributes # noop
       end
 
+      ##
+      # Destroy intermediate resources that possibly need to be cleaned up
+      def save(*)
+        saved = super
+        remove_destroyables
+        saved
+      end
+
       private
 
       ##
@@ -243,12 +251,6 @@ module DataMapper
       def remove_destroyables
         destroyables.each { |r| r.destroy if r.saved? }
         @destroyables.clear
-      end
-
-      def save(*)
-        saved = super
-        remove_destroyables
-        saved
       end
 
     end
