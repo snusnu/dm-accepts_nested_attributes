@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Martin Gamsjaeger"]
-  s.date = %q{2009-12-03}
+  s.date = %q{2010-03-15}
   s.description = %q{A datamapper plugin that allows nested model assignment like activerecord.}
   s.email = %q{gamsnjaga [a] gmail [d] com}
   s.extra_rdoc_files = [
@@ -21,7 +21,6 @@ Gem::Specification.new do |s|
     ".gitignore",
      "CHANGELOG",
      "LICENSE",
-     "Manifest.txt",
      "README.textile",
      "Rakefile",
      "TODO",
@@ -32,25 +31,18 @@ Gem::Specification.new do |s|
      "lib/dm-accepts_nested_attributes/resource.rb",
      "lib/dm-accepts_nested_attributes/transactional_save.rb",
      "lib/dm-accepts_nested_attributes/version.rb",
-     "spec/fixtures/address.rb",
-     "spec/fixtures/person.rb",
-     "spec/fixtures/profile.rb",
-     "spec/fixtures/project.rb",
-     "spec/fixtures/project_membership.rb",
-     "spec/fixtures/task.rb",
-     "spec/integration/belongs_to_spec.rb",
-     "spec/integration/has_1_spec.rb",
-     "spec/integration/has_n_spec.rb",
-     "spec/integration/has_n_through_spec.rb",
-     "spec/lib/constraint_support.rb",
+     "spec/accepts_nested_attributes_for_spec.rb",
+     "spec/many_to_many_spec.rb",
+     "spec/many_to_one_spec.rb",
+     "spec/one_to_many_spec.rb",
+     "spec/one_to_one_spec.rb",
      "spec/rcov.opts",
-     "spec/shared/belongs_to_spec.rb",
-     "spec/shared/has_1_spec.rb",
-     "spec/shared/has_n_spec.rb",
-     "spec/shared/has_n_through_spec.rb",
+     "spec/shared/many_to_many_spec.rb",
+     "spec/shared/many_to_one_spec.rb",
+     "spec/shared/one_to_many_spec.rb",
+     "spec/shared/one_to_one_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
-     "spec/unit/accepts_nested_attributes_for_spec.rb",
      "tasks/changelog.rake",
      "tasks/ci.rake",
      "tasks/metrics.rake",
@@ -61,26 +53,19 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/snusnu/dm-accepts_nested_attributes}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{Nested model assignment for datamapper}
   s.test_files = [
-    "spec/fixtures/address.rb",
-     "spec/fixtures/person.rb",
-     "spec/fixtures/profile.rb",
-     "spec/fixtures/project.rb",
-     "spec/fixtures/project_membership.rb",
-     "spec/fixtures/task.rb",
-     "spec/integration/belongs_to_spec.rb",
-     "spec/integration/has_1_spec.rb",
-     "spec/integration/has_n_spec.rb",
-     "spec/integration/has_n_through_spec.rb",
-     "spec/lib/constraint_support.rb",
-     "spec/shared/belongs_to_spec.rb",
-     "spec/shared/has_1_spec.rb",
-     "spec/shared/has_n_spec.rb",
-     "spec/shared/has_n_through_spec.rb",
-     "spec/spec_helper.rb",
-     "spec/unit/accepts_nested_attributes_for_spec.rb"
+    "spec/accepts_nested_attributes_for_spec.rb",
+     "spec/many_to_many_spec.rb",
+     "spec/many_to_one_spec.rb",
+     "spec/one_to_many_spec.rb",
+     "spec/one_to_one_spec.rb",
+     "spec/shared/many_to_many_spec.rb",
+     "spec/shared/many_to_one_spec.rb",
+     "spec/shared/one_to_many_spec.rb",
+     "spec/shared/one_to_one_spec.rb",
+     "spec/spec_helper.rb"
   ]
 
   if s.respond_to? :specification_version then
@@ -89,17 +74,17 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<dm-core>, ["~> 0.10.2"])
-      s.add_development_dependency(%q<rspec>, ["~> 1.2.9"])
-      s.add_development_dependency(%q<yard>, ["~> 0.4.0"])
+      s.add_development_dependency(%q<rspec>, ["~> 1.3"])
+      s.add_development_dependency(%q<yard>, ["~> 0.5"])
     else
       s.add_dependency(%q<dm-core>, ["~> 0.10.2"])
-      s.add_dependency(%q<rspec>, ["~> 1.2.9"])
-      s.add_dependency(%q<yard>, ["~> 0.4.0"])
+      s.add_dependency(%q<rspec>, ["~> 1.3"])
+      s.add_dependency(%q<yard>, ["~> 0.5"])
     end
   else
     s.add_dependency(%q<dm-core>, ["~> 0.10.2"])
-    s.add_dependency(%q<rspec>, ["~> 1.2.9"])
-    s.add_dependency(%q<yard>, ["~> 0.4.0"])
+    s.add_dependency(%q<rspec>, ["~> 1.3"])
+    s.add_dependency(%q<yard>, ["~> 0.5"])
   end
 end
 

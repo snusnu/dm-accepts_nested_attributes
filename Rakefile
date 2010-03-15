@@ -23,8 +23,8 @@ begin
 
     gem.add_dependency 'dm-core', '~> 0.10.2'
 
-    gem.add_development_dependency 'rspec', '~> 1.2.9'
-    gem.add_development_dependency 'yard',  '~> 0.4.0'
+    gem.add_development_dependency 'rspec', '~> 1.3'
+    gem.add_development_dependency 'yard',  '~> 0.5'
 
   end
 
