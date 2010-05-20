@@ -71,7 +71,7 @@
 source 'http://rubygems.org'
 
 DATAMAPPER = 'git://github.com/datamapper'
-DM_VERSION = '~> 1.0.0.rc1'
+DM_VERSION = '~> 1.0.0.rc2'
 
 
 group :runtime do # Runtime dependencies (as in the gemspec)
@@ -115,7 +115,7 @@ group :datamapper do # We need this because we want to pin these dependencies to
 
   unless adapters.empty?
 
-    DO_VERSION     = '~> 0.10.2'
+    DO_VERSION     = '~> 0.10.3'
     DM_DO_ADAPTERS = %w[sqlite postgres mysql oracle sqlserver]
 
     gem 'data_objects',  DO_VERSION, :git => "#{DATAMAPPER}/do.git"
