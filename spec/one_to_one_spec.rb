@@ -4,7 +4,7 @@ describe "Person.has(1, :profile);" do
 
   before(:all) do
 
-    class Person
+    class ::Person
 
       include DataMapper::Resource
       extend ConstraintSupport
@@ -17,7 +17,7 @@ describe "Person.has(1, :profile);" do
 
     end
 
-    class Profile
+    class ::Profile
 
       include DataMapper::Resource
 
@@ -29,7 +29,7 @@ describe "Person.has(1, :profile);" do
 
     end
 
-    class Address
+    class ::Address
 
       include DataMapper::Resource
 
@@ -41,7 +41,7 @@ describe "Person.has(1, :profile);" do
 
     end
 
-    DataMapper.auto_upgrade!
+    DataMapper.auto_migrate!
 
   end
 

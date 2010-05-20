@@ -4,7 +4,7 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
 
   FIXTURES = <<-RUBY
 
-    class Branch
+    class ::Branch
       include DataMapper::Resource
       property :id, Serial
       has 1, :shop
@@ -12,20 +12,20 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
       has n, :bookings, :through => :items
     end
 
-    class Shop
+    class ::Shop
       include DataMapper::Resource
       property :id,        Serial
       belongs_to :branch
     end
 
-    class Item
+    class ::Item
       include DataMapper::Resource
       property :id,        Serial
       belongs_to :branch
       has n, :bookings
     end
 
-    class Booking
+    class ::Booking
       include DataMapper::Resource
       property :id,      Serial
       belongs_to :item

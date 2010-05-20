@@ -61,27 +61,6 @@ describe "every accessible one_to_many association with no reject_if proc", :sha
     Task.first.name.should  == 'write specs'
   end
 
-  it "should perform atomic commits" do
-    Project.all.size.should == 0
-    Task.all.size.should    == 0
-
-    # self is invalid
-    project = Project.new :name => nil
-    project.tasks_attributes = [{ :name => 'write specs' }]
-    project.save.should be_false
-
-    Project.all.size.should == 0
-    Task.all.size.should    == 0
-
-    # related resource is invalid
-    project.name = 'dm-accepts_nested_attributes'
-    project.tasks_attributes = [{ :name => nil }] # will fail because of validations
-    project.save
-
-    Project.all.size.should == 0
-    Task.all.size.should    == 0
-  end
-
 end
 
 describe "every accessible one_to_many association with :allow_destroy => false", :shared => true do

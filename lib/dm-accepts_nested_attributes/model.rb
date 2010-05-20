@@ -56,16 +56,6 @@ module DataMapper
 
         include ::DataMapper::NestedAttributes::Resource
 
-        # TODO i wonder if this is the best place here?
-        # the transactional save behavior is definitely not needed for all resources,
-        # but it's necessary for resources that accept nested attributes
-        # FIXME this leads to weird "no such table" errors when specs are run
-        add_transactional_save_behavior # TODO if repository.adapter.supports_transactions?
-
-        # TODO make this do something
-        # it's only here now to remind me that this is probably the best place to put it
-        add_error_collection_behavior if DataMapper.const_defined?('Validate')
-
         type = relationship.max > 1 ? :collection : :resource
 
         define_method "#{association_name}_attributes" do
@@ -86,34 +76,6 @@ module DataMapper
 
 
       private
-
-      ##
-      # Provides a hook to include or disable customized transactional save behavior.
-      # Override this method to customize the implementation or disable it altogether.
-      # The current implementation in @see DataMapper::NestedAttributes::TransactionalSave
-      # simply wraps the saving of the complete object tree inside a transaction
-      # and rolls back in case any exceptions are raised, or any of the calls to
-      # @see DataMapper::Resource#save returned false
-      #
-      # @return Not specified
-      #
-      def add_transactional_save_behavior
-        require 'dm-accepts_nested_attributes/transactional_save'
-        include ::DataMapper::NestedAttributes::TransactionalSave
-      end
-
-      ##
-      # Provides a hook to include or disable customized error collecting behavior.
-      # Overwrite this method to customize the implementation or disable it altogether.
-      # The current implementation in @see DataMapper::NestedAttributes::ValidationErrorCollecting
-      # simply attaches all errors of related resources to the object that was initially saved.
-      #
-      # @return Not specified
-      #
-      def add_error_collection_behavior
-        require 'dm-accepts_nested_attributes/error_collecting'
-        include ::DataMapper::NestedAttributes::ValidationErrorCollecting
-      end
 
       ##
       # Checks options passed to @see accepts_nested_attributes_for

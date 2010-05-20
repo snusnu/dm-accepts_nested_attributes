@@ -4,7 +4,7 @@ describe "Project.has(n, :tasks);" do
 
   before(:all) do
 
-    class Project
+    class ::Project
 
       include DataMapper::Resource
       extend ConstraintSupport
@@ -16,7 +16,7 @@ describe "Project.has(n, :tasks);" do
 
     end
 
-    class Task
+    class ::Task
 
       include DataMapper::Resource
 
@@ -27,7 +27,7 @@ describe "Project.has(n, :tasks);" do
 
     end
 
-    DataMapper.auto_upgrade!
+    DataMapper.auto_migrate!
 
   end
 

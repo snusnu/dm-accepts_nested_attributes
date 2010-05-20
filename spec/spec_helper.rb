@@ -1,44 +1,16 @@
-require 'rubygems'
-require 'pathname'
-require 'spec'
+require 'dm-core/spec/setup'
+require 'dm-core/spec/lib/pending_helpers'
 
-# require the plugin
 require 'dm-accepts_nested_attributes'
-
-# allow testing with dm-validations enabled
-# must be required after the plugin, since
-# dm-validations seems to need dm-core
-require 'dm-validations'
-require 'dm-constraints'
-
-ENV["SQLITE3_SPEC_URI"]  ||= 'sqlite3::memory:'
-ENV["MYSQL_SPEC_URI"]    ||= 'mysql://localhost/dm-accepts_nested_attributes_test'
-ENV["POSTGRES_SPEC_URI"] ||= 'postgres://postgres@localhost/dm-accepts_nested_attributes_test'
-
-
-def setup_adapter(name, default_uri = nil)
-  begin
-    DataMapper.setup(name, ENV["#{ENV['ADAPTER'].to_s.upcase}_SPEC_URI"] || default_uri)
-    Object.const_set('ADAPTER', ENV['ADAPTER'].to_sym) if name.to_s == ENV['ADAPTER']
-    true
-  rescue Exception => e
-    if name.to_s == ENV['ADAPTER']
-      Object.const_set('ADAPTER', nil)
-      warn "Could not load do_#{name}: #{e}"
-    end
-    false
-  end
-end
-
-ENV['ADAPTER'] ||= 'mysql'
-setup_adapter(:default)
-
 
 require 'shared/many_to_many_spec'
 require 'shared/many_to_one_spec'
 require 'shared/one_to_many_spec'
 require 'shared/one_to_one_spec'
 
+DataMapper::Spec.setup
+
+HAS_M2M_SUPPORT = !%w[in_memory yaml].include?(DataMapper::Spec.adapter_name)
 
 module ConstraintSupport
 
@@ -47,6 +19,18 @@ module ConstraintSupport
       { :constraint => type }
     else
       {}
+    end
+  end
+
+end
+
+Spec::Runner.configure do |config|
+
+  config.include(DataMapper::Spec::PendingHelpers)
+
+  config.after(:suite) do
+    if DataMapper.respond_to?(:auto_migrate_down!, true)
+      DataMapper.send(:auto_migrate_down!, DataMapper::Spec.adapter.name)
     end
   end
 

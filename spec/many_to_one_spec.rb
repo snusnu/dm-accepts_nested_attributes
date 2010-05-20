@@ -4,7 +4,7 @@ describe "Profile.belongs_to(:person);" do
 
   before(:all) do
 
-    class Person
+    class ::Person
 
       include DataMapper::Resource
       extend ConstraintSupport
@@ -16,7 +16,7 @@ describe "Profile.belongs_to(:person);" do
 
     end
 
-    class Profile
+    class ::Profile
 
       include DataMapper::Resource
 
@@ -28,7 +28,7 @@ describe "Profile.belongs_to(:person);" do
 
     end
 
-    DataMapper.auto_upgrade!
+    DataMapper.auto_migrate!
 
   end
 

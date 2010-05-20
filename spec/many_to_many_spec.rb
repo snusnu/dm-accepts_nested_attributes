@@ -4,7 +4,7 @@ describe "Person.has(n, :projects, :through => :project_memberships);" do
 
   before(:all) do
 
-    class Person
+    class ::Person
 
       include DataMapper::Resource
       extend ConstraintSupport
@@ -18,7 +18,7 @@ describe "Person.has(n, :projects, :through => :project_memberships);" do
 
     end
 
-    class Project
+    class ::Project
 
       include DataMapper::Resource
       extend ConstraintSupport
@@ -32,7 +32,7 @@ describe "Person.has(n, :projects, :through => :project_memberships);" do
 
     end
 
-    class ProjectMembership
+    class ::ProjectMembership
 
       include DataMapper::Resource
 
@@ -43,7 +43,7 @@ describe "Person.has(n, :projects, :through => :project_memberships);" do
 
     end
 
-    class Task
+    class ::Task
 
       include DataMapper::Resource
 
@@ -54,7 +54,7 @@ describe "Person.has(n, :projects, :through => :project_memberships);" do
 
     end
 
-    DataMapper.auto_upgrade!
+    DataMapper.auto_migrate!
 
   end
 

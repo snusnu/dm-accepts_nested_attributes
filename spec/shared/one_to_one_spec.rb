@@ -60,25 +60,6 @@ describe "every accessible one_to_one association with no reject_if proc", :shar
     Profile.first.nick.should == 'snusnu'
   end
 
-  it "should perform atomic commits" do
-
-    # related resource is invalid
-    person = Person.new :name => 'Martin'
-    person.profile_attributes = { :nick => nil } # will fail because of validations
-    person.save.should be_false
-
-    Person.all.size.should == 0
-    Profile.all.size.should == 0
-
-    # self is invalid
-    person.name = nil # will fail because of validations
-    person.profile_attributes = { :nick => 'snusnu' }
-    person.save.should be_false
-
-    Person.all.size.should  == 0
-    Profile.all.size.should == 0
-  end
-
 end
 
 describe "every accessible one_to_one association with :allow_destroy => false", :shared => true do
