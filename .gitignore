@@ -26,4 +26,5 @@ tmp
 .bundle
 Gemfile.local
 Gemfile.lock
+*.gem
 
