@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
      "README.textile",
      "Rakefile",
      "TODO",
+     "VERSION",
      "dm-accepts_nested_attributes.gemspec",
      "lib/dm-accepts_nested_attributes.rb",
      "lib/dm-accepts_nested_attributes/model.rb",
@@ -73,16 +74,16 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<dm-core>, ["~> 0.10.2"])
+      s.add_runtime_dependency(%q<dm-core>, ["~> 1.0.0.rc1"])
       s.add_development_dependency(%q<rspec>, ["~> 1.3"])
       s.add_development_dependency(%q<yard>, ["~> 0.5"])
     else
-      s.add_dependency(%q<dm-core>, ["~> 0.10.2"])
+      s.add_dependency(%q<dm-core>, ["~> 1.0.0.rc1"])
       s.add_dependency(%q<rspec>, ["~> 1.3"])
       s.add_dependency(%q<yard>, ["~> 0.5"])
     end
   else
-    s.add_dependency(%q<dm-core>, ["~> 0.10.2"])
+    s.add_dependency(%q<dm-core>, ["~> 1.0.0.rc1"])
     s.add_dependency(%q<rspec>, ["~> 1.3"])
     s.add_dependency(%q<yard>, ["~> 0.5"])
   end
