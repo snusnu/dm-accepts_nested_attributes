@@ -1,5 +1,6 @@
 require 'dm-core/spec/setup'
 require 'dm-core/spec/lib/pending_helpers'
+require 'dm-core/spec/lib/spec_helper'
 
 require 'dm-accepts_nested_attributes'
 
@@ -31,6 +32,14 @@ end
 Spec::Runner.configure do |config|
 
   config.include(DataMapper::Spec::PendingHelpers)
+
+  config.after(:all) do
+    if DataMapper.respond_to?(:auto_migrate_down!, true)
+      DataMapper.send(:auto_migrate_down!, DataMapper::Spec.adapter.name)
+    end
+
+    DataMapper::Spec.cleanup_models
+  end
 
   config.after(:suite) do
     if DataMapper.respond_to?(:auto_migrate_down!, true)
