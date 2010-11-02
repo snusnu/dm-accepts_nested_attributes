@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
      "dm-accepts_nested_attributes.gemspec",
      "lib/dm-accepts_nested_attributes.rb",
      "lib/dm-accepts_nested_attributes/model.rb",
+     "lib/dm-accepts_nested_attributes/relationship.rb",
      "lib/dm-accepts_nested_attributes/resource.rb",
      "lib/dm-accepts_nested_attributes/version.rb",
      "spec/accepts_nested_attributes_for_spec.rb",

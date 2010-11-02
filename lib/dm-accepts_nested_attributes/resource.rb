@@ -183,39 +183,7 @@ module DataMapper
       #
       # @return [Array]
       def extract_keys(relationship, attributes)
-        if relationship.class == DataMapper::Associations::ManyToMany::Relationship
-          keys = relationship.child_key.map do |key|
-            attributes[key.name]
-          end
-        elsif relationship.class == DataMapper::Associations::OneToMany::Relationship
-          keys = relationship.child_model.key.to_enum(:each_with_index).map do |key, idx|
-            if parent_idx = relationship.child_key.to_a.index(key)
-              self[relationship.parent_key.at(parent_idx).name]
-            else
-              attributes[key.name]
-            end
-          end
-        elsif relationship.class == DataMapper::Associations::ManyToOne::Relationship
-          keys = relationship.parent_model.key.to_enum(:each_with_index).map do |key, idx|
-            if child_idx = relationship.parent_key.to_a.index(key)
-              self[relationship.child_key.at(child_idx).name]
-            else
-              attributes[key.name]
-            end
-          end
-        elsif relationship.class == DataMapper::Associations::OneToOne::Relationship
-          keys = relationship.child_model.key.to_enum(:each_with_index).map do |key, idx|
-            if parent_idx = relationship.child_key.to_a.index(key)
-              self[relationship.parent_key.at(parent_idx).name]
-            else
-              attributes[key.name]
-            end
-          end
-        else
-          raise NotImplementedError, "Unhandled relationship type #{relationship.class}"
-        end
-
-        keys.any?(&:blank?) ? nil : keys
+        relationship.extract_keys_for_nested_attributes(self, attributes)
       end
 
       ##
