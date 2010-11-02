@@ -79,6 +79,7 @@ module DataMapper
       #
       # @return nil
       def assign_nested_attributes_for_related_resource(relationship, attributes)
+        assert_kind_of 'attributes', attributes, Hash
 
         if keys = extract_keys(relationship, attributes)
           existing_record = relationship.get(self)
@@ -143,12 +144,13 @@ module DataMapper
       #   The relationship backing the association.
       #   Assignment will happen on the target end of the relationship
       #
-      # @param attributes [Hash]
+      # @param attributes_collection [Hash, Array]
       #   The attributes to assign to the relationship's target end
       #   All attributes except @see UNASSIGNABLE_KEYS will be assigned
       #
       # @return nil
       def assign_nested_attributes_for_related_collection(relationship, attributes_collection)
+        assert_hash_or_array_of_hashes("attributes_collection", attributes_collection)
 
         normalize_attributes_collection(attributes_collection).each do |attributes|
           if keys = extract_keys(relationship, attributes)
@@ -296,6 +298,37 @@ module DataMapper
         else
           # never reached when called from inside the plugin
           raise ArgumentError, "guard must be a Symbol, a String, or respond_to?(:call)"
+        end
+      end
+
+      ##
+      # Asserts that the specified parameter value is a Hash of Hashes, or an
+      # Array of Hashes and raises an ArgumentError if value does not conform.
+      #
+      # @param param_name [String]
+      #   The parameter name included in the raised ArgumentError.
+      #
+      # @param value
+      #   The value to check.
+      #
+      # @return nil
+      def assert_hash_or_array_of_hashes(param_name, value)
+       if value.is_a?(Hash)
+          unless value.values.all? { |a| a.is_a?(Hash) }
+            raise ArgumentError,
+                  "+#{param_name}+ should be a Hash of Hashes or Array " +
+                  "of Hashes, but was a Hash with #{value.values.map { |a| a.class }.uniq.inspect}"
+          end
+        elsif value.is_a?(Array)
+          unless value.all? { |a| a.is_a?(Hash) }
+            raise ArgumentError,
+                  "+#{param_name}+ should be a Hash of Hashes or Array " +
+                  "of Hashes, but was an Array with #{value.map { |a| a.class }.uniq.inspect}"
+          end
+        else
+          raise ArgumentError,
+                "+#{param_name}+ should be a Hash of Hashes or Array of " +
+                "Hashes, but was #{value.class}"
         end
       end
 

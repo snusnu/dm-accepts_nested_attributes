@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
      "lib/dm-accepts_nested_attributes/resource.rb",
      "lib/dm-accepts_nested_attributes/version.rb",
      "spec/accepts_nested_attributes_for_spec.rb",
+     "spec/assign_nested_attributes_for_spec.rb",
      "spec/many_to_many_composite_spec.rb",
      "spec/many_to_many_spec.rb",
      "spec/many_to_one_composite_spec.rb",
@@ -67,6 +68,7 @@ Gem::Specification.new do |s|
   s.summary = %q{Nested model assignment for datamapper}
   s.test_files = [
     "spec/accepts_nested_attributes_for_spec.rb",
+     "spec/assign_nested_attributes_for_spec.rb",
      "spec/many_to_many_composite_spec.rb",
      "spec/many_to_many_spec.rb",
      "spec/many_to_one_composite_spec.rb",

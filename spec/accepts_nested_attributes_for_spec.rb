@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "DataMapper::Model.accepts_nested_attributes_for" do
 
-  FIXTURES = <<-RUBY
+  fixtures = <<-RUBY
 
     class ::Branch
       include DataMapper::Resource
@@ -34,7 +34,7 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
   RUBY
 
   before(:all) do
-    eval FIXTURES
+    eval fixtures
     DataMapper.auto_migrate!
   end
 
@@ -45,7 +45,7 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
     Object.send(:remove_const, 'Item')    if Object.const_defined?('Item')
     Object.send(:remove_const, 'Booking') if Object.const_defined?('Booking')
 
-    eval FIXTURES # neither class_eval nor instance_eval work here
+    eval fixtures # neither class_eval nor instance_eval work here
 
   end
 
