@@ -7,6 +7,10 @@ require 'shared/many_to_many_spec'
 require 'shared/many_to_one_spec'
 require 'shared/one_to_many_spec'
 require 'shared/one_to_one_spec'
+require 'shared/many_to_many_composite_spec'
+require 'shared/many_to_one_composite_spec'
+require 'shared/one_to_many_composite_spec'
+require 'shared/one_to_one_composite_spec'
 
 DataMapper::Spec.setup
 

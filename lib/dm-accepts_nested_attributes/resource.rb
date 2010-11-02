@@ -57,13 +57,17 @@ module DataMapper
       ##
       # Assigns the given attributes to the resource association.
       #
-      # If the given attributes include an <tt>:id</tt> that matches the existing
-      # record’s id, then the existing record will be modified. Otherwise a new
-      # record will be built.
+      # If the given attributes include the primary key values that match the
+      # existing record’s keys, then the existing record will be modified.
+      # Otherwise a new record will be built.
       #
-      # If the given attributes include a matching <tt>:id</tt> attribute _and_ a
+      # If the given attributes include matching primary key values _and_ a
       # <tt>:_delete</tt> key set to a truthy value, then the existing record
       # will be marked for destruction.
+      #
+      # The names of the primary key values required depend on the configuration
+      # of the association. It is not necessary to specify values for attributes
+      # that exist on this resource as they are inferred.
       #
       # @param relationship [DataMapper::Associations::Relationship]
       #   The relationship backing the association.
@@ -75,26 +79,35 @@ module DataMapper
       #
       # @return nil
       def assign_nested_attributes_for_related_resource(relationship, attributes)
-        if attributes[:id].blank?
-          return if reject_new_record?(relationship, attributes)
-          new_record = relationship.target_model.new(attributes.except(*unassignable_keys))
-          relationship.set(self, new_record)
-        else
+
+        if keys = extract_keys(relationship, attributes)
           existing_record = relationship.get(self)
-          if existing_record && existing_record.id.to_s == attributes[:id].to_s
+          if existing_record && existing_record.key == keys
             update_or_mark_as_destroyable(relationship, existing_record, attributes)
+            return
           end
         end
+
+        return if reject_new_record?(relationship, attributes)
+        new_record = relationship.target_model.new(attributes.except(*unassignable_keys))
+        relationship.set(self, new_record)
+
+        nil
       end
 
       ##
       # Assigns the given attributes to the collection association.
       #
-      # Hashes with an <tt>:id</tt> value matching an existing associated record
-      # will update that record. Hashes without an <tt>:id</tt> value will build
-      # a new record for the association. Hashes with a matching <tt>:id</tt>
-      # value and a <tt>:_delete</tt> key set to a truthy value will mark the
-      # matched record for destruction.
+      # Hashes with primary key values matching an existing associated record
+      # will update that record. Hashes without primary key values (or only
+      # values for a partial primary key), or if no existing associated record
+      # exists, will build a new record for the association. Hashes with
+      # matching primary key values and a <tt>:_delete</tt> key set to a truthy
+      # value will mark the matched record for destruction.
+      #
+      # The names of the primary key values required depend on the configuration
+      # of the association. It is not necessary to specify values for attributes
+      # that exist on this resource as they are inferred.
       #
       # For example:
       #
@@ -107,6 +120,16 @@ module DataMapper
       # Will update the name of the Person with ID 1, build a new associated
       # person with the name `John', and mark the associatied Person with ID 2
       # for destruction.
+      #
+      # assign_nested_attributes_for_collection_association(:people, {
+      # '1' => { :person_id => '1', :audit_id => 2, :name => 'Peter' },
+      # '2' => { :audit_id => 2, :name => 'John' },
+      # '3' => { :person_id => '2', :audit_id => 3, :_delete => true }
+      # })
+      #
+      # Will update the name of the Person with (person_id, audit_id) = (1, 2),
+      # build a new associated person with the name `John', and mark the
+      # associatied Person with key (2, 3) for destruction.
       #
       # Also accepts an Array of attribute hashes:
       #
@@ -128,19 +151,69 @@ module DataMapper
       def assign_nested_attributes_for_related_collection(relationship, attributes_collection)
 
         normalize_attributes_collection(attributes_collection).each do |attributes|
-
-          if attributes[:id].blank?
-            next if reject_new_record?(relationship, attributes)
-            relationship.get(self).new(attributes.except(*unassignable_keys))
-          else
+          if keys = extract_keys(relationship, attributes)
             collection = relationship.get(self)
-            if existing_record = collection.get(attributes[:id])
+            if existing_record = collection.get(*keys)
               update_or_mark_as_destroyable(relationship, existing_record, attributes)
+              next
             end
           end
 
+          next if reject_new_record?(relationship, attributes)
+          relationship.get(self).new(attributes.except(*unassignable_keys))
         end
 
+        nil
+      end
+
+      # Extracts the primary key values necessary to retrieve or update a nested
+      # model when using +accepts_nested_attributes_for+. Values are taken from
+      # this model instance and attribute hash with the former having priority.
+      # Values for properties in the primary key that are *not* included in the
+      # foreign key must be specified in the attributes hash.
+      #
+      # @param relationship [DataMapper::Association::Relationship]
+      #   The relationship backing the association.
+      #
+      # @param attributes [Hash]
+      #   The attributes assigned to the nested attribute setter on the
+      #   +model+.
+      #
+      # @return [Array]
+      def extract_keys(relationship, attributes)
+        if relationship.class == DataMapper::Associations::ManyToMany::Relationship
+          keys = relationship.child_key.map do |key|
+            attributes[key.name]
+          end
+        elsif relationship.class == DataMapper::Associations::OneToMany::Relationship
+          keys = relationship.child_model.key.to_enum(:each_with_index).map do |key, idx|
+            if parent_idx = relationship.child_key.to_a.index(key)
+              self[relationship.parent_key.at(parent_idx).name]
+            else
+              attributes[key.name]
+            end
+          end
+        elsif relationship.class == DataMapper::Associations::ManyToOne::Relationship
+          keys = relationship.parent_model.key.to_enum(:each_with_index).map do |key, idx|
+            if child_idx = relationship.parent_key.to_a.index(key)
+              self[relationship.child_key.at(child_idx).name]
+            else
+              attributes[key.name]
+            end
+          end
+        elsif relationship.class == DataMapper::Associations::OneToOne::Relationship
+          keys = relationship.child_model.key.to_enum(:each_with_index).map do |key, idx|
+            if parent_idx = relationship.child_key.to_a.index(key)
+              self[relationship.parent_key.at(parent_idx).name]
+            else
+              attributes[key.name]
+            end
+          end
+        else
+          raise NotImplementedError, "Unhandled relationship type #{relationship.class}"
+        end
+
+        keys.any?(&:blank?) ? nil : keys
       end
 
       ##
