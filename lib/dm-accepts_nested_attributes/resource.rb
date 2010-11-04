@@ -10,6 +10,8 @@ module DataMapper
     # and child associations, based on the given attributes and what
     # kind of relationship should be altered.
     module Resource
+      TRUE_VALUES = [true, 1, '1', 't', 'T', 'true', 'TRUE'].to_set
+      FALSE_VALUES = [false, 0, '0', 'f', 'F', 'false', 'FALSE'].to_set
 
       ##
       # Can be used to remove ambiguities from the passed attributes.
@@ -220,7 +222,12 @@ module DataMapper
       # @return [TrueClass, FalseClass]
       #   true, if attributes contains a truthy :_delete key
       def has_delete_flag?(attributes)
-        !!attributes[:_delete]
+        value = attributes[:_delete]
+        if value.is_a?(String) && value.blank?
+          nil
+        else
+          TRUE_VALUES.include?(value)
+        end
       end
 
       ##
