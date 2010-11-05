@@ -210,7 +210,9 @@ module DataMapper
           end
           destroyables << resource
         else
-          resource.update(attributes.except(*unassignable_keys))
+          assert_nested_update_clean_only(resource)
+          resource.attributes = attributes.except(*unassignable_keys)
+          resource.save
         end
       end
 
@@ -273,6 +275,24 @@ module DataMapper
         else
           # never reached when called from inside the plugin
           raise ArgumentError, "guard must be a Symbol, a String, or respond_to?(:call)"
+        end
+      end
+
+      # Raises an exception if #update is performed on a nested resource
+      # which is dirty or has dirty children.
+      #
+      # @param [DataMapper::Resource] resource
+      #   the resource to check
+      #
+      # @return [undefined]
+      #
+      # @raise [UpdateConflictError]
+      #   raised if the resource is dirty
+      #
+      # @api private
+      def assert_nested_update_clean_only(resource)
+        if resource.send(:dirty_self?) || resource.send(:dirty_children?)
+          raise UpdateConflictError, "#{model}#update cannot be called on a #{new? ? 'new' : 'dirty'} nested resource"
         end
       end
 
