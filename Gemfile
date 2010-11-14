@@ -102,7 +102,6 @@ end
 group :quality do # These gems contain rake tasks that check the quality of the source code
 
   gem 'yardstick',       '~> 0.1'
-  gem 'metric_fu',       '~> 1.3'
   gem 'reek',            '~> 1.2.7'
   gem 'roodi',           '~> 2.1'
 

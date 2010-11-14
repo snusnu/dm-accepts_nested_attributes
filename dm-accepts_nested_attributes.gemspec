@@ -72,7 +72,6 @@ Gem::Specification.new do |s|
      "tasks/changelog.rake",
      "tasks/ci.rake",
      "tasks/local_gemfile.rake",
-     "tasks/metrics.rake",
      "tasks/spec.rake",
      "tasks/yard.rake",
      "tasks/yardstick.rake"
