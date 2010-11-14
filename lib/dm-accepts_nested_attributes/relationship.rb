@@ -38,7 +38,7 @@ module DataMapper
       def extract_keys_for_nested_attributes(model, attributes)
         keys = self.child_model.key.to_enum(:each_with_index).map do |key, idx|
           if parent_idx = self.child_key.to_a.index(key)
-            model[self.parent_key.at(parent_idx).name]
+            model[self.parent_key.to_a.at(parent_idx).name]
           else
             attributes[key.name]
           end
@@ -53,7 +53,7 @@ module DataMapper
       def extract_keys_for_nested_attributes(model, attributes)
         keys = self.parent_model.key.to_enum(:each_with_index).map do |key, idx|
           if child_idx = self.parent_key.to_a.index(key)
-            model[self.child_key.at(child_idx).name]
+            model[self.child_key.to_a.at(child_idx).name]
           else
             attributes[key.name]
           end
@@ -68,7 +68,7 @@ module DataMapper
       def extract_keys_for_nested_attributes(model, attributes)
         keys = self.child_model.key.to_enum(:each_with_index).map do |key, idx|
           if parent_idx = self.child_key.to_a.index(key)
-            model[self.parent_key.at(parent_idx).name]
+            model[self.parent_key.to_a.at(parent_idx).name]
           else
             attributes[key.name]
           end

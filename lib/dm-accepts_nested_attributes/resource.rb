@@ -52,7 +52,7 @@ module DataMapper
       #   The model key and :_delete, the latter being a special value
       #   used to mark a resource for destruction
       def unassignable_keys
-        model.key.to_a << :_delete
+        model.key.to_a.dup << :_delete
       end
 
 
