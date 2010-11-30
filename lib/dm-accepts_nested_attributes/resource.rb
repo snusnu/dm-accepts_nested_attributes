@@ -2,16 +2,16 @@ module DataMapper
   module NestedAttributes
 
     ##
-    # Extensions and customizations for @see DataMapper::Resource
-    # that are needed if the @see DataMapper::Resource wants to
+    # Extensions and customizations for a {DataMapper::Resource}
+    # that are needed if the {DataMapper::Resource} wants to
     # accept nested attributes for any given relationship.
     # Basically, this module provides functionality that allows
     # either assignment or marking for destruction of related parent
     # and child associations, based on the given attributes and what
     # kind of relationship should be altered.
     module Resource
+      # Truthy values for the +:_delete+ flag.
       TRUE_VALUES = [true, 1, '1', 't', 'T', 'true', 'TRUE'].to_set
-      FALSE_VALUES = [false, 0, '0', 'f', 'F', 'false', 'FALSE'].to_set
 
       ##
       # Can be used to remove ambiguities from the passed attributes.
@@ -26,17 +26,17 @@ module DataMapper
       # everyone can perform it's own sanitization by overwriting this method.
       #
       # @param attributes [Hash]
-      #   The attributes to sanitize
+      #   The attributes to sanitize.
       #
       # @return [Hash]
-      #   The sanitized attributes
+      #   The sanitized attributes.
       #
       def sanitize_nested_attributes(attributes)
         attributes # noop
       end
 
       ##
-      # Destroy intermediate resources that possibly need to be cleaned up
+      # Saves the resource and destroys nested resources marked for destruction.
       def save(*)
         saved = super
         remove_destroyables
@@ -47,7 +47,7 @@ module DataMapper
 
       ##
       # Attribute hash keys that are excluded when creating a nested resource.
-      # Excluded attributes include :_delete, a special value used to mark a
+      # Excluded attributes include +:_delete+, a special value used to mark a
       # resource for destruction.
       #
       # @return [Array<Symbol>] Excluded attribute names.
@@ -85,13 +85,13 @@ module DataMapper
       #   The relationship backing the association.
       #   Assignment will happen on the target end of the relationship
       #
-      # @param attributes [Hash]
+      # @param attributes [Hash{Symbol => Object}]
       #   The attributes to assign to the relationship's target end.
       #   All attributes except {#uncreatable_keys} (for new resources) and
       #   {#unupdatable_keys} (when updating an existing resource) will be
       #   assigned.
       #
-      # @return nil
+      # @return [void]
       def assign_nested_attributes_for_related_resource(relationship, attributes)
         assert_kind_of 'attributes', attributes, Hash
 
@@ -106,8 +106,6 @@ module DataMapper
         return if reject_new_record?(relationship, attributes)
         new_record = relationship.target_model.new(attributes.except(*uncreatable_keys))
         relationship.set(self, new_record)
-
-        nil
       end
 
       ##
@@ -126,45 +124,45 @@ module DataMapper
       #
       # For example:
       #
-      # assign_nested_attributes_for_collection_association(:people, {
-      # '1' => { :id => '1', :name => 'Peter' },
-      # '2' => { :name => 'John' },
-      # '3' => { :id => '2', :_delete => true }
-      # })
+      #     assign_nested_attributes_for_collection_association(:people, {
+      #       '1' => { :id => '1', :name => 'Peter' },
+      #       '2' => { :name => 'John' },
+      #       '3' => { :id => '2', :_delete => true }
+      #     })
       #
       # Will update the name of the Person with ID 1, build a new associated
-      # person with the name `John', and mark the associatied Person with ID 2
+      # person with the name 'John', and mark the associatied Person with ID 2
       # for destruction.
       #
-      # assign_nested_attributes_for_collection_association(:people, {
-      # '1' => { :person_id => '1', :audit_id => 2, :name => 'Peter' },
-      # '2' => { :audit_id => 2, :name => 'John' },
-      # '3' => { :person_id => '2', :audit_id => 3, :_delete => true }
-      # })
+      #     assign_nested_attributes_for_collection_association(:people, {
+      #       '1' => { :person_id => '1', :audit_id => 2, :name => 'Peter' },
+      #       '2' => { :audit_id => 2, :name => 'John' },
+      #       '3' => { :person_id => '2', :audit_id => 3, :_delete => true }
+      #     })
       #
-      # Will update the name of the Person with (person_id, audit_id) = (1, 2),
-      # build a new associated person with the name `John', and mark the
-      # associatied Person with key (2, 3) for destruction.
+      # Will update the name of the Person with `(person_id, audit_id) = (1, 2)`,
+      # build a new associated person with the name 'John', and mark the
+      # associatied Person with key `(2, 3)` for destruction.
       #
       # Also accepts an Array of attribute hashes:
       #
-      # assign_nested_attributes_for_collection_association(:people, [
-      # { :id => '1', :name => 'Peter' },
-      # { :name => 'John' },
-      # { :id => '2', :_delete => true }
-      # ])
+      #     assign_nested_attributes_for_collection_association(:people, [
+      #       { :id => '1', :name => 'Peter' },
+      #       { :name => 'John' },
+      #       { :id => '2', :_delete => true }
+      #     ])
       #
       # @param relationship [DataMapper::Associations::Relationship]
       #   The relationship backing the association.
       #   Assignment will happen on the target end of the relationship
       #
-      # @param attributes_collection [Hash, Array]
+      # @param attributes_collection [Hash{Integer=>Hash}, Array<Hash>]
       #   The attributes to assign to the relationship's target end.
       #   All attributes except {#uncreatable_keys} (for new resources) and
       #   {#unupdatable_keys} (when updating an existing resource) will be
       #   assigned.
       #
-      # @return nil
+      # @return [void]
       def assign_nested_attributes_for_related_collection(relationship, attributes_collection)
         assert_hash_or_array_of_hashes("attributes_collection", attributes_collection)
 
@@ -184,6 +182,7 @@ module DataMapper
         nil
       end
 
+      ##
       # Extracts the primary key values necessary to retrieve or update a nested
       # model when using +accepts_nested_attributes_for+. Values are taken from
       # this model instance and attribute hash with the former having priority.
@@ -193,7 +192,7 @@ module DataMapper
       # @param relationship [DataMapper::Association::Relationship]
       #   The relationship backing the association.
       #
-      # @param attributes [Hash]
+      # @param attributes [Hash{Symbol => Object}]
       #   The attributes assigned to the nested attribute setter on the
       #   +model+.
       #
@@ -204,17 +203,18 @@ module DataMapper
 
       ##
       # Updates a record with the +attributes+ or marks it for destruction if
-      # +allow_destroy+ is +true+ and has_delete_flag? returns +true+.
+      # the +:allow_destroy+ option is +true+ and {#has_delete_flag?} returns
+      # +true+.
       #
       # @param relationship [DataMapper::Associations::Relationship]
       #   The relationship backing the association.
       #   Assignment will happen on the target end of the relationship
       #
-      # @param attributes [Hash]
+      # @param attributes [Hash{Symbol => Object}]
       #   The attributes to assign to the relationship's target end.
       #   All attributes except {#unupdatable_keys} will be assigned.
       #
-      # @return nil
+      # @return [void]
       def update_or_mark_as_destroyable(relationship, resource, attributes)
         allow_destroy = self.class.options_for_nested_attributes[relationship][:allow_destroy]
         if has_delete_flag?(attributes) && allow_destroy
@@ -231,12 +231,14 @@ module DataMapper
       end
 
       ##
-      # Determines if the given attributes hash contains a truthy :_delete key.
+      # Determines whether the given attributes hash contains a truthy :_delete key.
       #
-      # @param attributes [Hash] The attributes to test
+      # @param attributes [Hash{Symbol => Object}] The attributes to test.
       #
-      # @return [TrueClass, FalseClass]
-      #   true, if attributes contains a truthy :_delete key
+      # @return [Boolean]
+      #   +true+ if attributes contains a truthy :_delete key.
+      #
+      # @see TRUE_VALUES
       def has_delete_flag?(attributes)
         value = attributes[:_delete]
         if value.is_a?(String) && value.blank?
@@ -248,17 +250,18 @@ module DataMapper
 
       ##
       # Determines if a new record should be built with the given attributes.
-      # Rejects a new record if @see has_delete_flag? returns true for the given attributes,
-      # or if a :reject_if guard exists for the passed relationship that evaluates to +true+.
+      # Rejects a new record if {#has_delete_flag?} returns +true+ for the given
+      # attributes, or if a +:reject_if+ guard exists for the passed relationship
+      # that evaluates to +true+.
       #
       # @param relationship [DataMapper::Associations::Relationship]
       #   The relationship backing the association.
       #
-      # @param attributes [Hash]
-      #   The attributes to test with @see has_delete_flag?
+      # @param attributes [Hash{Symbol => Object}]
+      #   The attributes to test with {#has_delete_flag?}.
       #
-      # @return [TrueClass, FalseClass]
-      #   true, if the given attributes will be rejected
+      # @return [Boolean]
+      #   +true+ if the given attributes will be rejected.
       def reject_new_record?(relationship, attributes)
         guard = self.class.options_for_nested_attributes[relationship][:reject_if]
         return false if guard.nil? # if relationship guard is nil, nothing will be rejected
@@ -266,20 +269,20 @@ module DataMapper
       end
 
       ##
-      # Evaluates the given guard by calling it with the given attributes
+      # Evaluates the given guard by calling it with the given attributes.
       #
       # @param [Symbol, String, #call] guard
       #   An instance method name or an object that respond_to?(:call), which
       #   would stop a new record from being created, if it evaluates to true.
       #
-      # @param [Hash] attributes
+      # @param [Hash{Symbol => Object}] attributes
       #   The attributes to pass to the guard for evaluating if it should reject
       #   the creation of a new resource
       #
       # @raise [ArgumentError]
       #   If the given guard doesn't match [Symbol, String, #call]
       #
-      # @return [true, false]
+      # @return [Boolean]
       #   The value returned by evaluating the guard
       def evaluate_reject_new_record_guard(guard, attributes)
         if guard.is_a?(Symbol) || guard.is_a?(String)
@@ -292,16 +295,17 @@ module DataMapper
         end
       end
 
-      # Raises an exception if #update is performed on a nested resource
-      # which is dirty or has dirty children.
+      ##
+      # Raises an exception if the specified resource is dirty or has dirty
+      # children.
       #
       # @param [DataMapper::Resource] resource
-      #   the resource to check
+      #   The resource to check.
       #
-      # @return [undefined]
+      # @return [void]
       #
       # @raise [UpdateConflictError]
-      #   raised if the resource is dirty
+      #   If the resource is dirty.
       #
       # @api private
       def assert_nested_update_clean_only(resource)
@@ -320,7 +324,7 @@ module DataMapper
       # @param value
       #   The value to check.
       #
-      # @return nil
+      # @return [void]
       def assert_hash_or_array_of_hashes(param_name, value)
        if value.is_a?(Hash)
           unless value.values.all? { |a| a.is_a?(Hash) }
@@ -343,13 +347,13 @@ module DataMapper
 
       ##
       # Make sure to return a collection of attribute hashes.
-      # If passed an attributes hash, map it to its attributes
+      # If passed an attributes hash, map it to its attributes.
       #
       # @param attributes [Hash, #each]
-      #   An attributes hash or a collection of attribute hashes
+      #   An attributes hash or a collection of attribute hashes.
       #
       # @return [#each]
-      #   A collection of attribute hashes
+      #   A collection of attribute hashes.
       def normalize_attributes_collection(attributes)
         if attributes.is_a?(Hash)
           attributes.map { |_, attributes| attributes }

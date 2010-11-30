@@ -1,10 +1,10 @@
 module DataMapper
   module NestedAttributes
 
-    # Extensions for DataMapper::Associations::Relationship
+    # Extensions for {DataMapper::Associations::Relationship}.
     module Relationship
       # Extracts the primary key values necessary to retrieve or update a nested
-      # model when using +accepts_nested_attributes_for+. Values are taken from
+      # model when using {Model#accepts_nested_attributes_for}. Values are taken from
       # the specified model and attribute hash with the former having priority.
       # Values for properties in the primary key that are *not* included in the
       # foreign key must be specified in the attributes hash.
@@ -22,7 +22,7 @@ module DataMapper
       end
     end
 
-    # Extensions for DataMapper::Associations::ManyToMany::Relationship
+    # Extensions for {DataMapper::Associations::ManyToMany::Relationship}.
     module ManyToMany
       def extract_keys_for_nested_attributes(model, attributes)
         keys = self.child_key.map do |key|
@@ -33,7 +33,7 @@ module DataMapper
       end
     end
 
-    # Extensions for DataMapper::Associations::OneToMany::Relationship
+    # Extensions for {DataMapper::Associations::OneToMany::Relationship}.
     module OneToMany
       def extract_keys_for_nested_attributes(model, attributes)
         keys = self.child_model.key.to_enum(:each_with_index).map do |key, idx|
@@ -48,7 +48,7 @@ module DataMapper
       end
     end
 
-    # Extensions for DataMapper::Associations::ManyToOne::Relationship
+    # Extensions for {DataMapper::Associations::ManyToOne::Relationship}.
     module ManyToOne
       def extract_keys_for_nested_attributes(model, attributes)
         keys = self.parent_model.key.to_enum(:each_with_index).map do |key, idx|
@@ -63,7 +63,7 @@ module DataMapper
       end
     end
 
-    # Extensions for DataMapper::Associations::OneToOne::Relationship
+    # Extensions for {DataMapper::Associations::OneToOne::Relationship}.
     module OneToOne
       def extract_keys_for_nested_attributes(model, attributes)
         keys = self.child_model.key.to_enum(:each_with_index).map do |key, idx|
