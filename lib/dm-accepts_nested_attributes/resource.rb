@@ -46,12 +46,22 @@ module DataMapper
       private
 
       ##
-      # Attribute hash keys that should not be assigned as normal attributes.
+      # Attribute hash keys that are excluded when creating a nested resource.
+      # Excluded attributes include :_delete, a special value used to mark a
+      # resource for destruction.
       #
-      # @return [#each]
-      #   The model key and :_delete, the latter being a special value
-      #   used to mark a resource for destruction
-      def unassignable_keys
+      # @return [Array<Symbol>] Excluded attribute names.
+      def uncreatable_keys
+        [:_delete]
+      end
+
+      ##
+      # Attribute hash keys that are excluded when updating a nested resource.
+      # Excluded attributes include the model key and :_delete, a special value
+      # used to mark a resource for destruction.
+      #
+      # @return [Array<Symbol>] Excluded attribute names.
+      def unupdatable_keys
         model.key.to_a.map { |property| property.name } << :_delete
       end
 
@@ -76,8 +86,10 @@ module DataMapper
       #   Assignment will happen on the target end of the relationship
       #
       # @param attributes [Hash]
-      #   The attributes to assign to the relationship's target end
-      #   All attributes except @see UNASSIGNABLE_KEYS will be assigned
+      #   The attributes to assign to the relationship's target end.
+      #   All attributes except {#uncreatable_keys} (for new resources) and
+      #   {#unupdatable_keys} (when updating an existing resource) will be
+      #   assigned.
       #
       # @return nil
       def assign_nested_attributes_for_related_resource(relationship, attributes)
@@ -92,7 +104,7 @@ module DataMapper
         end
 
         return if reject_new_record?(relationship, attributes)
-        new_record = relationship.target_model.new(attributes.except(*unassignable_keys))
+        new_record = relationship.target_model.new(attributes.except(*uncreatable_keys))
         relationship.set(self, new_record)
 
         nil
@@ -147,8 +159,10 @@ module DataMapper
       #   Assignment will happen on the target end of the relationship
       #
       # @param attributes_collection [Hash, Array]
-      #   The attributes to assign to the relationship's target end
-      #   All attributes except @see UNASSIGNABLE_KEYS will be assigned
+      #   The attributes to assign to the relationship's target end.
+      #   All attributes except {#uncreatable_keys} (for new resources) and
+      #   {#unupdatable_keys} (when updating an existing resource) will be
+      #   assigned.
       #
       # @return nil
       def assign_nested_attributes_for_related_collection(relationship, attributes_collection)
@@ -164,7 +178,7 @@ module DataMapper
           end
 
           next if reject_new_record?(relationship, attributes)
-          relationship.get(self).new(attributes.except(*unassignable_keys))
+          relationship.get(self).new(attributes.except(*uncreatable_keys))
         end
 
         nil
@@ -197,8 +211,8 @@ module DataMapper
       #   Assignment will happen on the target end of the relationship
       #
       # @param attributes [Hash]
-      #   The attributes to assign to the relationship's target end
-      #   All attributes except @see UNASSIGNABLE_KEYS will be assigned
+      #   The attributes to assign to the relationship's target end.
+      #   All attributes except {#unupdatable_keys} will be assigned.
       #
       # @return nil
       def update_or_mark_as_destroyable(relationship, resource, attributes)
@@ -211,7 +225,7 @@ module DataMapper
           destroyables << resource
         else
           assert_nested_update_clean_only(resource)
-          resource.attributes = attributes.except(*unassignable_keys)
+          resource.attributes = attributes.except(*unupdatable_keys)
           resource.save
         end
       end

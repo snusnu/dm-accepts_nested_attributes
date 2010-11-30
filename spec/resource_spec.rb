@@ -49,10 +49,17 @@ describe DataMapper::NestedAttributes::Resource do
     Project.all.destroy!
   end
 
-  describe "#unassignable_keys" do
+  describe "#uncreatable_keys" do
+    it "includes delete marker" do
+      Person.new.send(:uncreatable_keys).should == [:_delete]
+      Membership.new.send(:uncreatable_keys).should == [:_delete]
+    end
+  end
+
+  describe "#unupdateable_keys" do
     it "includes primary keys and delete marker" do
-      Person.new.send(:unassignable_keys).should == [:id, :_delete]
-      Membership.new.send(:unassignable_keys).should == [:person_id, :project_id, :_delete]
+      Person.new.send(:unupdatable_keys).should == [:id, :_delete]
+      Membership.new.send(:unupdatable_keys).should == [:person_id, :project_id, :_delete]
     end
   end
 end
