@@ -146,14 +146,14 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
           @model.options_for_nested_attributes[@association].should be_nil
           @model.accepts_nested_attributes_for @association
           relationship = @model.relationships[@association]
-          @model.options_for_nested_attributes[relationship].should_not be_nil
+          @model.options_for_nested_attributes[relationship.name].should_not be_nil
         end
 
         it "should store the default options under the association_name in .options_for_nested_attributes" do
           @model.options_for_nested_attributes[@association].should be_nil
           @model.accepts_nested_attributes_for @association
           relationship = @model.relationships[@association]
-          @model.options_for_nested_attributes[relationship].should == { :allow_destroy => false }
+          @model.options_for_nested_attributes[relationship.name].should == { :allow_destroy => false }
         end
 
         it "should create a \#{association_name}_attributes instance reader" do
@@ -184,14 +184,14 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
           @model.options_for_nested_attributes[@association].should be_nil
           @model.accepts_nested_attributes_for @association, {}
           relationship = @model.relationships[@association]
-          @model.options_for_nested_attributes[relationship].should_not be_nil
+          @model.options_for_nested_attributes[relationship.name].should_not be_nil
         end
 
         it "should store the default options under the association_name in .autosave_associations" do
           @model.options_for_nested_attributes[@association].should be_nil
           @model.accepts_nested_attributes_for @association, {}
           relationship = @model.relationships[@association]
-          @model.options_for_nested_attributes[relationship].should == { :allow_destroy => false }
+          @model.options_for_nested_attributes[relationship.name].should == { :allow_destroy => false }
         end
 
         it "should create a \#{association_name}_attributes instance reader" do
@@ -252,32 +252,32 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
           @model.options_for_nested_attributes[@association].should be_nil
           @model.accepts_nested_attributes_for @association, :allow_destroy => true
           relationship = @model.relationships[@association]
-          @model.options_for_nested_attributes[relationship].should_not be_nil
+          @model.options_for_nested_attributes[relationship.name].should_not be_nil
         end
 
         it "should accept :allow_destroy as the only option (and thus overwrite the default option)" do
           @model.options_for_nested_attributes[@association].should be_nil
           @model.accepts_nested_attributes_for @association, :allow_destroy => true
           relationship = @model.relationships[@association]
-          @model.options_for_nested_attributes[relationship].should == { :allow_destroy => true }
+          @model.options_for_nested_attributes[relationship.name].should == { :allow_destroy => true }
         end
 
         it "should accept :reject_if as the only option (and add :allow_destroy => false)" do
           @model.options_for_nested_attributes[@association].should be_nil
           @model.accepts_nested_attributes_for @association, :reject_if => lambda { |attributes| nil }
           relationship = @model.relationships[@association]
-          @model.options_for_nested_attributes[relationship].should_not be_nil
-          @model.options_for_nested_attributes[relationship][:allow_destroy].should be_false
-          @model.options_for_nested_attributes[relationship][:reject_if].should be_kind_of(Proc)
+          @model.options_for_nested_attributes[relationship.name].should_not be_nil
+          @model.options_for_nested_attributes[relationship.name][:allow_destroy].should be_false
+          @model.options_for_nested_attributes[relationship.name][:reject_if].should be_kind_of(Proc)
         end
 
         it "should accept both :allow_destroy and :reject_if as options" do
           @model.options_for_nested_attributes[@association].should be_nil
           @model.accepts_nested_attributes_for @association, :allow_destroy => true, :reject_if => lambda { |attributes| nil }
           relationship = @model.relationships[@association]
-          @model.options_for_nested_attributes[relationship].should_not be_nil
-          @model.options_for_nested_attributes[relationship][:allow_destroy].should be_true
-          @model.options_for_nested_attributes[relationship][:reject_if].should be_kind_of(Proc)
+          @model.options_for_nested_attributes[relationship.name].should_not be_nil
+          @model.options_for_nested_attributes[relationship.name][:allow_destroy].should be_true
+          @model.options_for_nested_attributes[relationship.name][:reject_if].should be_kind_of(Proc)
         end
 
         it "should create a \#{association_name}_attributes instance reader" do

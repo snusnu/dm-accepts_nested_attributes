@@ -1,5 +1,30 @@
 module DataMapper
   module NestedAttributes
+    class BackwardsCompatibilityHash < Hash
+      def initialize(model)
+        @model = model
+      end
+
+      def [](key)
+        if key.is_a?(DataMapper::Associations::Relationship)
+          warn "#{@model}#options_for_nested_attributes: Using a relationship " +
+               "as key is deprecated. Use the relationship name (i.e. " +
+               "#{key.name.inspect}) as key."
+          key = key.name
+        end
+        super(key)
+      end
+
+      def []=(key, value)
+        if key.is_a?(DataMapper::Associations::Relationship)
+          warn "#{@model}#options_for_nested_attributes: Using a relationship " +
+               "as key is deprecated. Use the relationship name (i.e. " +
+               "#{key.name.inspect}) as key."
+          key = key.name
+        end
+        super(key, value)
+      end
+    end
 
     ##
     # Named plugin exception that is raised by {Model#accepts_nested_attributes_for}
@@ -50,7 +75,7 @@ module DataMapper
         #                       should be safe to go from here
         # ----------------------------------------------------------------------------------
 
-        options_for_nested_attributes[relationship] = options
+        options_for_nested_attributes[relationship.name] = options
 
         include ::DataMapper::NestedAttributes::Resource
 
@@ -73,7 +98,7 @@ module DataMapper
       #
       # @return [Hash{DataMapper::Associations::Relationship => Hash}]
       def options_for_nested_attributes
-        @options_for_nested_attributes ||= {}
+        @options_for_nested_attributes ||= DataMapper::NestedAttributes::BackwardsCompatibilityHash.new(self)
       end
 
 
