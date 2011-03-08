@@ -104,7 +104,9 @@ module DataMapper
         end
 
         return if reject_new_record?(relationship, attributes)
-        new_record = relationship.target_model.new(attributes.except(*uncreatable_keys))
+
+        attributes = DataMapper::Ext::Hash.except(attributes, *uncreatable_keys)
+        new_record = relationship.target_model.new(attributes)
         relationship.set(self, new_record)
       end
 
@@ -176,7 +178,9 @@ module DataMapper
           end
 
           next if reject_new_record?(relationship, attributes)
-          relationship.get(self).new(attributes.except(*uncreatable_keys))
+
+          attributes = DataMapper::Ext::Hash.except(attributes, *uncreatable_keys)
+          relationship.get(self).new(attributes)
         end
 
         nil
@@ -225,7 +229,7 @@ module DataMapper
           destroyables << resource
         else
           assert_nested_update_clean_only(resource)
-          resource.attributes = attributes.except(*unupdatable_keys)
+          resource.attributes = DataMapper::Ext::Hash.except(attributes, *unupdatable_keys)
           resource.save
         end
       end
@@ -241,7 +245,7 @@ module DataMapper
       # @see TRUE_VALUES
       def has_delete_flag?(attributes)
         value = attributes[:_delete]
-        if value.is_a?(String) && value.blank?
+        if value.is_a?(String) && value !~ /\S/
           nil
         else
           TRUE_VALUES.include?(value)

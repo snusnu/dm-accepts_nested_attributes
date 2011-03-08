@@ -29,7 +29,7 @@ module DataMapper
           attributes[key.name]
         end
 
-        keys.any?(&:blank?) ? nil : keys
+        keys.any? { |key| DataMapper::Ext.blank?(key) } ? nil : keys
       end
     end
 
@@ -44,7 +44,7 @@ module DataMapper
           end
         end
 
-        keys.any?(&:blank?) ? nil : keys
+        keys.any? { |key| DataMapper::Ext.blank?(key) } ? nil : keys
       end
     end
 
@@ -59,7 +59,7 @@ module DataMapper
           end
         end
 
-        keys.any?(&:blank?) ? nil : keys
+        keys.any? { |key| DataMapper::Ext.blank?(key) } ? nil : keys
       end
     end
 
@@ -74,7 +74,7 @@ module DataMapper
           end
         end
 
-        keys.any?(&:blank?) ? nil : keys
+        keys.any? { |key| DataMapper::Ext.blank?(key) } ? nil : keys
       end
     end
 
