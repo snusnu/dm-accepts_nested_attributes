@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Martin Gamsjaeger (snusnu)"]
-  s.date = %q{2011-03-08}
+  s.date = %q{2011-03-19}
   s.description = %q{A datamapper plugin that allows nested model assignment like activerecord.}
   s.email = %q{gamsnjaga [a] gmail [d] com}
   s.extra_rdoc_files = [
@@ -115,7 +115,6 @@ Gem::Specification.new do |s|
     "spec/shared/one_to_one_composite_spec.rb",
     "spec/shared/one_to_one_spec.rb",
     "spec/spec_helper.rb",
-    "spec/t_spec.rb",
     "spec/update_dirty_spec.rb",
     "spec/update_multiple_spec.rb"
   ]
