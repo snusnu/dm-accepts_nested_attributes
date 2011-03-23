@@ -15,17 +15,15 @@ group :development do
   gem 'dm-validations',  DM_VERSION, DM_UVERSION, SOURCE => "#{DATAMAPPER}/dm-validations#{REPO_POSTFIX}"
   gem 'dm-constraints',  DM_VERSION, DM_UVERSION, SOURCE => "#{DATAMAPPER}/dm-constraints#{REPO_POSTFIX}"
 
-  gem 'rake',            '~> 0.8.7'
-  gem 'rspec',           '~> 1.3'
-  gem 'yard',            '~> 0.5'
-  gem 'jeweler',         '~> 1.5.2'
+  gem 'rake',      '~> 0.8.7'
+  gem 'rspec',     '~> 1.3'
+  gem 'yard',      '~> 0.5'
+  gem 'jeweler',   '~> 1.5.2'
 
 end
 
-platforms :mri_18 do
-  group :quality do
-    gem 'yardstick',     '~> 0.1'
-  end
+group :quality do
+  gem 'yardstick', '~> 0.1', :platforms => :mri_18
 end
 
 group :datamapper do
