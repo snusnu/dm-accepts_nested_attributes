@@ -285,12 +285,12 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
           p.respond_to?("#{@association}_attributes").should be_false
           @model.accepts_nested_attributes_for @association, :allow_destroy => true
           p = @model.new
-          p.respond_to?("#{@association}_attributes=").should be_true
+          p.respond_to?("#{@association}_attributes").should be_true
         end
 
         it "should create a \#{association_name}_attributes instance writer" do
           p = @model.new
-          p.respond_to?("#{@association}_attributes").should be_false
+          p.respond_to?("#{@association}_attributes=").should be_false
           @model.accepts_nested_attributes_for @association, :allow_destroy => true
           p = @model.new
           p.respond_to?("#{@association}_attributes=").should be_true
