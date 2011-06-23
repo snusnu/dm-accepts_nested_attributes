@@ -360,7 +360,7 @@ module DataMapper
       #   A collection of attribute hashes.
       def normalize_attributes_collection(attributes)
         if attributes.is_a?(Hash)
-          attributes.map { |_, attributes| attributes }
+          attributes.map { |_, attrs| attrs }
         else
           attributes
         end
