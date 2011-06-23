@@ -17,14 +17,14 @@ module DataMapper
       #   +model+.
       #
       # @return [Array]
-      def extract_keys_for_nested_attributes(model, attributes)
+      def extract_keys_for_nested_attributes(resource, attributes)
         raise NotImplementedError, "extract_keys must be overridden in a derived class"
       end
     end
 
     # Extensions for {DataMapper::Associations::ManyToMany::Relationship}.
     module ManyToMany
-      def extract_keys_for_nested_attributes(model, attributes)
+      def extract_keys_for_nested_attributes(resource, attributes)
         keys = self.child_key.map do |key|
           attributes[key.name]
         end
@@ -35,10 +35,10 @@ module DataMapper
 
     # Extensions for {DataMapper::Associations::OneToMany::Relationship}.
     module OneToMany
-      def extract_keys_for_nested_attributes(model, attributes)
+      def extract_keys_for_nested_attributes(resource, attributes)
         keys = self.child_model.key.to_enum(:each_with_index).map do |key, idx|
           if parent_idx = self.child_key.to_a.index(key)
-            model[self.parent_key.to_a.at(parent_idx).name]
+            resource[self.parent_key.to_a.at(parent_idx).name]
           else
             attributes[key.name]
           end
@@ -50,10 +50,10 @@ module DataMapper
 
     # Extensions for {DataMapper::Associations::ManyToOne::Relationship}.
     module ManyToOne
-      def extract_keys_for_nested_attributes(model, attributes)
+      def extract_keys_for_nested_attributes(resource, attributes)
         keys = self.parent_model.key.to_enum(:each_with_index).map do |key, idx|
           if child_idx = self.parent_key.to_a.index(key)
-            model[self.child_key.to_a.at(child_idx).name]
+            resource[self.child_key.to_a.at(child_idx).name]
           else
             attributes[key.name]
           end
@@ -65,10 +65,10 @@ module DataMapper
 
     # Extensions for {DataMapper::Associations::OneToOne::Relationship}.
     module OneToOne
-      def extract_keys_for_nested_attributes(model, attributes)
+      def extract_keys_for_nested_attributes(resource, attributes)
         keys = self.child_model.key.to_enum(:each_with_index).map do |key, idx|
           if parent_idx = self.child_key.to_a.index(key)
-            model[self.parent_key.to_a.at(parent_idx).name]
+            resource[self.parent_key.to_a.at(parent_idx).name]
           else
             attributes[key.name]
           end
