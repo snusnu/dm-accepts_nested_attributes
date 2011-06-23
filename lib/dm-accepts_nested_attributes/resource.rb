@@ -330,7 +330,7 @@ module DataMapper
       #
       # @return [void]
       def assert_hash_or_array_of_hashes(param_name, value)
-       if value.is_a?(Hash)
+        if value.is_a?(Hash)
           unless value.values.all? { |a| a.is_a?(Hash) }
             raise ArgumentError,
                   "+#{param_name}+ should be a Hash of Hashes or Array " +
@@ -360,7 +360,7 @@ module DataMapper
       #   A collection of attribute hashes.
       def normalize_attributes_collection(attributes)
         if attributes.is_a?(Hash)
-          attributes.map { |_, attributes| attributes }
+          attributes.map { |_, attrs| attrs }
         else
           attributes
         end
