@@ -17,61 +17,28 @@ module DataMapper
       #   +model+.
       #
       # @return [Array]
-      def extract_keys_for_nested_attributes(resource, attributes)
-        raise NotImplementedError, "extract_keys must be overridden in a derived class"
+      def extract_keys_for_nested_attributes(model, attributes)
+        target_model_key = self.target_model.key
+        target_key_array = self.target_key.to_a
+        source_key_array = self.source_key.to_a
+
+        keys = target_model_key.to_enum(:each_with_index).map do |key, idx|
+          if source_idx = target_key_array.index(key)
+            model[source_key_array.at(source_idx).name]
+          else
+            attributes[key.name]
+          end
+        end
+
+        keys.any? { |key| DataMapper::Ext.blank?(key) } ? nil : keys
       end
     end
 
     # Extensions for {DataMapper::Associations::ManyToMany::Relationship}.
     module ManyToMany
-      def extract_keys_for_nested_attributes(resource, attributes)
+      def extract_keys_for_nested_attributes(model, attributes)
         keys = self.child_key.map do |key|
           attributes[key.name]
-        end
-
-        keys.any? { |key| DataMapper::Ext.blank?(key) } ? nil : keys
-      end
-    end
-
-    # Extensions for {DataMapper::Associations::OneToMany::Relationship}.
-    module OneToMany
-      def extract_keys_for_nested_attributes(resource, attributes)
-        keys = self.child_model.key.to_enum(:each_with_index).map do |key, idx|
-          if parent_idx = self.child_key.to_a.index(key)
-            resource[self.parent_key.to_a.at(parent_idx).name]
-          else
-            attributes[key.name]
-          end
-        end
-
-        keys.any? { |key| DataMapper::Ext.blank?(key) } ? nil : keys
-      end
-    end
-
-    # Extensions for {DataMapper::Associations::ManyToOne::Relationship}.
-    module ManyToOne
-      def extract_keys_for_nested_attributes(resource, attributes)
-        keys = self.parent_model.key.to_enum(:each_with_index).map do |key, idx|
-          if child_idx = self.parent_key.to_a.index(key)
-            resource[self.child_key.to_a.at(child_idx).name]
-          else
-            attributes[key.name]
-          end
-        end
-
-        keys.any? { |key| DataMapper::Ext.blank?(key) } ? nil : keys
-      end
-    end
-
-    # Extensions for {DataMapper::Associations::OneToOne::Relationship}.
-    module OneToOne
-      def extract_keys_for_nested_attributes(resource, attributes)
-        keys = self.child_model.key.to_enum(:each_with_index).map do |key, idx|
-          if parent_idx = self.child_key.to_a.index(key)
-            resource[self.parent_key.to_a.at(parent_idx).name]
-          else
-            attributes[key.name]
-          end
         end
 
         keys.any? { |key| DataMapper::Ext.blank?(key) } ? nil : keys

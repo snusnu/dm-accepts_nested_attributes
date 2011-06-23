@@ -8,6 +8,3 @@ require 'dm-accepts_nested_attributes/relationship'
 DataMapper::Model.append_extensions(DataMapper::NestedAttributes::Model)
 DataMapper::Associations::Relationship.send(:include, DataMapper::NestedAttributes::Relationship)
 DataMapper::Associations::ManyToMany::Relationship.send(:include, DataMapper::NestedAttributes::ManyToMany)
-DataMapper::Associations::OneToMany::Relationship.send(:include, DataMapper::NestedAttributes::OneToMany)
-DataMapper::Associations::ManyToOne::Relationship.send(:include, DataMapper::NestedAttributes::ManyToOne)
-DataMapper::Associations::OneToOne::Relationship.send(:include, DataMapper::NestedAttributes::OneToOne)
