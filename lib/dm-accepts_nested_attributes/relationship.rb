@@ -17,14 +17,14 @@ module DataMapper
       #   +model+.
       #
       # @return [Array]
-      def extract_keys_for_nested_attributes(model, attributes)
+      def extract_keys_for_nested_attributes(resource, attributes)
         target_model_key = self.target_model.key
         target_key_array = self.target_key.to_a
         source_key_array = self.source_key.to_a
 
         keys = target_model_key.to_enum(:each_with_index).map do |key, idx|
           if source_idx = target_key_array.index(key)
-            model[source_key_array.at(source_idx).name]
+            resource[source_key_array.at(source_idx).name]
           else
             attributes[key.name]
           end
@@ -36,7 +36,7 @@ module DataMapper
 
     # Extensions for {DataMapper::Associations::ManyToMany::Relationship}.
     module ManyToMany
-      def extract_keys_for_nested_attributes(model, attributes)
+      def extract_keys_for_nested_attributes(resource, attributes)
         keys = self.child_key.map do |key|
           attributes[key.name]
         end
