@@ -14,6 +14,8 @@ describe "Person.has(1, :profile);" do
 
       has 1, :profile, constraint(:destroy)
       has 1, :address, :through => :profile
+      
+      accepts_nested_attributes_for(:profile)
 
     end
 
@@ -26,15 +28,16 @@ describe "Person.has(1, :profile);" do
 
       belongs_to :person
       has 1, :address
+      
+      accepts_nested_attributes_for(:address)
 
     end
-
+    
     class ::Address
 
       include DataMapper::Resource
 
       property :id,         Serial
-      property :profile_id, Integer, :required => true, :unique => true, :unique_index => true, :min => 0
       property :body,       String,  :required => true
 
       belongs_to :profile
@@ -50,8 +53,8 @@ describe "Person.has(1, :profile);" do
     Profile.all.destroy!
     Person.all.destroy!
   end
-
-
+  
+  
   describe "Person.accepts_nested_attributes_for(:profile)" do
 
     before(:all) do
