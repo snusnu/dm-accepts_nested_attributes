@@ -32,6 +32,7 @@ module DataMapper
             attributes[key.name]
           end
         end
+        key_values = target_model_key.typecast(key_values)
 
         verify_key_values_for_nested_attributes(key_values)
       end
