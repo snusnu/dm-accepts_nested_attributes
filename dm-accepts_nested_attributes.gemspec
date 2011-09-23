@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.version = "1.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Martin Gamsjaeger (snusnu)"]
-  s.date = %q{2011-03-19}
+  s.authors = [%q{Martin Gamsjaeger (snusnu)}]
+  s.date = %q{2011-09-23}
   s.description = %q{A datamapper plugin that allows nested model assignment like activerecord.}
   s.email = %q{gamsnjaga [a] gmail [d] com}
   s.extra_rdoc_files = [
@@ -77,79 +77,38 @@ Gem::Specification.new do |s|
     "tasks/yardstick.rake"
   ]
   s.homepage = %q{http://github.com/snusnu/dm-accepts_nested_attributes}
-  s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.5.2}
+  s.require_paths = [%q{lib}]
+  s.rubygems_version = %q{1.8.5}
   s.summary = %q{Nested model assignment for datamapper}
-  s.test_files = [
-    "spec/accepts_nested_attributes_for_spec.rb",
-    "spec/assign_nested_attributes_for_spec.rb",
-    "spec/comb/1-1_disjoint_spec.rb",
-    "spec/comb/1-1_overlapping_spec.rb",
-    "spec/comb/1-1_subset_spec.rb",
-    "spec/comb/1-1_superset_spec.rb",
-    "spec/comb/1-m_disjoint_spec.rb",
-    "spec/comb/1-m_overlapping_spec.rb",
-    "spec/comb/1-m_subset_spec.rb",
-    "spec/comb/1-m_superset_spec.rb",
-    "spec/comb/m-1_disjoint_spec.rb",
-    "spec/comb/m-1_overlapping_spec.rb",
-    "spec/comb/m-1_subset_spec.rb",
-    "spec/comb/m-1_superset_spec.rb",
-    "spec/comb/n-m_composite_spec.rb",
-    "spec/comb/n-m_surrogate_spec.rb",
-    "spec/many_to_many_composite_spec.rb",
-    "spec/many_to_many_spec.rb",
-    "spec/many_to_one_composite_spec.rb",
-    "spec/many_to_one_spec.rb",
-    "spec/one_to_many_composite_spec.rb",
-    "spec/one_to_many_spec.rb",
-    "spec/one_to_one_composite_spec.rb",
-    "spec/one_to_one_spec.rb",
-    "spec/resource_spec.rb",
-    "spec/shared/many_to_many_composite_spec.rb",
-    "spec/shared/many_to_many_spec.rb",
-    "spec/shared/many_to_one_composite_spec.rb",
-    "spec/shared/many_to_one_spec.rb",
-    "spec/shared/one_to_many_composite_spec.rb",
-    "spec/shared/one_to_many_spec.rb",
-    "spec/shared/one_to_one_composite_spec.rb",
-    "spec/shared/one_to_one_spec.rb",
-    "spec/spec_helper.rb",
-    "spec/update_dirty_spec.rb",
-    "spec/update_multiple_spec.rb"
-  ]
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<dm-core>, [">= 1.1.0.rc0", "< 1.2"])
-      s.add_development_dependency(%q<dm-validations>, [">= 1.1.0.rc0", "< 1.2"])
-      s.add_development_dependency(%q<dm-constraints>, [">= 1.1.0.rc0", "< 1.2"])
-      s.add_development_dependency(%q<rake>, ["~> 0.8.7"])
-      s.add_development_dependency(%q<rspec>, ["~> 1.3"])
-      s.add_development_dependency(%q<yard>, ["~> 0.5"])
-      s.add_development_dependency(%q<rcov>, ["~> 0.9.7"])
-      s.add_development_dependency(%q<jeweler>, ["~> 1.5.2"])
+      s.add_runtime_dependency(%q<dm-core>, ["~> 1.2.0.rc2"])
+      s.add_development_dependency(%q<dm-validations>, ["~> 1.2.0.rc2"])
+      s.add_development_dependency(%q<dm-constraints>, ["~> 1.2.0.rc2"])
+      s.add_development_dependency(%q<rake>, ["~> 0.9.2"])
+      s.add_development_dependency(%q<rspec>, ["~> 1.3.2"])
+      s.add_development_dependency(%q<yard>, ["~> 0.7.2"])
+      s.add_development_dependency(%q<jeweler>, ["~> 1.6.4"])
     else
-      s.add_dependency(%q<dm-core>, [">= 1.1.0.rc0", "< 1.2"])
-      s.add_dependency(%q<dm-validations>, [">= 1.1.0.rc0", "< 1.2"])
-      s.add_dependency(%q<dm-constraints>, [">= 1.1.0.rc0", "< 1.2"])
-      s.add_dependency(%q<rake>, ["~> 0.8.7"])
-      s.add_dependency(%q<rspec>, ["~> 1.3"])
-      s.add_dependency(%q<yard>, ["~> 0.5"])
-      s.add_dependency(%q<rcov>, ["~> 0.9.7"])
-      s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
+      s.add_dependency(%q<dm-core>, ["~> 1.2.0.rc2"])
+      s.add_dependency(%q<dm-validations>, ["~> 1.2.0.rc2"])
+      s.add_dependency(%q<dm-constraints>, ["~> 1.2.0.rc2"])
+      s.add_dependency(%q<rake>, ["~> 0.9.2"])
+      s.add_dependency(%q<rspec>, ["~> 1.3.2"])
+      s.add_dependency(%q<yard>, ["~> 0.7.2"])
+      s.add_dependency(%q<jeweler>, ["~> 1.6.4"])
     end
   else
-    s.add_dependency(%q<dm-core>, [">= 1.1.0.rc0", "< 1.2"])
-    s.add_dependency(%q<dm-validations>, [">= 1.1.0.rc0", "< 1.2"])
-    s.add_dependency(%q<dm-constraints>, [">= 1.1.0.rc0", "< 1.2"])
-    s.add_dependency(%q<rake>, ["~> 0.8.7"])
-    s.add_dependency(%q<rspec>, ["~> 1.3"])
-    s.add_dependency(%q<yard>, ["~> 0.5"])
-    s.add_dependency(%q<rcov>, ["~> 0.9.7"])
-    s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
+    s.add_dependency(%q<dm-core>, ["~> 1.2.0.rc2"])
+    s.add_dependency(%q<dm-validations>, ["~> 1.2.0.rc2"])
+    s.add_dependency(%q<dm-constraints>, ["~> 1.2.0.rc2"])
+    s.add_dependency(%q<rake>, ["~> 0.9.2"])
+    s.add_dependency(%q<rspec>, ["~> 1.3.2"])
+    s.add_dependency(%q<yard>, ["~> 0.7.2"])
+    s.add_dependency(%q<jeweler>, ["~> 1.6.4"])
   end
 end
 

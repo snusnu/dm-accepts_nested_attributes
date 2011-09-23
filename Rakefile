@@ -2,7 +2,6 @@ require 'rubygems'
 require 'rake'
 
 begin
-  gem 'jeweler', '~> 1.5.2'
   require 'jeweler'
 
   Jeweler::Tasks.new do |gem|
