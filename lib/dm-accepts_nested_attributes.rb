@@ -1,6 +1,7 @@
 require 'dm-core'
 
-require 'dm-accepts_nested_attributes/model'
+require 'data_mapper/nested_attributes/model'
+
 require 'dm-accepts_nested_attributes/resource'
 require 'dm-accepts_nested_attributes/relationship'
 
