@@ -79,17 +79,7 @@ module DataMapper
 
         include ::DataMapper::NestedAttributes::Resource
 
-        type = relationship.max > 1 ? :collection : :resource
-
-        define_method "#{association_name}_attributes" do
-          instance_variable_get("@#{association_name}_attributes")
-        end
-
-        define_method "#{association_name}_attributes=" do |attributes|
-          attributes = sanitize_nested_attributes(attributes)
-          instance_variable_set("@#{association_name}_attributes", attributes)
-          send("assign_nested_attributes_for_related_#{type}", relationship, attributes)
-        end
+        nested_attributes_module.define_nested_attribute_accessor(relationship)
 
       end
 
@@ -102,7 +92,35 @@ module DataMapper
       end
 
 
-      private
+    private
+
+      def nested_attributes_module
+        @nested_attributes_module ||= begin
+          mod = Module.new { extend NestedAttributes::Model::ModuleMethods }
+          include mod
+          mod
+        end
+      end
+
+      module ModuleMethods
+        def define_nested_attribute_accessor(relationship)
+          type = relationship.max > 1 ? :collection : :resource
+          name = relationship.name
+
+          module_eval <<-RUBY
+            def #{name}_attributes
+              @#{name}_attributes
+            end
+
+            def #{name}_attributes=(attributes)
+              attributes = sanitize_nested_attributes(attributes)
+              @#{name}_attributes = attributes
+              relationship = relationships[:#{name}]
+              assign_nested_attributes_for_related_#{type}(relationship, attributes)
+            end
+          RUBY
+        end
+      end
 
       ##
       # Checks options passed to {#accepts_nested_attributes_for}.
