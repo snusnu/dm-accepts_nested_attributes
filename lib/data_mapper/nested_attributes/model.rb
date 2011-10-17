@@ -1,3 +1,5 @@
+require 'data_mapper/nested_attributes/acceptor'
+
 module DataMapper
   module NestedAttributes
     class BackwardsCompatibilityHash < Hash
@@ -65,6 +67,10 @@ module DataMapper
           raise(ArgumentError, "No relationship #{association_name.inspect} for '#{name}' in :#{repository_name} repository")
         end
 
+        acceptor_factory = options.delete(:acceptor) || Acceptor
+        acceptor = acceptor_factory.new(relationship, options)
+        nested_attribute_acceptors[association_name] = acceptor
+
         # raise InvalidOptions if the given options don't make sense
         assert_valid_options_for_nested_attributes(options)
 
@@ -81,6 +87,11 @@ module DataMapper
 
         nested_attributes_module.define_nested_attribute_accessor(relationship)
 
+        self
+      end
+
+      def nested_attribute_acceptors
+        @nested_attribute_acceptors ||= Hash.new
       end
 
       # Returns a hash with the options for all associations (using the
@@ -113,10 +124,9 @@ module DataMapper
             end
 
             def #{name}_attributes=(attributes)
-              attributes = sanitize_nested_attributes(attributes)
-              @#{name}_attributes = attributes
-              relationship = relationships[:#{name}]
-              assign_nested_attributes_for_related_#{type}(relationship, attributes)
+              acceptor = model.nested_attribute_acceptors[:#{name}]
+              assigned_attributes = acceptor.accept(self, attributes)
+              @#{name}_attributes = assigned_attributes
             end
           RUBY
         end
