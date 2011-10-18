@@ -60,7 +60,9 @@ module DataMapper
         end
 
         if configuration.accept_new_resource?(assignee, attributes)
-          assign_new_resource(attributes)
+          new_related_resource = new_resource
+          filtered_attributes = creatable_attributes(new_related_resource, attributes)
+          new_related_resource.attributes = filtered_attributes
         end
 
         self
@@ -99,10 +101,8 @@ module DataMapper
           existing_related if existing_related && existing_related.key == key_values
         end
 
-        def assign_new_resource(attributes)
-          new_resource = relationship.target_model.new
-          new_resource.attributes = creatable_attributes(new_resource, attributes)
-          relationship.set(assignee, new_resource)
+        def new_resource
+          relationship.set(assignee, relationship.target_model.new)
         end
       end # class Resource
 
@@ -170,10 +170,8 @@ module DataMapper
           collection.get(*key_values)
         end
 
-        def assign_new_resource(attributes)
-          new_resource = collection.new(attributes)
-          new_resource.attributes = creatable_attributes(new_resource, attributes)
-          new_resource
+        def new_resource
+          collection.new
         end
 
         def collection
