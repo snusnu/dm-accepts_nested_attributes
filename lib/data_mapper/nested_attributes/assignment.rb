@@ -1,3 +1,5 @@
+require 'data_mapper/nested_attributes/key_values_extractor'
+
 module DataMapper
   module NestedAttributes
     class Assignment
@@ -26,47 +28,49 @@ module DataMapper
         @assignee     = assignee
       end
 
+      # Assigns the given attributes to the resource association.
+      #
+      # If the given attributes include the primary key values that match the
+      # existing record’s keys, then the existing record will be modified.
+      # Otherwise a new record will be built.
+      #
+      # If the given attributes include matching primary key values _and_ a
+      # <tt>:_delete</tt> key set to a truthy value, then the existing record
+      # will be marked for destruction.
+      #
+      # The names of the primary key values required depend on the configuration
+      # of the association. It is not necessary to specify values for attributes
+      # that exist on this resource as they are inferred.
+      #
+      # @param [Hash{Symbol => Object}] attributes
+      #   The attributes to assign to the relationship's target end.
+      #   All attributes except {#uncreatable_keys} (for new resources) and
+      #   {#unupdatable_keys} (when updating an existing resource) will be
+      #   assigned.
+      #
+      # @return [void]
       def assign(attributes)
-        raise NotImplementedError, "#{self.class}#assign is not implemented"
-      end
+        assert_kind_of 'attributes', attributes, Hash
 
-      class Resource < Assignment
-        # Assigns the given attributes to the resource association.
-        #
-        # If the given attributes include the primary key values that match the
-        # existing record’s keys, then the existing record will be modified.
-        # Otherwise a new record will be built.
-        #
-        # If the given attributes include matching primary key values _and_ a
-        # <tt>:_delete</tt> key set to a truthy value, then the existing record
-        # will be marked for destruction.
-        #
-        # The names of the primary key values required depend on the configuration
-        # of the association. It is not necessary to specify values for attributes
-        # that exist on this resource as they are inferred.
-        #
-        # @param [Hash{Symbol => Object}] attributes
-        #   The attributes to assign to the relationship's target end.
-        #   All attributes except {#uncreatable_keys} (for new resources) and
-        #   {#unupdatable_keys} (when updating an existing resource) will be
-        #   assigned.
-        #
-        # @return [void]
-        def assign(attributes)
-          assert_kind_of 'attributes', attributes, Hash
-
-          if key_values = acceptor.extract_key_values(assignee, attributes)
-            if existing_resource = existing_resource_for_key_values(key_values)
-              acceptor.update_or_mark_as_destroyable(assignee, existing_resource, attributes)
-              return self
-            end
+        if key_values = key_values_extractor.extract(attributes)
+          if existing_resource = existing_resource_for_key_values(key_values)
+            acceptor.update_or_mark_as_destroyable(assignee, existing_resource, attributes)
+            return self
           end
+        end
 
-          return self if acceptor.reject_new_record?(assignee, attributes)
-
+        unless acceptor.reject_new_resource?(assignee, attributes)
           assign_new_resource(attributes)
         end
 
+        self
+      end
+
+      def key_values_extractor
+        @key_values_extractor ||= acceptor.key_values_extractor_for(assignee)
+      end
+
+      class Resource < Assignment
         def existing_resource_for_key_values(key_values)
           existing_related = relationship.get(assignee)
           existing_related if existing_related && existing_related.key == key_values
@@ -134,9 +138,7 @@ module DataMapper
           assert_hash_or_array_of_hashes("attributes", attributes)
 
           attributes_collection = normalize_attributes_collection(attributes)
-          attributes_collection.each do |attributes|
-            super(attributes)
-          end
+          attributes_collection.each { |attrs| super(attrs) }
 
           self
         end

@@ -1,5 +1,6 @@
 require 'data_mapper/nested_attributes/assignment'
 require 'data_mapper/nested_attributes/assignment/guard'
+require 'data_mapper/nested_attributes/key_values_extractor'
 
 module DataMapper
   module NestedAttributes
@@ -83,87 +84,12 @@ module DataMapper
         assignee.__send__(:destroyables)
       end
 
-      # Extracts the primary key values necessary to retrieve or update a nested
-      # resource when using {Model#accepts_nested_attributes_for}. Values are taken from
-      # the specified resource and attribute hash with the former having priority.
-      # Values for properties in the primary key that are *not* included in the
-      # foreign key must be specified in the attributes hash.
-      #
-      # @param [DataMapper::Resource] resource
-      #   The resource that accepts nested attributes.
-      #
-      # @param [Hash] attributes
-      #   The attributes assigned to the nested attribute setter on the
-      #   +resource+.
-      #
-      # @return [Array, NilClass]
-      #   Array if valid key values are present, nil otherwise
-      # 
-      # @api private
-      def extract_key_values(resource, attributes)
-        raw_key_values = extract_target_primary_key_values(resource, attributes)
-        key_values     = target_model_key.typecast(raw_key_values)
-
-        verify_key_values(key_values)
+      def key_values_extractor_for(resource)
+        key_values_extractor_factory.new(relationship, resource)
       end
 
-      def extract_target_primary_key_values(resource, attributes)
-        target_model_key.map do |target_property|
-          if source_property = target_key_to_source_key_map[target_property]
-            resource[source_property.name]
-          else
-            attributes[target_property.name]
-          end
-        end
-      end
-
-      def target_key_to_source_key_map
-        @target_key_to_source_key_map ||=
-          Hash[target_key.to_a.zip(source_key.to_a)]
-      end
-
-      # @api private
-      def verify_key_values(key_values)
-        key_properties_and_values = target_model_key.zip(key_values)
-
-        invalid = key_properties_and_values.any? do |property, value|
-          verify_key_value(property, value)
-        end
-
-        invalid ? nil : key_values
-      end
-
-      # @return [Boolean]
-      #   whether +value+ is valid for +property+
-      # 
-      # @api private
-      # 
-      # TODO: move this into Property?
-      def verify_key_value(property, value)
-        case
-        when property.allow_nil?            then false
-        when property.allow_blank?          then value.nil?
-        when Property::Boolean === property then false
-        else
-          DataMapper::Ext.blank?(value)
-        end
-      end
-
-      # TODO: resolve Law of Demeter violation
-      def target_model_key
-        target_model.key
-      end
-
-      def target_model
-        relationship.target_model
-      end
-
-      def target_key
-        relationship.target_key
-      end
-
-      def source_key
-        relationship.source_key
+      def key_values_extractor_factory
+        KeyValuesExtractor
       end
 
       # Can be used to remove ambiguities from the passed attributes.
@@ -278,8 +204,7 @@ module DataMapper
       #
       # @return [Boolean]
       #   +true+ if the given attributes will be rejected.
-      def reject_new_record?(resource, attributes)
-        # if relationship guard is nil, nothing will be rejected
+      def reject_new_resource?(resource, attributes)
         assignment_guard.active? &&
           (has_delete_flag?(attributes) ||
           assignment_guard.reject?(resource, attributes))
@@ -318,12 +243,8 @@ module DataMapper
           super
         end
 
-        def extract_key_values(resource, attributes)
-          child_key      = relationship.child_key
-          raw_key_values = attributes.values_at(*child_key.map { |key| key.name })
-          key_values     = child_key.typecast(raw_key_values)
-
-          verify_key_values(key_values)
+        def key_values_extractor_factory
+          KeyValuesExtractor::ManyToMany
         end
       end # class ManyToMany
 
