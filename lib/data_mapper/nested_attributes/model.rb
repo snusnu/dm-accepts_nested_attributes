@@ -1,3 +1,4 @@
+require 'data_mapper/nested_attributes/resource'
 require 'data_mapper/nested_attributes/acceptor'
 
 module DataMapper

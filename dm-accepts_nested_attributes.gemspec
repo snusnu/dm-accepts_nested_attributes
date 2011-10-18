@@ -8,9 +8,9 @@ Gem::Specification.new do |s|
   s.version = "1.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Martin Gamsjaeger (snusnu)"]
+  s.authors = ["Martin Gamsjaeger (snusnu)", "Emmanuel Gomez"]
   s.date = %q{2011-03-19}
-  s.description = %q{A datamapper plugin that allows nested model assignment like activerecord.}
+  s.description = %q{A DataMapper plugin that allows attribute assignment to related resources (like ActiveRecord).}
   s.email = %q{gamsnjaga [a] gmail [d] com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -27,10 +27,13 @@ Gem::Specification.new do |s|
     "VERSION",
     "dm-accepts_nested_attributes.gemspec",
     "lib/dm-accepts_nested_attributes.rb",
-    "lib/dm-accepts_nested_attributes/model.rb",
-    "lib/dm-accepts_nested_attributes/relationship.rb",
-    "lib/dm-accepts_nested_attributes/resource.rb",
-    "lib/dm-accepts_nested_attributes/version.rb",
+    "lib/data_mapper/nested_attributes/model.rb",
+    "lib/data_mapper/nested_attributes/resource.rb",
+    "lib/data_mapper/nested_attributes/acceptor.rb",
+    "lib/data_mapper/nested_attributes/assignment.rb",
+    "lib/data_mapper/nested_attributes/assignment/guard.rb",
+    "lib/data_mapper/nested_attributes/key_values_extractor.rb",
+    "lib/data_mapper/nested_attributes/version.rb",
     "spec/accepts_nested_attributes_for_spec.rb",
     "spec/assign_nested_attributes_for_spec.rb",
     "spec/comb/1-1_disjoint_spec.rb",

@@ -10,7 +10,7 @@ module DataMapper
       TRUE_VALUES = [true, 1, '1', 't', 'T', 'true', 'TRUE'].to_set
 
       def self.for(relationship, options)
-        if relationship.kind_of?(DataMapper::Associations::ManyToMany::Relationship)
+        if relationship.kind_of?(Associations::ManyToMany::Relationship)
           Acceptor::ManyToMany.new(relationship, options)
         else
           Acceptor.new(relationship, options)
