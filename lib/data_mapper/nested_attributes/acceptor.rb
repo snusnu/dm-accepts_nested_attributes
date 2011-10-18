@@ -1,6 +1,7 @@
 require 'data_mapper/nested_attributes/assignment'
 require 'data_mapper/nested_attributes/assignment/guard'
 require 'data_mapper/nested_attributes/key_values_extractor'
+require 'data_mapper/nested_attributes/updater'
 
 module DataMapper
   module NestedAttributes
@@ -34,7 +35,7 @@ module DataMapper
 
       def accept(resource, attributes)
         sanitized_attributes = sanitize_attributes(resource, attributes)
-        assignment = assignment_factory.for(self, resource)
+        assignment = assignment_factory.for(resource, relationship, self)
         assignment.assign(sanitized_attributes)
         sanitized_attributes
       end
@@ -47,49 +48,20 @@ module DataMapper
         !collection?
       end
 
-      # Updates a record with the +attributes+ or marks it for destruction if
-      # the +:allow_destroy+ option is +true+ and {#delete_flagged?} returns
-      # +true+.
-      #
-      # @param [DataMapper::Resource] resource
-      #   The resource to be updated or destroyed
-      #
-      # @param [Hash{Symbol => Object}] attributes
-      #   The attributes to assign to the relationship's target end.
-      #   All attributes except {#unupdatable_keys} will be assigned.
-      #
-      # @return [void]
-      def update_or_mark_as_destroyable(assignee, resource, attributes)
-        if delete_flagged?(attributes) && allow_destroy?
-          mark_as_destroyable(assignee, resource)
-        else
-          update(resource, attributes)
-        end
-      end
-
-      def update(resource, attributes)
-        assert_nested_update_clean_only(resource)
-        resource.attributes = updatable_attributes(resource, attributes)
-        # TODO: do we really want to call +resource#save+ here?
-        #   after all, resource is set via a relationship on assignee;
-        #   +resource+ will receive a #save call via +assignee#save+
-        resource.save
-      end
-
-      def mark_as_destroyable(assignee, resource)
-        destroyables(assignee) << resource
-      end
-
-      def destroyables(assignee)
-        assignee.__send__(:destroyables)
-      end
-
       def key_values_extractor_for(resource)
         key_values_extractor_factory.new(relationship, resource)
       end
 
       def key_values_extractor_factory
         KeyValuesExtractor
+      end
+
+      def updater_for(resource)
+        updater_factory.new(resource, relationship, self)
+      end
+
+      def updater_factory
+        Updater
       end
 
       # Can be used to remove ambiguities from the passed attributes.
@@ -122,23 +94,6 @@ module DataMapper
       # resource for destruction.
       #
       # @param [DataMapper::Resource] resource
-      #   Resource for which +attributes+ will be filtered
-      #
-      # @param [Hash<Symbol => Object>] attributes
-      #   Attributes to be filtered according to which of its keys are
-      #   creatable in +resource+
-      #
-      # @return [Hash<Symbol => Object>]
-      #   Filtered attributes which are valida for creating +resource+
-      def creatable_attributes(resource, attributes)
-        DataMapper::Ext::Hash.except(attributes, *uncreatable_keys(resource))
-      end
-
-      # Attribute hash keys that are excluded when creating a nested resource.
-      # Excluded attributes include +:_delete+, a special value used to mark a
-      # resource for destruction.
-      #
-      # @param [DataMapper::Resource] resource
       #   Resource for which valid creatable attribute keys will be returned
       #
       # @return [Array<Symbol>] Excluded attribute names.
@@ -149,10 +104,6 @@ module DataMapper
         else
           [delete_key]
         end
-      end
-
-      def updatable_attributes(resource, attributes)
-        DataMapper::Ext::Hash.except(attributes, *unupdatable_keys(resource))
       end
 
       # Attribute hash keys that are excluded when updating a nested resource.
@@ -214,37 +165,14 @@ module DataMapper
         @assignment_factory || Assignment
       end
 
-      # Raises an exception if the specified resource is dirty or has dirty
-      # children.
-      #
-      # @param [DataMapper::Resource] resource
-      #   The resource to check.
-      #
-      # @return [void]
-      #
-      # @raise [UpdateConflictError]
-      #   If the resource is dirty.
-      #
-      # @api private
-      def assert_nested_update_clean_only(resource)
-        if resource.send(:dirty_self?) || resource.send(:dirty_children?)
-          new_or_dirty = resource.new? ? 'new' : 'dirty'
-          raise UpdateConflictError, "#{resource.model}#update cannot be called on a #{new_or_dirty} nested resource"
-        end
-      end
-
 
       class ManyToMany < Acceptor
-        def mark_as_destroyable(assignee, resource)
-          intermediary_collection = relationship.through.get(assignee)
-          intermediaries = intermediary_collection.all(relationship.via => resource)
-          intermediaries.each { |i| destroyables(assignee) << i }
-
-          super
-        end
-
         def key_values_extractor_factory
           KeyValuesExtractor::ManyToMany
+        end
+
+        def updater_factory
+          Updater::ManyToMany
         end
       end # class ManyToMany
 

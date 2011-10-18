@@ -5,27 +5,27 @@ module DataMapper
     class Assignment
       include Assertions
 
-      attr_reader :acceptor
-      attr_reader :relationship
       attr_reader :assignee
+      attr_reader :relationship
+      attr_reader :configuration
 
-      def self.for(acceptor, assignee)
-        if acceptor.collection?
-          Assignment::Collection.new(acceptor, assignee)
+      def self.for(assignee, relationship, configuration)
+        if configuration.collection?
+          Assignment::Collection.new(assignee, relationship, configuration)
         else
-          Assignment::Resource.new(acceptor, assignee)
+          Assignment::Resource.new(assignee, relationship, configuration)
         end
       end
 
-      # @param [DataMapper::NestedAttributes::Acceptor] acceptor
+      # @param [DataMapper::NestedAttributes::Acceptor] configuration
       #   Acceptor whose configuration will guide this Assignment.
       # 
       # @param [DataMapper::NestedAttributes::Resource] assignee
       #   Resource which is receiving the nested attribute assignment
-      def initialize(acceptor, assignee)
-        @acceptor     = acceptor
-        @relationship = acceptor.relationship
-        @assignee     = assignee
+      def initialize(assignee, relationship, configuration)
+        @assignee      = assignee
+        @relationship  = relationship
+        @configuration = configuration
       end
 
       # Assigns the given attributes to the resource association.
@@ -54,12 +54,12 @@ module DataMapper
 
         if key_values = key_values_extractor.extract(attributes)
           if existing_resource = existing_resource_for_key_values(key_values)
-            acceptor.update_or_mark_as_destroyable(assignee, existing_resource, attributes)
+            updater.update(existing_resource, attributes)
             return self
           end
         end
 
-        if acceptor.accept_new_resource?(assignee, attributes)
+        if configuration.accept_new_resource?(assignee, attributes)
           assign_new_resource(attributes)
         end
 
@@ -67,8 +67,31 @@ module DataMapper
       end
 
       def key_values_extractor
-        @key_values_extractor ||= acceptor.key_values_extractor_for(assignee)
+        @key_values_extractor ||= configuration.key_values_extractor_for(assignee)
       end
+
+      def updater
+        @updater ||= configuration.updater_for(assignee)
+      end
+
+      # Attribute hash keys that are excluded when creating a nested resource.
+      # Excluded attributes include +:_delete+, a special value used to mark a
+      # resource for destruction.
+      #
+      # @param [DataMapper::Resource] resource
+      #   Resource for which +attributes+ will be filtered
+      #
+      # @param [Hash<Symbol => Object>] attributes
+      #   Attributes to be filtered according to which of its keys are
+      #   creatable in +resource+
+      #
+      # @return [Hash<Symbol => Object>]
+      #   Filtered attributes which are valida for creating +resource+
+      def creatable_attributes(resource, attributes)
+        uncreatable_keys = configuration.uncreatable_keys(resource)
+        DataMapper::Ext::Hash.except(attributes, *uncreatable_keys)
+      end
+
 
       class Resource < Assignment
         def existing_resource_for_key_values(key_values)
@@ -78,7 +101,7 @@ module DataMapper
 
         def assign_new_resource(attributes)
           new_resource = relationship.target_model.new
-          new_resource.attributes = acceptor.creatable_attributes(new_resource, attributes)
+          new_resource.attributes = creatable_attributes(new_resource, attributes)
           relationship.set(assignee, new_resource)
         end
       end # class Resource
@@ -149,7 +172,7 @@ module DataMapper
 
         def assign_new_resource(attributes)
           new_resource = collection.new(attributes)
-          new_resource.attributes = acceptor.creatable_attributes(new_resource, attributes)
+          new_resource.attributes = creatable_attributes(new_resource, attributes)
           new_resource
         end
 

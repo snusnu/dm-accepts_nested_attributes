@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
     "lib/data_mapper/nested_attributes/assignment.rb",
     "lib/data_mapper/nested_attributes/assignment/guard.rb",
     "lib/data_mapper/nested_attributes/key_values_extractor.rb",
+    "lib/data_mapper/nested_attributes/updater",
     "lib/data_mapper/nested_attributes/version.rb",
     "spec/accepts_nested_attributes_for_spec.rb",
     "spec/assign_nested_attributes_for_spec.rb",
