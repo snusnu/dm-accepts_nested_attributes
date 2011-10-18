@@ -22,7 +22,7 @@ module DataMapper
       #
       # @return [void]
       def update(resource, attributes)
-        if configuration.delete_flagged?(attributes) && configuration.allow_destroy?
+        if configuration.allow_destroy? && configuration.delete_flagged?(attributes)
           mark_as_destroyable(resource)
         else
           update_attributes(resource, attributes)

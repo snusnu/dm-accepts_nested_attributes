@@ -35,8 +35,7 @@ module DataMapper
 
       def accept(resource, attributes)
         sanitized_attributes = sanitize_attributes(resource, attributes)
-        assignment = assignment_factory.for(resource, relationship, self)
-        assignment.assign(sanitized_attributes)
+        assignment_for(resource).assign(sanitized_attributes)
         sanitized_attributes
       end
 
@@ -46,6 +45,14 @@ module DataMapper
 
       def resource?
         !collection?
+      end
+
+      def assignment_for(resource)
+        assignment_factory.for(resource, self)
+      end
+
+      def assignment_factory
+        @assignment_factory || Assignment
       end
 
       def key_values_extractor_for(resource)
@@ -62,6 +69,18 @@ module DataMapper
 
       def updater_factory
         Updater
+      end
+
+      def get_associated(resource)
+        relationship.get(resource)
+      end
+
+      def set_associated(resource, associated)
+        relationship.set(resource, associated)
+      end
+
+      def new_target_model_instance
+        relationship.target_model.new
       end
 
       def intermediaries_between(source, target)
@@ -167,10 +186,6 @@ module DataMapper
         !assignment_guard.active? ||
           !delete_flagged?(attributes) &&
           assignment_guard.accept?(resource, attributes)
-      end
-
-      def assignment_factory
-        @assignment_factory || Assignment
       end
 
 

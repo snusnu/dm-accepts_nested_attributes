@@ -6,14 +6,13 @@ module DataMapper
       include Assertions
 
       attr_reader :assignee
-      attr_reader :relationship
       attr_reader :configuration
 
-      def self.for(assignee, relationship, configuration)
+      def self.for(assignee, configuration)
         if configuration.collection?
-          Assignment::Collection.new(assignee, relationship, configuration)
+          Assignment::Collection.new(assignee, configuration)
         else
-          Assignment::Resource.new(assignee, relationship, configuration)
+          Assignment::Resource.new(assignee, configuration)
         end
       end
 
@@ -22,9 +21,8 @@ module DataMapper
       # 
       # @param [DataMapper::NestedAttributes::Resource] assignee
       #   Resource which is receiving the nested attribute assignment
-      def initialize(assignee, relationship, configuration)
+      def initialize(assignee, configuration)
         @assignee      = assignee
-        @relationship  = relationship
         @configuration = configuration
       end
 
@@ -60,9 +58,9 @@ module DataMapper
         end
 
         if configuration.accept_new_resource?(assignee, attributes)
-          new_related_resource = new_resource
-          filtered_attributes = creatable_attributes(new_related_resource, attributes)
-          new_related_resource.attributes = filtered_attributes
+          new_resource = new_associated_resource
+          filtered_attributes = creatable_attributes(new_resource, attributes)
+          new_resource.attributes = filtered_attributes
         end
 
         self
@@ -74,6 +72,10 @@ module DataMapper
 
       def updater
         @updater ||= configuration.updater_for(assignee)
+      end
+
+      def associated
+        configuration.get_associated(assignee)
       end
 
       # Attribute hash keys that are excluded when creating a nested resource.
@@ -97,12 +99,14 @@ module DataMapper
 
       class Resource < Assignment
         def existing_resource_for_key_values(key_values)
-          existing_related = relationship.get(assignee)
-          existing_related if existing_related && existing_related.key == key_values
+          existing = associated
+          existing if existing && existing.key == key_values
         end
 
-        def new_resource
-          relationship.set(assignee, relationship.target_model.new)
+        def new_associated_resource
+          new_resource = configuration.new_target_model_instance
+          configuration.set_associated(assignee, new_resource)
+          new_resource
         end
       end # class Resource
 
@@ -167,15 +171,11 @@ module DataMapper
         end
 
         def existing_resource_for_key_values(key_values)
-          collection.get(*key_values)
+          associated.get(*key_values)
         end
 
-        def new_resource
-          collection.new
-        end
-
-        def collection
-          relationship.get(assignee)
+        def new_associated_resource
+          associated.new
         end
 
         # Make sure to return a collection of attribute hashes.
