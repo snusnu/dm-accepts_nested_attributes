@@ -1,11 +1,7 @@
 require 'dm-core'
 
 require 'data_mapper/nested_attributes/model'
-
-require 'dm-accepts_nested_attributes/resource'
-require 'dm-accepts_nested_attributes/relationship'
+require 'data_mapper/nested_attributes/resource'
 
 # Activate the plugin
 DataMapper::Model.append_extensions(DataMapper::NestedAttributes::Model)
-DataMapper::Associations::Relationship.send(:include, DataMapper::NestedAttributes::Relationship)
-DataMapper::Associations::ManyToMany::Relationship.send(:include, DataMapper::NestedAttributes::ManyToMany)

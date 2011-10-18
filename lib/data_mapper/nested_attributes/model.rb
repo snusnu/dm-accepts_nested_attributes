@@ -63,7 +63,7 @@ module DataMapper
         end
 
         acceptor_factory = options.delete(:acceptor) || Acceptor
-        acceptor = acceptor_factory.new(relationship, options)
+        acceptor = acceptor_factory.for(relationship, options)
         nested_attribute_acceptors[relationship_name] = acceptor
 
         # raise InvalidOptions if the given options don't make sense

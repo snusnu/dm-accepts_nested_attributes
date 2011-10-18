@@ -30,87 +30,6 @@ module DataMapper
         raise NotImplementedError, "#{self.class}#assign is not implemented"
       end
 
-      # Updates a record with the +attributes+ or marks it for destruction if
-      # the +:allow_destroy+ option is +true+ and {#has_delete_flag?} returns
-      # +true+.
-      #
-      # @param [DataMapper::Resource] resource
-      #   The resource to be updated or destroyed
-      #
-      # @param [Hash{Symbol => Object}] attributes
-      #   The attributes to assign to the relationship's target end.
-      #   All attributes except {#unupdatable_keys} will be assigned.
-      #
-      # @return [void]
-      def update_or_mark_as_destroyable(resource, attributes)
-        if acceptor.has_delete_flag?(attributes) && acceptor.allow_destroy?
-          mark_as_destroyable(resource)
-        else
-          update(resource, attributes)
-        end
-      end
-
-      def update(resource, attributes)
-        assert_nested_update_clean_only(resource)
-        resource.attributes = updatable_attributes(resource, attributes)
-        resource.save
-      end
-
-      def mark_as_destroyable(resource)
-        mark_intermediaries_as_destroyable(resource) if acceptor.many_to_many?
-        destroyables << resource
-      end
-
-      def mark_intermediaries_as_destroyable(resource)
-        intermediary_collection = relationship.through.get(assignee)
-        intermediaries = intermediary_collection.all(relationship.via => resource)
-        intermediaries.each { |intermediary| destroyables << intermediary }
-      end
-
-      def destroyables
-        assignee.__send__(:destroyables)
-      end
-
-      def creatable_attributes(resource, attributes)
-        DataMapper::Ext::Hash.except(attributes, *uncreatable_keys(resource))
-      end
-
-      def updatable_attributes(resource, attributes)
-        DataMapper::Ext::Hash.except(attributes, *unupdatable_keys(resource))
-      end
-
-      # Attribute hash keys that are excluded when creating a nested resource.
-      # Excluded attributes include +:_delete+, a special value used to mark a
-      # resource for destruction.
-      #
-      # @return [Array<Symbol>] Excluded attribute names.
-      def uncreatable_keys(resource)
-        acceptor.uncreatable_keys(resource)
-      end
-
-      def unupdatable_keys(resource)
-        acceptor.unupdatable_keys(resource)
-      end
-
-      # Raises an exception if the specified resource is dirty or has dirty
-      # children.
-      #
-      # @param [DataMapper::Resource] resource
-      #   The resource to check.
-      #
-      # @return [void]
-      #
-      # @raise [UpdateConflictError]
-      #   If the resource is dirty.
-      #
-      # @api private
-      def assert_nested_update_clean_only(resource)
-        if resource.send(:dirty_self?) || resource.send(:dirty_children?)
-          new_or_dirty = resource.new? ? 'new' : 'dirty'
-          raise UpdateConflictError, "#{resource.model}#update cannot be called on a #{new_or_dirty} nested resource"
-        end
-      end
-
       class Resource < Assignment
         # Assigns the given attributes to the resource association.
         #
@@ -136,9 +55,9 @@ module DataMapper
         def assign(attributes)
           assert_kind_of 'attributes', attributes, Hash
 
-          if key = acceptor.extract_key(assignee, attributes)
-            if existing_resource = existing_resource_for_key(key)
-              update_or_mark_as_destroyable(existing_resource, attributes)
+          if key_values = acceptor.extract_key_values(assignee, attributes)
+            if existing_resource = existing_resource_for_key_values(key_values)
+              acceptor.update_or_mark_as_destroyable(assignee, existing_resource, attributes)
               return self
             end
           end
@@ -148,14 +67,14 @@ module DataMapper
           assign_new_resource(attributes)
         end
 
-        def existing_resource_for_key(key)
+        def existing_resource_for_key_values(key_values)
           existing_related = relationship.get(assignee)
-          existing_related if existing_related && existing_related.key == key
+          existing_related if existing_related && existing_related.key == key_values
         end
 
         def assign_new_resource(attributes)
           new_resource = relationship.target_model.new
-          new_resource.attributes = creatable_attributes(new_resource, attributes)
+          new_resource.attributes = acceptor.creatable_attributes(new_resource, attributes)
           relationship.set(assignee, new_resource)
         end
       end # class Resource
@@ -222,13 +141,13 @@ module DataMapper
           self
         end
 
-        def existing_resource_for_key(key)
-          collection.get(*key)
+        def existing_resource_for_key_values(key_values)
+          collection.get(*key_values)
         end
 
         def assign_new_resource(attributes)
           new_resource = collection.new(attributes)
-          new_resource.attributes = creatable_attributes(new_resource, attributes)
+          new_resource.attributes = acceptor.creatable_attributes(new_resource, attributes)
           new_resource
         end
 

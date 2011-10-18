@@ -26,13 +26,13 @@ module DataMapper
       let(:options) { { :acceptor => acceptor_factory } }
 
       it 'passes the relationship as the first arg' do
-        acceptor_factory.expect(:new, acceptor, [relationship, Hash])
+        acceptor_factory.expect(:for, acceptor, [relationship, Hash])
 
         subject
       end
 
       it 'passes the options as the second arg' do
-        acceptor_factory.expect(:new, acceptor, [Associations::Relationship, options])
+        acceptor_factory.expect(:for, acceptor, [Associations::Relationship, options])
 
         subject
       end

@@ -8,6 +8,14 @@ module DataMapper
       # TODO: eliminate; replace with %w[1 t true].include?(value.to_s.downcase)
       TRUE_VALUES = [true, 1, '1', 't', 'T', 'true', 'TRUE'].to_set
 
+      def self.for(relationship, options)
+        if relationship.kind_of?(DataMapper::Associations::ManyToMany::Relationship)
+          Acceptor::ManyToMany.new(relationship, options)
+        else
+          Acceptor.new(relationship, options)
+        end
+      end
+
       attr_reader :relationship
       attr_reader :assignment_guard
       attr_writer :assignment_factory
@@ -38,23 +46,124 @@ module DataMapper
         !collection?
       end
 
-      def many_to_many?
-        relationship.kind_of?(DataMapper::Associations::ManyToMany::Relationship)
+      # Updates a record with the +attributes+ or marks it for destruction if
+      # the +:allow_destroy+ option is +true+ and {#has_delete_flag?} returns
+      # +true+.
+      #
+      # @param [DataMapper::Resource] resource
+      #   The resource to be updated or destroyed
+      #
+      # @param [Hash{Symbol => Object}] attributes
+      #   The attributes to assign to the relationship's target end.
+      #   All attributes except {#unupdatable_keys} will be assigned.
+      #
+      # @return [void]
+      def update_or_mark_as_destroyable(assignee, resource, attributes)
+        if has_delete_flag?(attributes) && allow_destroy?
+          mark_as_destroyable(assignee, resource)
+        else
+          update(resource, attributes)
+        end
+      end
+
+      def update(resource, attributes)
+        assert_nested_update_clean_only(resource)
+        resource.attributes = updatable_attributes(resource, attributes)
+        # TODO: do we really want to call +resource#save+ here?
+        #   after all, resource is set via a relationship on assignee;
+        #   +resource+ will receive a #save call via +assignee#save+
+        resource.save
+      end
+
+      def mark_as_destroyable(assignee, resource)
+        destroyables(assignee) << resource
+      end
+
+      def destroyables(assignee)
+        assignee.__send__(:destroyables)
       end
 
       # Extracts the primary key values necessary to retrieve or update a nested
-      # model when using +accepts_nested_attributes_for+. Values are taken from
-      # +assignee+ and the given attribute hash with the former having priority.
+      # resource when using {Model#accepts_nested_attributes_for}. Values are taken from
+      # the specified resource and attribute hash with the former having priority.
       # Values for properties in the primary key that are *not* included in the
       # foreign key must be specified in the attributes hash.
       #
-      # @param [Hash{Symbol => Object}] attributes
-      #   The attributes assigned to the nested attribute setter on the
-      #   +model+.
+      # @param [DataMapper::Resource] resource
+      #   The resource that accepts nested attributes.
       #
-      # @return [Array]
-      def extract_key(resource, attributes)
-        relationship.extract_keys_for_nested_attributes(resource, attributes)
+      # @param [Hash] attributes
+      #   The attributes assigned to the nested attribute setter on the
+      #   +resource+.
+      #
+      # @return [Array, NilClass]
+      #   Array if valid key values are present, nil otherwise
+      # 
+      # @api private
+      def extract_key_values(resource, attributes)
+        raw_key_values = extract_target_primary_key_values(resource, attributes)
+        key_values     = target_model_key.typecast(raw_key_values)
+
+        verify_key_values(key_values)
+      end
+
+      def extract_target_primary_key_values(resource, attributes)
+        target_model_key.map do |target_property|
+          if source_property = target_key_to_source_key_map[target_property]
+            resource[source_property.name]
+          else
+            attributes[target_property.name]
+          end
+        end
+      end
+
+      def target_key_to_source_key_map
+        @target_key_to_source_key_map ||=
+          Hash[target_key.to_a.zip(source_key.to_a)]
+      end
+
+      # @api private
+      def verify_key_values(key_values)
+        key_properties_and_values = target_model_key.zip(key_values)
+
+        invalid = key_properties_and_values.any? do |property, value|
+          verify_key_value(property, value)
+        end
+
+        invalid ? nil : key_values
+      end
+
+      # @return [Boolean]
+      #   whether +value+ is valid for +property+
+      # 
+      # @api private
+      # 
+      # TODO: move this into Property?
+      def verify_key_value(property, value)
+        case
+        when property.allow_nil?            then false
+        when property.allow_blank?          then value.nil?
+        when Property::Boolean === property then false
+        else
+          DataMapper::Ext.blank?(value)
+        end
+      end
+
+      # TODO: resolve Law of Demeter violation
+      def target_model_key
+        target_model.key
+      end
+
+      def target_model
+        relationship.target_model
+      end
+
+      def target_key
+        relationship.target_key
+      end
+
+      def source_key
+        relationship.source_key
       end
 
       # Can be used to remove ambiguities from the passed attributes.
@@ -86,6 +195,26 @@ module DataMapper
       # Excluded attributes include +:_delete+, a special value used to mark a
       # resource for destruction.
       #
+      # @param [DataMapper::Resource] resource
+      #   Resource for which +attributes+ will be filtered
+      #
+      # @param [Hash<Symbol => Object>] attributes
+      #   Attributes to be filtered according to which of its keys are
+      #   creatable in +resource+
+      #
+      # @return [Hash<Symbol => Object>]
+      #   Filtered attributes which are valida for creating +resource+
+      def creatable_attributes(resource, attributes)
+        DataMapper::Ext::Hash.except(attributes, *uncreatable_keys(resource))
+      end
+
+      # Attribute hash keys that are excluded when creating a nested resource.
+      # Excluded attributes include +:_delete+, a special value used to mark a
+      # resource for destruction.
+      #
+      # @param [DataMapper::Resource] resource
+      #   Resource for which valid creatable attribute keys will be returned
+      #
       # @return [Array<Symbol>] Excluded attribute names.
       def uncreatable_keys(resource)
         if resource.respond_to?(:uncreatable_keys)
@@ -96,9 +225,16 @@ module DataMapper
         end
       end
 
+      def updatable_attributes(resource, attributes)
+        DataMapper::Ext::Hash.except(attributes, *unupdatable_keys(resource))
+      end
+
       # Attribute hash keys that are excluded when updating a nested resource.
       # Excluded attributes include the model key and :_delete, a special value
       # used to mark a resource for destruction.
+      #
+      # @param [DataMapper::Resource] resource
+      #   Resource for which valid updatable attribute keys will be returned
       #
       # @return [Array<Symbol>] Excluded attribute names.
       def unupdatable_keys(resource)
@@ -152,6 +288,44 @@ module DataMapper
       def assignment_factory
         @assignment_factory || Assignment
       end
+
+      # Raises an exception if the specified resource is dirty or has dirty
+      # children.
+      #
+      # @param [DataMapper::Resource] resource
+      #   The resource to check.
+      #
+      # @return [void]
+      #
+      # @raise [UpdateConflictError]
+      #   If the resource is dirty.
+      #
+      # @api private
+      def assert_nested_update_clean_only(resource)
+        if resource.send(:dirty_self?) || resource.send(:dirty_children?)
+          new_or_dirty = resource.new? ? 'new' : 'dirty'
+          raise UpdateConflictError, "#{resource.model}#update cannot be called on a #{new_or_dirty} nested resource"
+        end
+      end
+
+
+      class ManyToMany < Acceptor
+        def mark_as_destroyable(assignee, resource)
+          intermediary_collection = relationship.through.get(assignee)
+          intermediaries = intermediary_collection.all(relationship.via => resource)
+          intermediaries.each { |i| destroyables(assignee) << i }
+
+          super
+        end
+
+        def extract_key_values(resource, attributes)
+          child_key      = relationship.child_key
+          raw_key_values = attributes.values_at(*child_key.map { |key| key.name })
+          key_values     = child_key.typecast(raw_key_values)
+
+          verify_key_values(key_values)
+        end
+      end # class ManyToMany
 
     end # class Acceptor
   end # module NestedAttributes
