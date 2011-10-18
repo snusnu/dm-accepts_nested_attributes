@@ -57,11 +57,19 @@ module DataMapper
       end
 
       def updater_for(resource)
-        updater_factory.new(resource, relationship, self)
+        updater_factory.new(resource, self)
       end
 
       def updater_factory
         Updater
+      end
+
+      def intermediaries_between(source, target)
+        intermediary_collection(source).all(relationship.via => target)
+      end
+
+      def intermediary_collection(source)
+        relationship.through.get(source)
       end
 
       # Can be used to remove ambiguities from the passed attributes.

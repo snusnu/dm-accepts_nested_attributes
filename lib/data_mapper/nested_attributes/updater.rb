@@ -2,12 +2,10 @@ module DataMapper
   module NestedAttributes
     class Updater
       attr_reader :assignee
-      attr_reader :relationship
       attr_reader :configuration
 
-      def initialize(assignee, relationship, configuration)
+      def initialize(assignee, configuration)
         @assignee      = assignee
-        @relationship  = relationship
         @configuration = configuration
       end
 
@@ -83,11 +81,7 @@ module DataMapper
         end
 
         def intermediaries_to(resource)
-          intermediary_collection.all(relationship.via => resource)
-        end
-
-        def intermediary_collection
-          relationship.through.get(assignee)
+          configuration.intermediaries_between(assignee, resource)
         end
 
       end # class ManyToMany
