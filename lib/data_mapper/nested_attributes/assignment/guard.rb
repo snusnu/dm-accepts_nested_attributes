@@ -21,6 +21,10 @@ module DataMapper
           @value = value
         end
 
+        def accept?(resource, attributes)
+          !reject?(resource, attributes)
+        end
+
         def reject?(resource, attributes)
           raise NotImplementedError, "#{self.class}#reject? is not implemented"
         end

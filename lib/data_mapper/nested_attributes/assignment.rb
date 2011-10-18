@@ -59,7 +59,7 @@ module DataMapper
           end
         end
 
-        unless acceptor.reject_new_resource?(assignee, attributes)
+        if acceptor.accept_new_resource?(assignee, attributes)
           assign_new_resource(attributes)
         end
 

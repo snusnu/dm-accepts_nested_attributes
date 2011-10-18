@@ -48,7 +48,7 @@ module DataMapper
       end
 
       # Updates a record with the +attributes+ or marks it for destruction if
-      # the +:allow_destroy+ option is +true+ and {#has_delete_flag?} returns
+      # the +:allow_destroy+ option is +true+ and {#delete_flagged?} returns
       # +true+.
       #
       # @param [DataMapper::Resource] resource
@@ -60,7 +60,7 @@ module DataMapper
       #
       # @return [void]
       def update_or_mark_as_destroyable(assignee, resource, attributes)
-        if has_delete_flag?(attributes) && allow_destroy?
+        if delete_flagged?(attributes) && allow_destroy?
           mark_as_destroyable(assignee, resource)
         else
           update(resource, attributes)
@@ -185,7 +185,7 @@ module DataMapper
       #   +true+ if attributes contains a truthy :_delete key.
       #
       # @see TRUE_VALUES
-      def has_delete_flag?(attributes)
+      def delete_flagged?(attributes)
         value = attributes[delete_key]
         if value.is_a?(String) && value !~ /\S/
           nil
@@ -195,19 +195,19 @@ module DataMapper
       end
 
       # Determines if a new record should be built with the given attributes.
-      # Rejects a new record if {#has_delete_flag?} returns +true+ for the given
+      # Rejects a new record if {#delete_flagged?} returns +true+ for the given
       # attributes, or if a +:reject_if+ guard exists for the passed relationship
       # that evaluates to +true+.
       #
       # @param [Hash{Symbol => Object}] attributes
-      #   The attributes to test with {#has_delete_flag?}.
+      #   The attributes to test with {#delete_flagged?}.
       #
       # @return [Boolean]
       #   +true+ if the given attributes will be rejected.
-      def reject_new_resource?(resource, attributes)
-        assignment_guard.active? &&
-          (has_delete_flag?(attributes) ||
-          assignment_guard.reject?(resource, attributes))
+      def accept_new_resource?(resource, attributes)
+        !assignment_guard.active? ||
+          !delete_flagged?(attributes) &&
+          assignment_guard.accept?(resource, attributes)
       end
 
       def assignment_factory
