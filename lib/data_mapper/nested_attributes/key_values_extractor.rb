@@ -1,8 +1,17 @@
+require 'forwardable'
+
 module DataMapper
   module NestedAttributes
     class KeyValuesExtractor
+      extend Forwardable
+
       attr_reader :relationship
       attr_reader :resource
+
+      def_delegators :relationship, :target_model, :target_key, :source_key
+      def_delegator  :target_model, :key, :target_model_key
+
+      alias_method :casting_key, :target_model_key
 
       def initialize(relationship, resource)
         @relationship = relationship
@@ -72,34 +81,14 @@ module DataMapper
         end
       end
 
-      def target_model_key
-        target_model.key
-      end
-
-      alias_method :casting_key, :target_model_key
-
-      def target_model
-        relationship.target_model
-      end
-
-      def target_key
-        relationship.target_key
-      end
-
-      def source_key
-        relationship.source_key
-      end
-
       class ManyToMany < KeyValuesExtractor
+        def_delegators :relationship, :child_key
+
+        alias_method :casting_key, :child_key
+
         def extract_raw_key_values(attributes)
           attributes.values_at(*child_key.map { |property| property.name })
         end
-
-        def child_key
-          relationship.child_key
-        end
-
-        alias_method :casting_key, :child_key
 
       end # class ManyToMany
 
