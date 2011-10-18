@@ -7,18 +7,19 @@ module DataMapper
       attr_reader :relationship
       attr_reader :assignee
 
-      def self.for_collection(acceptor, assignee)
-        Assignment::Collection.new(acceptor, assignee)
+      def self.for(acceptor, assignee)
+        if acceptor.collection?
+          Assignment::Collection.new(acceptor, assignee)
+        else
+          Assignment::Resource.new(acceptor, assignee)
+        end
       end
 
-      def self.for_resource(acceptor, assignee)
-        Assignment::Resource.new(acceptor, assignee)
-      end
-
-      # @param [DataMapper::Associations::Relationship] relationship
-      #   The relationship backing the association.
-      #   Assignment will happen on the target end of the relationship
-      #
+      # @param [DataMapper::NestedAttributes::Acceptor] acceptor
+      #   Acceptor whose configuration will guide this Assignment.
+      # 
+      # @param [DataMapper::NestedAttributes::Resource] assignee
+      #   Resource which is receiving the nested attribute assignment
       def initialize(acceptor, assignee)
         @acceptor     = acceptor
         @relationship = acceptor.relationship
@@ -27,21 +28,6 @@ module DataMapper
 
       def assign(attributes)
         raise NotImplementedError, "#{self.class}#assign is not implemented"
-      end
-
-      # Extracts the primary key values necessary to retrieve or update a nested
-      # model when using +accepts_nested_attributes_for+. Values are taken from
-      # +assignee+ and the given attribute hash with the former having priority.
-      # Values for properties in the primary key that are *not* included in the
-      # foreign key must be specified in the attributes hash.
-      #
-      # @param [Hash{Symbol => Object}] attributes
-      #   The attributes assigned to the nested attribute setter on the
-      #   +model+.
-      #
-      # @return [Array]
-      def extract_keys(attributes)
-        relationship.extract_keys_for_nested_attributes(assignee, attributes)
       end
 
       # Updates a record with the +attributes+ or marks it for destruction if
@@ -150,8 +136,8 @@ module DataMapper
         def assign(attributes)
           assert_kind_of 'attributes', attributes, Hash
 
-          if keys = extract_keys(attributes)
-            if existing_resource = existing_resource_for_key(keys)
+          if key = acceptor.extract_key(assignee, attributes)
+            if existing_resource = existing_resource_for_key(key)
               update_or_mark_as_destroyable(existing_resource, attributes)
               return self
             end

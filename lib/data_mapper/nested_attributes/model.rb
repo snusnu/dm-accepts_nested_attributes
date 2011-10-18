@@ -38,8 +38,8 @@ module DataMapper
       ##
       # Allows an association to accept nested attributes.
       #
-      # @param [Symbol, String] association_name
-      #   The name of the association that should accept nested attributes.
+      # @param [Symbol, String] relationship_name
+      #   The name of the Relationship that should accept nested attributes.
       #
       # @param [Hash?] options
       #   List of resources to initialize the collection with.
@@ -57,19 +57,14 @@ module DataMapper
       #
       # @return [void]
       #
-      def accepts_nested_attributes_for(association_name, options = {})
-
-        # ----------------------------------------------------------------------------------
-        #                      try to fail as early as possible
-        # ----------------------------------------------------------------------------------
-
-        unless relationship = relationships(repository_name)[association_name]
-          raise(ArgumentError, "No relationship #{association_name.inspect} for '#{name}' in :#{repository_name} repository")
+      def accepts_nested_attributes_for(relationship_name, options = {})
+        unless relationship = relationships(repository_name)[relationship_name]
+          raise(ArgumentError, "No relationship #{relationship_name.inspect} for '#{name}' in :#{repository_name} repository")
         end
 
         acceptor_factory = options.delete(:acceptor) || Acceptor
         acceptor = acceptor_factory.new(relationship, options)
-        nested_attribute_acceptors[association_name] = acceptor
+        nested_attribute_acceptors[relationship_name] = acceptor
 
         # raise InvalidOptions if the given options don't make sense
         assert_valid_options_for_nested_attributes(options)
@@ -85,7 +80,7 @@ module DataMapper
 
         include ::DataMapper::NestedAttributes::Resource
 
-        nested_attributes_module.define_nested_attribute_accessor(relationship)
+        nested_attributes_module.define_nested_attribute_accessor(relationship_name)
 
         self
       end
@@ -114,19 +109,16 @@ module DataMapper
       end
 
       module ModuleMethods
-        def define_nested_attribute_accessor(relationship)
-          type = relationship.max > 1 ? :collection : :resource
-          name = relationship.name
-
+        def define_nested_attribute_accessor(relationship_name)
           module_eval <<-RUBY
-            def #{name}_attributes
-              @#{name}_attributes
+            def #{relationship_name}_attributes
+              @#{relationship_name}_attributes
             end
 
-            def #{name}_attributes=(attributes)
-              acceptor = model.nested_attribute_acceptors[:#{name}]
+            def #{relationship_name}_attributes=(attributes)
+              acceptor = model.nested_attribute_acceptors[:#{relationship_name}]
               assigned_attributes = acceptor.accept(self, attributes)
-              @#{name}_attributes = assigned_attributes
+              @#{relationship_name}_attributes = assigned_attributes
             end
           RUBY
         end

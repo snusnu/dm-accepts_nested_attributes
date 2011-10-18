@@ -2,9 +2,10 @@ require 'minitest_helper'
 
 module DataMapper
   describe DataMapper::NestedAttributes, '#accepts_nested_attributes_for' do
-    let(:options) { { :allow_destroy => true } }
-    let(:parent) { Source}
+    let(:options) { { } }
+    let(:parent) { Source }
     let(:relationship_name) { :targets }
+    let(:relationship) { parent.relationships[relationship_name] }
 
     subject { Source.accepts_nested_attributes_for(relationship_name, options) }
 
@@ -19,17 +20,22 @@ module DataMapper
       assert_kind_of NestedAttributes::Acceptor, acceptors[relationship_name]
     end
 
-    it 'initializes the stored Acceptor with the expected relationship' do
-      acceptor = subject.nested_attribute_acceptors[relationship_name]
-      expected_relationship = subject.relationships[relationship_name]
+    describe 'Acceptor initialization' do
+      let(:acceptor_factory) { MiniTest::Mock.new }
+      let(:acceptor) { MiniTest::Mock.new }
+      let(:options) { { :acceptor => acceptor_factory } }
 
-      assert_same expected_relationship, acceptor.relationship
-    end
+      it 'passes the relationship as the first arg' do
+        acceptor_factory.expect(:new, acceptor, [relationship, Hash])
 
-    it 'initializes the stored Acceptor with the expected allow_destroy value' do
-      acceptor = subject.nested_attribute_acceptors[relationship_name]
+        subject
+      end
 
-      assert_same true, acceptor.allow_destroy?
+      it 'passes the options as the second arg' do
+        acceptor_factory.expect(:new, acceptor, [Associations::Relationship, options])
+
+        subject
+      end
     end
 
   end

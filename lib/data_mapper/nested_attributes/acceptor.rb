@@ -15,25 +15,19 @@ module DataMapper
       def initialize(relationship, options)
         @relationship     = relationship
         @allow_destroy    = !!options.fetch(:allow_destroy, false)
-        @assignment_guard = Assignment::Guard.for(options.fetch(:reject_if, nil))
+        guard_factory     = options.fetch(:guard_factory) { Assignment::Guard }
+        @assignment_guard = guard_factory.for(options.fetch(:reject_if, nil))
       end
 
       def allow_destroy?
         @allow_destroy
       end
 
-      def accept(assignee, attributes)
-        sanitized_attributes = sanitize_attributes(assignee, attributes)
-        assignment_for(assignee, sanitized_attributes).assign(attributes)
+      def accept(resource, attributes)
+        sanitized_attributes = sanitize_attributes(resource, attributes)
+        assignment = assignment_factory.for(self, resource)
+        assignment.assign(sanitized_attributes)
         sanitized_attributes
-      end
-
-      def assignment_for(assignee, attributes)
-        if collection?
-          assignment_factory.for_collection(self, assignee)
-        else
-          assignment_factory.for_resource(self, assignee)
-        end
       end
 
       def collection?
@@ -45,7 +39,22 @@ module DataMapper
       end
 
       def many_to_many?
-        relationship.is_a?(DataMapper::Associations::ManyToMany::Relationship)
+        relationship.kind_of?(DataMapper::Associations::ManyToMany::Relationship)
+      end
+
+      # Extracts the primary key values necessary to retrieve or update a nested
+      # model when using +accepts_nested_attributes_for+. Values are taken from
+      # +assignee+ and the given attribute hash with the former having priority.
+      # Values for properties in the primary key that are *not* included in the
+      # foreign key must be specified in the attributes hash.
+      #
+      # @param [Hash{Symbol => Object}] attributes
+      #   The attributes assigned to the nested attribute setter on the
+      #   +model+.
+      #
+      # @return [Array]
+      def extract_key(resource, attributes)
+        relationship.extract_keys_for_nested_attributes(resource, attributes)
       end
 
       # Can be used to remove ambiguities from the passed attributes.
@@ -64,10 +73,10 @@ module DataMapper
       #
       # @return [Hash]
       #   The sanitized attributes.
-      def sanitize_attributes(assignee, attributes)
-        if assignee.respond_to?(:sanitize_attributes)
+      def sanitize_attributes(resource, attributes)
+        if resource.respond_to?(:sanitize_attributes)
           # TODO: issue deprecation warning for Resource#sanitize_attributes
-          assignee.sanitize_attributes(attributes)
+          resource.sanitize_attributes(attributes)
         else
           attributes
         end
@@ -80,6 +89,7 @@ module DataMapper
       # @return [Array<Symbol>] Excluded attribute names.
       def uncreatable_keys(resource)
         if resource.respond_to?(:uncreatable_keys)
+          # TODO: deprecation warning about Resource#uncreatable_keys
           resource.uncreatable_keys
         else
           [delete_key]
@@ -93,6 +103,7 @@ module DataMapper
       # @return [Array<Symbol>] Excluded attribute names.
       def unupdatable_keys(resource)
         if resource.respond_to?(:unupdatable_keys)
+          # TODO: deprecation warning about Resource#unupdatable_keys
           resource.unupdatable_keys
         else
           resource.model.key.map { |property| property.name } << delete_key
@@ -113,7 +124,7 @@ module DataMapper
       #
       # @see TRUE_VALUES
       def has_delete_flag?(attributes)
-        value = attributes.fetch(:_delete) { attributes['_delete'] }
+        value = attributes[delete_key]
         if value.is_a?(String) && value !~ /\S/
           nil
         else

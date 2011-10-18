@@ -4,8 +4,8 @@ module DataMapper
     # Extensions for {DataMapper::Associations::Relationship}.
     module Relationship
       # Extracts the primary key values necessary to retrieve or update a nested
-      # model when using {Model#accepts_nested_attributes_for}. Values are taken from
-      # the specified model and attribute hash with the former having priority.
+      # resource when using {Model#accepts_nested_attributes_for}. Values are taken from
+      # the specified resource and attribute hash with the former having priority.
       # Values for properties in the primary key that are *not* included in the
       # foreign key must be specified in the attributes hash.
       #
@@ -14,32 +14,36 @@ module DataMapper
       #
       # @param [Hash] attributes
       #   The attributes assigned to the nested attribute setter on the
-      #   +model+.
+      #   +resource+.
       #
       # @return [Array, NilClass]
       #   Array if valid key values are present, nil otherwise
       # 
       # @api private
-      def extract_keys_for_nested_attributes(model, attributes)
-        target_model_key = self.target_model.key
-        target_key_array = self.target_key.to_a
-        source_key_array = self.source_key.to_a
-
-        key_values = target_model_key.to_enum(:each_with_index).map do |key, idx|
-          if source_idx = target_key_array.index(key)
-            model[source_key_array.at(source_idx).name]
-          else
-            attributes[key.name]
-          end
-        end
-        key_values = target_model_key.typecast(key_values)
+      def extract_keys_for_nested_attributes(resource, attributes)
+        raw_key_values = extract_target_primary_key_values(resource, attributes)
+        key_values     = target_model.key.typecast(raw_key_values)
 
         verify_key_values_for_nested_attributes(key_values)
       end
 
+      def extract_target_primary_key_values(resource, attributes)
+        target_model.key.map do |target_property|
+          if source_property = target_key_to_source_key_map[target_property]
+            resource[source_property.name]
+          else
+            attributes[target_property.name]
+          end
+        end
+      end
+
+      def target_key_to_source_key_map
+        @target_key_to_source_key_map ||= Hash[target_key.to_a.zip(source_key.to_a)]
+      end
+
       # @api private
       def verify_key_values_for_nested_attributes(key_values)
-        invalid = self.target_model.key.zip(key_values).any? do |property, value|
+        invalid = target_model.key.zip(key_values).any? do |property, value|
           verify_single_key_value_for_nested_attributes(property, value)
         end
 
@@ -66,10 +70,10 @@ module DataMapper
     # Extensions for {DataMapper::Associations::ManyToMany::Relationship}.
     module ManyToMany
       # @api private
-      def extract_keys_for_nested_attributes(model, attributes)
-        key_values = self.child_key.map do |key|
-          attributes[key.name]
-        end
+      def extract_keys_for_nested_attributes(resource, attributes)
+        child_key      = self.child_key
+        raw_key_values = attributes.values_at(*child_key.map { |key| key.name })
+        key_values     = child_key.typecast(raw_key_values)
 
         verify_key_values_for_nested_attributes(key_values)
       end
