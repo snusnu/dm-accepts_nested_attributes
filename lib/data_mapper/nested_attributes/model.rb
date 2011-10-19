@@ -92,6 +92,7 @@ module DataMapper
       def nested_attributes_module
         @nested_attributes_module ||= begin
           mod = Module.new { extend NestedAttributes::Model::ModuleMethods }
+          mod.define_inspect(self.name)
           include mod
           mod
         end
@@ -99,7 +100,7 @@ module DataMapper
 
       module ModuleMethods
         def define_nested_attribute_accessor(relationship_name)
-          module_eval <<-RUBY
+          module_eval <<-RUBY, __FILE__, __LINE__ + 1
             def #{relationship_name}_attributes
               @#{relationship_name}_attributes
             end
@@ -108,6 +109,14 @@ module DataMapper
               acceptor = model.nested_attribute_acceptors[:#{relationship_name}]
               assigned_attributes = acceptor.accept(self, attributes)
               @#{relationship_name}_attributes = assigned_attributes
+            end
+          RUBY
+        end
+
+        def define_inspect(model_name)
+          module_eval <<-RUBY, __FILE__, __LINE__ + 1
+            def self.inspect
+              "#{model_name}::NestedAttributesMethods"
             end
           RUBY
         end
