@@ -67,21 +67,9 @@ module DataMapper
         acceptor = acceptor_factory.for(relationship, options)
         nested_attribute_acceptors[relationship_name] = acceptor
 
-        # raise InvalidOptions if the given options don't make sense
-        assert_valid_options_for_nested_attributes(options)
-
-        # by default, nested attributes can't be destroyed
-        options = { :allow_destroy => false }.update(options)
-
-        # ----------------------------------------------------------------------------------
-        #                       should be safe to go from here
-        # ----------------------------------------------------------------------------------
-
-        options_for_nested_attributes[relationship.name] = options
+        nested_attributes_module.define_nested_attribute_accessor(relationship_name)
 
         include ::DataMapper::NestedAttributes::Resource
-
-        nested_attributes_module.define_nested_attribute_accessor(relationship_name)
 
         self
       end

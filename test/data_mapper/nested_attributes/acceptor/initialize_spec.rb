@@ -15,8 +15,8 @@ module DataMapper
       refute_predicate subject, :allow_destroy?
     end
 
-    it 'defaults acceptor#reject_if to nil' do
-      assert_nil subject.reject_if
+    it 'defaults acceptor#assignment_guard to #active? -> false' do
+      refute_predicate subject.assignment_guard, :active?
     end
 
     describe 'with :allow_destroy => true' do
