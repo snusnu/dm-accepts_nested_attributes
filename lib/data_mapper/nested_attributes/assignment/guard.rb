@@ -1,5 +1,10 @@
 module DataMapper
   module NestedAttributes
+
+    unless const_defined?(:InvalidOptions)
+      class InvalidOptions < ArgumentError; end
+    end
+
     class Assignment
       class Guard
         attr_reader :value
@@ -13,7 +18,8 @@ module DataMapper
             Inactive.new(value)
           else
             # never reached when called from inside the plugin
-            raise ArgumentError, "guard must be a Symbol, a String, or respond_to?(:call)"
+            message = "guard must be nil, a Symbol, a String, or respond_to?(:call)"
+            raise InvalidOptions, message
           end
         end
 
