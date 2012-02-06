@@ -3,9 +3,9 @@ source 'http://rubygems.org'
 SOURCE         = ENV.fetch('SOURCE', :git).to_sym
 REPO_POSTFIX   = SOURCE == :path ? ''                                : '.git'
 DATAMAPPER     = SOURCE == :path ? Pathname(__FILE__).dirname.parent : 'http://github.com/datamapper'
-DM_VERSION     = '~> 1.1.0'
-DM_UVERSION    = '< 1.2'
-DO_VERSION     = '~> 0.10.3'
+DM_VERSION     = '~> 1.1'
+DM_UVERSION    = '<= 1.3'
+DO_VERSION     = '~> 0.10.7'
 DM_DO_ADAPTERS = %w[ sqlite postgres mysql oracle sqlserver ]
 
 gem 'dm-core', DM_VERSION, DM_UVERSION, SOURCE => "#{DATAMAPPER}/dm-core#{REPO_POSTFIX}"
@@ -15,8 +15,8 @@ group :development do
   gem 'dm-validations',  DM_VERSION, DM_UVERSION, SOURCE => "#{DATAMAPPER}/dm-validations#{REPO_POSTFIX}"
   gem 'dm-constraints',  DM_VERSION, DM_UVERSION, SOURCE => "#{DATAMAPPER}/dm-constraints#{REPO_POSTFIX}"
 
-  gem 'rake',      '~> 0.8.7'
-  gem 'rspec',     '~> 1.3'
+  gem 'rake',      '~> 0.9.2'
+  gem 'rspec',     '~> 1.3.1'
   gem 'yard',      '~> 0.5'
   gem 'jeweler',   '~> 1.5.2'
 

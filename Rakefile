@@ -17,7 +17,7 @@ begin
 
   Jeweler::GemcutterTasks.new
 
-  FileList['tasks/**/*.rake'].each { |task| import task }
+  #FileList['tasks/**/*.rake'].each { |task| Rake.import task }
 
 rescue LoadError => e
   puts 'Jeweler (or a dependency) not available. Install it with: gem install jeweler'
