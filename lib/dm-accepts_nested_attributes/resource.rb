@@ -220,7 +220,12 @@ module DataMapper
       #
       # @return [void]
       def update_or_mark_as_destroyable(relationship, resource, attributes)
-        allow_destroy = self.class.options_for_nested_attributes[relationship.name][:allow_destroy]
+        options = self.class.options_for_nested_attributes
+        if options.empty? || !options[relationship.name].respond_to?(:[])
+          allow_destroy = nil
+        else
+          allow_destroy = options[relationship.name][:allow_destroy]
+        end
         if has_delete_flag?(attributes) && allow_destroy
           if relationship.is_a?(DataMapper::Associations::ManyToMany::Relationship)
             intermediaries = relationship.through.get(self).all(relationship.via => resource)
@@ -267,7 +272,12 @@ module DataMapper
       # @return [Boolean]
       #   +true+ if the given attributes will be rejected.
       def reject_new_record?(relationship, attributes)
-        guard = self.class.options_for_nested_attributes[relationship.name][:reject_if]
+        options = self.class.options_for_nested_attributes
+        if options.empty? || !options[relationship.name].respond_to?(:[])
+          guard = nil
+        else
+          guard = options[relationship.name][:reject_if]
+        end
         return false if guard.nil? # if relationship guard is nil, nothing will be rejected
         has_delete_flag?(attributes) || evaluate_reject_new_record_guard(guard, attributes)
       end
