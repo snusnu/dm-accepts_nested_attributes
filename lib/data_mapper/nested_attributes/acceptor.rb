@@ -20,6 +20,7 @@ module DataMapper
 
       attr_reader :relationship
       attr_reader :assignment_guard
+      attr_reader :delete_key
       attr_writer :assignment_factory
 
       def initialize(relationship, options)
@@ -27,6 +28,7 @@ module DataMapper
         @allow_destroy    = !!options.fetch(:allow_destroy, false)
         guard_factory     = options.fetch(:guard_factory) { Assignment::Guard }
         @assignment_guard = guard_factory.for(options.fetch(:reject_if, nil))
+        @delete_key = option.feth(:delete_key, :_delete).to_sym
       end
 
       def allow_destroy?
@@ -148,10 +150,6 @@ module DataMapper
         else
           resource.model.key.map { |property| property.name } << delete_key
         end
-      end
-
-      def delete_key
-        :_delete
       end
 
       # Determines whether the given attributes hash contains a truthy :_delete key.
