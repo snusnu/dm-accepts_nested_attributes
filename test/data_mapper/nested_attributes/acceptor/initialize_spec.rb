@@ -35,5 +35,14 @@ module DataMapper
       end
     end
 
+    describe 'with :delete_key => :_destroy' do
+      let(:options) { { :delete_key => :_destroy } }
+
+      it 'captures the :delete_key option as #delete_key' do
+        assert_same subject.delete_key, :_destroy
+      end
+
+    end
+
   end
 end
