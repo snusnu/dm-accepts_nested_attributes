@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
 
   s.files            = `git ls-files`.split("\n")
   s.test_files       = `git ls-files -- {spec}/*`.split("\n")
-  s.extra_rdoc_files = %w[LICENSE.txt READMEmd]
+  s.extra_rdoc_files = %w[LICENSE.txt README.md]
   s.require_paths    = ['lib']
 
   s.add_dependency 'dm-core', ['>= 1.1.0.rc0', '< 1.2']
