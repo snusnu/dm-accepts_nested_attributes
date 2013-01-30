@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.email       = 'gamsnjaga [a] gmail [d] com'
   s.summary     = %{Nested model assignment for datamapper}
   s.description = %{A datamapper plugin that allows nested model assignment like activerecord.}
-  s.homepage = %q{http://github.com/snusnu/dm-accepts_nested_attributes}
+  s.homepage    = 'http://github.com/snusnu/dm-accepts_nested_attributes'
 
   s.files            = `git ls-files`.split("\n")
   s.test_files       = `git ls-files -- {spec}/*`.split("\n")
