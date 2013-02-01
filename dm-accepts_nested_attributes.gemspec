@@ -1,8 +1,10 @@
 # -*- encoding: utf-8 -*-
 
+require File.expand_path('../lib/dm-accepts_nested_attributes/version', __FILE__)
+
 Gem::Specification.new do |s|
   s.name    = 'dm-accepts_nested_attributes'
-  s.version = '1.1.0'
+  s.version = DataMapper::NestedAttributes::VERSION
   s.license = 'MIT'
 
   s.authors     = ['Martin Gamsjaeger (snusnu)']
