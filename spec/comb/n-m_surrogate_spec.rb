@@ -98,7 +98,6 @@ describe "N:M (surrogate PK)" do
     end
 
     it "should allow to create a new project via Person#projects_attributes" do
-      pending_if "#{DataMapper::Spec.adapter_name} doesn't support M2M", DataMapper::Spec.adapter_name == 'in_memory' do
         person1  = Person.create(:id => 1, :audit_id => 10, :name => 'Martin')
         project1 = Project.create(:id => 100, :audit_id => 1000, :name => 'foo')
         project2 = Project.create(:id => 200, :audit_id => 2000, :name => 'bar')
@@ -148,7 +147,6 @@ describe "N:M (surrogate PK)" do
         }.should == [
           [1, 10, 500, 5000, nil],
         ]
-      end
     end
   end
 end
