@@ -63,21 +63,21 @@ describe "N:M (surrogate PK)" do
         Membership.create(:id => 10000, :person => person1, :project => project1, :role => 'foo-maintainer')
         Membership.create(:id => 20000, :person => person1, :project => project2, :role => 'bar-contributor')
         person1.reload
-  
+
         person2  = Person.create(:id => 2, :audit_id => 20, :name => 'John')
         project3 = Project.create(:id => 300, :audit_id => 3000, :name => 'qux')
         project4 = Project.create(:id => 400, :audit_id => 4000, :name => 'baz')
         Membership.create(:id => 30000, :person => person2, :project => project3, :role => 'qux-maintainer')
         Membership.create(:id => 40000, :person => person2, :project => project4, :role => 'baz-contributor')
         person2.reload
-  
+
         Person.all.size.should     == 2
         Project.all.size.should    == 4
         Membership.all.size.should == 4
-  
+
         person1.projects_attributes = [{ :id => 100, :audit_id => 1000, :name => 'still foo' }]
         person1.save.should be_true
-  
+
         Person.all.map { |p| [p.id, p.audit_id, p.name] }.should == [
           [1, 10, 'Martin'],
           [2, 20, 'John'],
@@ -96,30 +96,30 @@ describe "N:M (surrogate PK)" do
         ]
       end
     end
-  
+
     it "should allow to create a new project via Person#projects_attributes" do
-      pending_if "#{DataMapper::Spec.adapter_name} doesn't support M2M", !HAS_M2M_SUPPORT do
+      pending_if "#{DataMapper::Spec.adapter_name} doesn't support M2M", DataMapper::Spec.adapter_name == 'in_memory' do
         person1  = Person.create(:id => 1, :audit_id => 10, :name => 'Martin')
         project1 = Project.create(:id => 100, :audit_id => 1000, :name => 'foo')
         project2 = Project.create(:id => 200, :audit_id => 2000, :name => 'bar')
         Membership.create(:id => 10000, :person => person1, :project => project1, :role => 'foo-maintainer')
         Membership.create(:id => 20000, :person => person1, :project => project2, :role => 'bar-contributor')
         person1.reload
-  
+
         person2  = Person.create(:id => 2, :audit_id => 20, :name => 'John')
         project3 = Project.create(:id => 300, :audit_id => 3000, :name => 'qux')
         project4 = Project.create(:id => 400, :audit_id => 4000, :name => 'baz')
         Membership.create(:id => 30000, :person => person2, :project => project3, :role => 'qux-maintainer')
         Membership.create(:id => 40000, :person => person2, :project => project4, :role => 'baz-contributor')
         person2.reload
-  
+
         Person.all.size.should     == 2
         Project.all.size.should    == 4
         Membership.all.size.should == 4
-  
+
         person1.projects_attributes = [{ :id => 500, :audit_id => 5000, :name => 'fibble' }]
         person1.save.should be_true
-  
+
         Person.all.map { |p| [p.id, p.audit_id, p.name] }.should == [
           [1, 10, 'Martin'],
           [2, 20, 'John'],
