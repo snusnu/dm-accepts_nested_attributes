@@ -28,7 +28,7 @@ module DataMapper
         @allow_destroy    = !!options.fetch(:allow_destroy, false)
         guard_factory     = options.fetch(:guard_factory) { Assignment::Guard }
         @assignment_guard = guard_factory.for(options.fetch(:reject_if, nil))
-        @delete_key       = options.fetch(:delete_key, :_delete).to_sym
+        @delete_key       = options.fetch(:delete_key, NestedAttributes.delete_key).to_sym
       end
 
       def allow_destroy?

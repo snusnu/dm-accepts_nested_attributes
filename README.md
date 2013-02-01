@@ -19,6 +19,14 @@ The following example illustrates the use of this plugin.
     DataMapper::Logger.new(STDOUT, :debug)
     DataMapper.setup(:default, 'sqlite3::memory:')
 
+    # Specify the name of the key that marks a record
+    # for deletion (defaults to :_delete)
+    #
+    # Can be overwritten on a per model basis by
+    # passing :delete_key => :_my_delete_key to
+    # Model.accepts_nested_attributes_for
+    DataMapper::NestedAttributes.delete_key = :_destroy
+
     class Person
       include DataMapper::Resource
       property :id,   Serial
