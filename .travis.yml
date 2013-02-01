@@ -25,9 +25,21 @@ rvm:
 env:
   - "GIT_BRANCH=release-1.2 ADAPTER=in_memory PLUGINS=dm-migrations"
   - "GIT_BRANCH=release-1.2 ADAPTER=yaml"
+
   - "GIT_BRANCH=release-1.2 ADAPTER=sqlite"
+  - "GIT_BRANCH=release-1.2 ADAPTER=sqlite PLUGINS=dm-validations"
+  - "GIT_BRANCH=release-1.2 ADAPTER=sqlite PLUGINS=dm-constraints"
+  - "GIT_BRANCH=release-1.2 ADAPTER=sqlite PLUGINS=dm-validations,dm-constraints"
+
   - "GIT_BRANCH=release-1.2 ADAPTER=mysql DM_DB_USER=root DM_DB_PASSWORD=''"
+  - "GIT_BRANCH=release-1.2 ADAPTER=mysql PLUGINS=dm-validations DM_DB_USER=root DM_DB_PASSWORD=''"
+  - "GIT_BRANCH=release-1.2 ADAPTER=mysql PLUGINS=dm-constraints DM_DB_USER=root DM_DB_PASSWORD=''"
+  - "GIT_BRANCH=release-1.2 ADAPTER=mysql PLUGINS=dm-validations,dm-constraints DM_DB_USER=root DM_DB_PASSWORD=''"
+
   - "GIT_BRANCH=release-1.2 ADAPTER=postgres DM_DB_USER=postgres DM_DB_PASSWORD=''"
+  - "GIT_BRANCH=release-1.2 ADAPTER=postgres PLUGINS=dm-validations DM_DB_USER=postgres DM_DB_PASSWORD=''"
+  - "GIT_BRANCH=release-1.2 ADAPTER=postgres PLUGINS=dm-constraints DM_DB_USER=postgres DM_DB_PASSWORD=''"
+  - "GIT_BRANCH=release-1.2 ADAPTER=postgres PLUGINS=dm-validations,dm-constraints DM_DB_USER=postgres DM_DB_PASSWORD=''"
 matrix:
   allow_failures:
     #- rvm: ree
