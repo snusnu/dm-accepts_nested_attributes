@@ -22,7 +22,7 @@ rvm:
   - jruby-19mode
   - jruby-head
   - ree
-en:
+env:
   # specs need to be adapted for this to pass
   #
   #- "GIT_BRANCH=release-1.2 ADAPTER=in_memory"
