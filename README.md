@@ -9,14 +9,14 @@ Current documentation can always be found at [rdoc.info](http://rdoc.info/projec
 The following example illustrates the use of this plugin.
 
     require "rubygems"
-    
+
     require "dm-core"
     require "dm-validations"
     require "dm-accepts_nested_attributes"
-    
-    DataMapper::Logger.new(STDOUT, :debug)  
+
+    DataMapper::Logger.new(STDOUT, :debug)
     DataMapper.setup(:default, 'sqlite3::memory:')
-      
+
     class Person
       include DataMapper::Resource
       property :id,   Serial
@@ -24,47 +24,47 @@ The following example illustrates the use of this plugin.
       has 1, :profile
       has n, :project_memberships
       has n, :projects, :through => :project_memberships
-    
+
       accepts_nested_attributes_for :profile
       accepts_nested_attributes_for :projects
-    
+
       # adds the following instance methods
       # #profile_attributes=
       # #profile_attributes
       # #projects_attributes=
       # #projects_attributes
     end
-    
+
     class Profile
       include DataMapper::Resource
       property :id,      Serial
       property :person_id, Integer
       belongs_to :person
-    
+
       accepts_nested_attributes_for :person
-    
+
       # adds the following instance methods
       # #person_attributes=
       # #person_attributes
     end
-    
+
     class Project
       include DataMapper::Resource
       property :id, Serial
       has n, :tasks
       has n, :project_memberships
       has n, :people, :through => :project_memberships
-    
+
       accepts_nested_attributes_for :tasks
       accepts_nested_attributes_for :people
-      
+
       # adds the following instance methods
       # #tasks_attributes=
       # #tasks_attributes
       # #people_attributes=
       # #people_attributes
     end
-    
+
     class ProjectMembership
       include DataMapper::Resource
       property :id,         Serial
@@ -73,14 +73,14 @@ The following example illustrates the use of this plugin.
       belongs_to :person
       belongs_to :project
     end
-    
+
     class Task
       include DataMapper::Resource
       property :id,         Serial
       property :project_id, Integer
       belongs_to :project
     end
-    
+
     DataMapper.auto_migrate!
 
 ## TODO
