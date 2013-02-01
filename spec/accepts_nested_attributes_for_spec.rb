@@ -142,18 +142,20 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
           lambda { @model.accepts_nested_attributes_for @association }.should_not raise_error
         end
 
-        it "should store the accessible association in .options_for_nested_attributes" do
-          @model.options_for_nested_attributes[@association].should be_nil
+        it "should store the acceptor in .nested_attribute_acceptors" do
+          @model.nested_attribute_acceptors[@association].should be_nil
+
           @model.accepts_nested_attributes_for @association
-          relationship = @model.relationships[@association]
-          @model.options_for_nested_attributes[relationship.name].should_not be_nil
+
+          @model.nested_attribute_acceptors[@association].should_not be_nil
         end
 
-        it "should store the default options under the association_name in .options_for_nested_attributes" do
-          @model.options_for_nested_attributes[@association].should be_nil
+        it "should store the default options under the association_name in .nested_attribute_acceptors" do
+          @model.nested_attribute_acceptors[@association].should be_nil
+
           @model.accepts_nested_attributes_for @association
-          relationship = @model.relationships[@association]
-          @model.options_for_nested_attributes[relationship.name].should == { :allow_destroy => false }
+
+          @model.nested_attribute_acceptors[@association].should_not be_allow_destroy
         end
 
         it "should create a \#{association_name}_attributes instance reader" do
@@ -180,18 +182,20 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
           lambda { @model.accepts_nested_attributes_for @association, {} }.should_not raise_error
         end
 
-        it "should store the accessible association in .autosave_associations" do
-          @model.options_for_nested_attributes[@association].should be_nil
+        it "should store the acceptor under the association name in .nested_attribute_acceptors" do
+          @model.nested_attribute_acceptors[@association].should be_nil
+
           @model.accepts_nested_attributes_for @association, {}
-          relationship = @model.relationships[@association]
-          @model.options_for_nested_attributes[relationship.name].should_not be_nil
+
+          @model.nested_attribute_acceptors[@association].should_not be_nil
         end
 
-        it "should store the default options under the association_name in .autosave_associations" do
-          @model.options_for_nested_attributes[@association].should be_nil
+        it "should store the acceptor with default options under the association name in .nested_attribute_acceptors" do
+          @model.nested_attribute_acceptors[@association].should be_nil
+
           @model.accepts_nested_attributes_for @association, {}
-          relationship = @model.relationships[@association]
-          @model.options_for_nested_attributes[relationship.name].should == { :allow_destroy => false }
+
+          @model.nested_attribute_acceptors[@association].should_not be_allow_destroy
         end
 
         it "should create a \#{association_name}_attributes instance reader" do
@@ -212,35 +216,39 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
 
       end
 
-      describe "and invalid options" do
-
-        it "should raise" do
-          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error(DataMapper::NestedAttributes::InvalidOptions)
-        end
-
-        it "should not store the accessible association in .autosave_associations" do
-          @model.options_for_nested_attributes[@association].should be_nil
-          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error(DataMapper::NestedAttributes::InvalidOptions)
-          @model.options_for_nested_attributes[@association].should be_nil
-        end
-
-        it "should not create a \#{association_name}_attributes instance reader" do
-          p = @model.new
-          p.respond_to?("#{@association}_attributes").should be_false
-          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error(DataMapper::NestedAttributes::InvalidOptions)
-          p = @model.new
-          p.respond_to?("#{@association}_attributes").should be_false
-        end
-
-        it "should not create a \#{association_name}_attributes instance writer" do
-          p = @model.new
-          p.respond_to?("#{@association}_attributes=").should be_false
-          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error(DataMapper::NestedAttributes::InvalidOptions)
-          p = @model.new
-          p.respond_to?("#{@association}_attributes=").should be_false
-        end
-
-      end
+      # Dropped support for raising exceptions on unrecognized options keys
+      #   options hash is no longer stored in its entirety; specific keys
+      #   are now pulled out as needed and hash itself is GC'd
+      # 
+      # describe "and invalid options" do
+      # 
+      #   it "should raise" do
+      #     lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error(DataMapper::NestedAttributes::InvalidOptions)
+      #   end
+      # 
+      #   it "should not store the accessible association in .autosave_associations" do
+      #     @model.options_for_nested_attributes[@association].should be_nil
+      #     lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error(DataMapper::NestedAttributes::InvalidOptions)
+      #     @model.options_for_nested_attributes[@association].should be_nil
+      #   end
+      # 
+      #   it "should not create a \#{association_name}_attributes instance reader" do
+      #     p = @model.new
+      #     p.respond_to?("#{@association}_attributes").should be_false
+      #     lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error(DataMapper::NestedAttributes::InvalidOptions)
+      #     p = @model.new
+      #     p.respond_to?("#{@association}_attributes").should be_false
+      #   end
+      # 
+      #   it "should not create a \#{association_name}_attributes instance writer" do
+      #     p = @model.new
+      #     p.respond_to?("#{@association}_attributes=").should be_false
+      #     lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error(DataMapper::NestedAttributes::InvalidOptions)
+      #     p = @model.new
+      #     p.respond_to?("#{@association}_attributes=").should be_false
+      #   end
+      # 
+      # end
 
       describe "and valid options" do
 
@@ -248,36 +256,42 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
           lambda { @model.accepts_nested_attributes_for @association, :allow_destroy => true }.should_not raise_error
         end
 
-        it "should store the accessible association in .autosave_associations" do
-          @model.options_for_nested_attributes[@association].should be_nil
+        it "should store the acceptor under the association name in .nested_attribute_acceptors" do
+          @model.nested_attribute_acceptors[@association].should be_nil
+
           @model.accepts_nested_attributes_for @association, :allow_destroy => true
-          relationship = @model.relationships[@association]
-          @model.options_for_nested_attributes[relationship.name].should_not be_nil
+
+          @model.nested_attribute_acceptors[@association].should_not be_nil
         end
 
         it "should accept :allow_destroy as the only option (and thus overwrite the default option)" do
-          @model.options_for_nested_attributes[@association].should be_nil
+          @model.nested_attribute_acceptors[@association].should be_nil
+
           @model.accepts_nested_attributes_for @association, :allow_destroy => true
-          relationship = @model.relationships[@association]
-          @model.options_for_nested_attributes[relationship.name].should == { :allow_destroy => true }
+
+          @model.nested_attribute_acceptors[@association].should be_allow_destroy
         end
 
         it "should accept :reject_if as the only option (and add :allow_destroy => false)" do
-          @model.options_for_nested_attributes[@association].should be_nil
+          @model.nested_attribute_acceptors[@association].should be_nil
+
           @model.accepts_nested_attributes_for @association, :reject_if => lambda { |attributes| nil }
-          relationship = @model.relationships[@association]
-          @model.options_for_nested_attributes[relationship.name].should_not be_nil
-          @model.options_for_nested_attributes[relationship.name][:allow_destroy].should be_false
-          @model.options_for_nested_attributes[relationship.name][:reject_if].should be_kind_of(Proc)
+
+          acceptor = @model.nested_attribute_acceptors[@association]
+          acceptor.should be
+          acceptor.should_not be_allow_destroy
+          acceptor.assignment_guard.should be_kind_of(DataMapper::NestedAttributes::Assignment::Guard::Proc)
         end
 
         it "should accept both :allow_destroy and :reject_if as options" do
-          @model.options_for_nested_attributes[@association].should be_nil
+          @model.nested_attribute_acceptors[@association].should be_nil
+
           @model.accepts_nested_attributes_for @association, :allow_destroy => true, :reject_if => lambda { |attributes| nil }
-          relationship = @model.relationships[@association]
-          @model.options_for_nested_attributes[relationship.name].should_not be_nil
-          @model.options_for_nested_attributes[relationship.name][:allow_destroy].should be_true
-          @model.options_for_nested_attributes[relationship.name][:reject_if].should be_kind_of(Proc)
+
+          acceptor = @model.nested_attribute_acceptors[@association]
+          acceptor.should be
+          acceptor.should be_allow_destroy
+          acceptor.assignment_guard.should be_kind_of(DataMapper::NestedAttributes::Assignment::Guard::Proc)
         end
 
         it "should create a \#{association_name}_attributes instance reader" do
@@ -326,17 +340,20 @@ describe "DataMapper::Model.accepts_nested_attributes_for" do
 
       end
 
-      describe "and invalid options" do
-
-        it "should not create a get_\#{association_name} instance reader" do
-          p = @model.new
-          p.respond_to?("get_#{@association}").should be_false
-          lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error(DataMapper::NestedAttributes::InvalidOptions)
-          p = @model.new
-          p.respond_to?("get_#{@association}").should be_false
-        end
-
-      end
+      # See note above about dropped support for raising InvalidOptions exception
+      #   when invalid options keys are provided to #accepts_nested_attributes_for
+      # 
+      # describe "and invalid options" do
+      # 
+      #   it "should not create a get_\#{association_name} instance reader" do
+      #     p = @model.new
+      #     p.respond_to?("get_#{@association}").should be_false
+      #     lambda { @model.accepts_nested_attributes_for @association, { :foo => :bar } }.should raise_error(DataMapper::NestedAttributes::InvalidOptions)
+      #     p = @model.new
+      #     p.respond_to?("get_#{@association}").should be_false
+      #   end
+      # 
+      # end
 
       describe "and valid options" do
 

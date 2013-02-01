@@ -1,3 +1,6 @@
+require 'data_mapper/nested_attributes/resource'
+require 'data_mapper/nested_attributes/acceptor'
+
 module DataMapper
   module NestedAttributes
     class BackwardsCompatibilityHash < Hash
@@ -36,8 +39,8 @@ module DataMapper
       ##
       # Allows an association to accept nested attributes.
       #
-      # @param [Symbol, String] association_name
-      #   The name of the association that should accept nested attributes.
+      # @param [Symbol, String] relationship_name
+      #   The name of the Relationship that should accept nested attributes.
       #
       # @param [Hash?] options
       #   List of resources to initialize the collection with.
@@ -55,42 +58,24 @@ module DataMapper
       #
       # @return [void]
       #
-      def accepts_nested_attributes_for(association_name, options = {})
-
-        # ----------------------------------------------------------------------------------
-        #                      try to fail as early as possible
-        # ----------------------------------------------------------------------------------
-
-        unless relationship = relationships(repository_name)[association_name]
-          raise(ArgumentError, "No relationship #{association_name.inspect} for '#{name}' in :#{repository_name} repository")
+      def accepts_nested_attributes_for(relationship_name, options = {})
+        unless relationship = relationships(repository_name)[relationship_name]
+          raise(ArgumentError, "No relationship #{relationship_name.inspect} for '#{name}' in :#{repository_name} repository")
         end
 
-        # raise InvalidOptions if the given options don't make sense
-        assert_valid_options_for_nested_attributes(options)
+        acceptor_factory = options.delete(:acceptor) || Acceptor
+        acceptor = acceptor_factory.for(relationship, options)
+        nested_attribute_acceptors[relationship_name] = acceptor
 
-        # by default, nested attributes can't be destroyed
-        options = { :allow_destroy => false }.update(options)
-
-        # ----------------------------------------------------------------------------------
-        #                       should be safe to go from here
-        # ----------------------------------------------------------------------------------
-
-        options_for_nested_attributes[relationship.name] = options
+        nested_attributes_module.define_nested_attribute_accessor(relationship_name)
 
         include ::DataMapper::NestedAttributes::Resource
 
-        type = relationship.max > 1 ? :collection : :resource
+        self
+      end
 
-        define_method "#{association_name}_attributes" do
-          instance_variable_get("@#{association_name}_attributes")
-        end
-
-        define_method "#{association_name}_attributes=" do |attributes|
-          attributes = sanitize_nested_attributes(attributes)
-          instance_variable_set("@#{association_name}_attributes", attributes)
-          send("assign_nested_attributes_for_related_#{type}", relationship, attributes)
-        end
-
+      def nested_attribute_acceptors
+        @nested_attribute_acceptors ||= Hash.new
       end
 
       # Returns a hash with the options for all associations (using the
@@ -102,7 +87,40 @@ module DataMapper
       end
 
 
-      private
+    private
+
+      def nested_attributes_module
+        @nested_attributes_module ||= begin
+          mod = Module.new { extend NestedAttributes::Model::ModuleMethods }
+          mod.define_inspect(self.name)
+          include mod
+          mod
+        end
+      end
+
+      module ModuleMethods
+        def define_nested_attribute_accessor(relationship_name)
+          module_eval <<-RUBY, __FILE__, __LINE__ + 1
+            def #{relationship_name}_attributes
+              @#{relationship_name}_attributes
+            end
+
+            def #{relationship_name}_attributes=(attributes)
+              acceptor = model.nested_attribute_acceptors[:#{relationship_name}]
+              assigned_attributes = acceptor.accept(self, attributes)
+              @#{relationship_name}_attributes = assigned_attributes
+            end
+          RUBY
+        end
+
+        def define_inspect(model_name)
+          module_eval <<-RUBY, __FILE__, __LINE__ + 1
+            def self.inspect
+              "#{model_name}::NestedAttributesMethods"
+            end
+          RUBY
+        end
+      end
 
       ##
       # Checks options passed to {#accepts_nested_attributes_for}.

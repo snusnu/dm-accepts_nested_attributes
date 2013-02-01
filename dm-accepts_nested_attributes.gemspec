@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-require File.expand_path('../lib/dm-accepts_nested_attributes/version', __FILE__)
+require File.expand_path('../lib/data_mapper/nested_attributes/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.name    = 'dm-accepts_nested_attributes'
