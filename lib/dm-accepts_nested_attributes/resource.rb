@@ -220,7 +220,12 @@ module DataMapper
       #
       # @return [void]
       def update_or_mark_as_destroyable(relationship, resource, attributes)
-        allow_destroy = self.class.options_for_nested_attributes[relationship.name][:allow_destroy]
+        options = self.class.options_for_nested_attributes
+        if options.empty? || !options[relationship.name].respond_to?(:[])
+          allow_destroy = nil
+        else
+          allow_destroy = options[relationship.name][:allow_destroy]
+        end
         if has_delete_flag?(attributes) && allow_destroy
           if relationship.is_a?(DataMapper::Associations::ManyToMany::Relationship)
             intermediaries = relationship.through.get(self).all(relationship.via => resource)
@@ -230,7 +235,57 @@ module DataMapper
         else
           assert_nested_update_clean_only(resource)
           resource.attributes = DataMapper::Ext::Hash.except(attributes, *unupdatable_keys)
-          resource.save
+          # TODO: Contribute this back to main project with an explanation of
+          # why this shouldn't save, after getting tests to run and ensuring
+          # coverage for this.
+          # The DataMapper paradigm is that if I call @object.attributes =
+          # some_hash, that's explicitly saying "update the attributes but
+          # don't save yet." If I wanted to update and save at the same time,
+          # I'd call @object.update(some_hash).  The line below breaks that
+          # paradigm: if the hash contains attributes for associations, this
+          # method automatically saves them.
+          # This is broken because:
+          # - I no longer have the option of using `attributes=` without
+          # saving the associations; `update` and `attributes=` do the same
+          # thing as far as nested resources are concerned
+          # - Saving here is unnecessary anyway. If we simply don't save,
+          # calling save on the parent object will save these associations
+          # anyway, per the DataMapper documentation:
+          # 
+          # >>  It is important to note that #save will save the complete loaded
+          # >>  object graph when called. This means that calling #save on a
+          # >>  resource that has relationships of any kind (established via
+          # >>  belongs_to or has) will also save those related resources, if
+          # >>  they are loaded at the time #save is being called. Related
+          # >>  resources are loaded if they've been accessed either for read or
+          # >>  for write purposes, prior to #save being called.  contains
+          # >>  attributes for nested resorces
+          #
+          # - Finally, saving here makes it impossible to use DataMapper's
+          # global `Model.raise_on_save_failure` setting, because as soon as
+          # one of these associations fails to save, the process of building
+          # the others is aborted. In a Rails controller, I want to do:
+          #
+          # @foo.attributes = params[:foo_attributes]
+          # begin
+          #   @foo.save
+          #   redirect_to someplace
+          # rescue
+          #   render :new, alert: t('flash.save_failed')
+          #
+          # With `raise_on_save_failure`, this ensures that all associations
+          # were saved before we continue. However, if `attributes=` tries
+          # to save each associated object before I call `@foo.save`, the
+          # first invalid one short-circuts the process and the other objects
+          # never get built, which means they can't be displayed with errors
+          # when we re-render the form.
+          #
+          # For all of these reasons, the save below is commented out. Later,
+          # we should delete it and contribute it back if possible.
+          # I've already opened an issue with the info above:
+          # https://github.com/snusnu/dm-accepts_nested_attributes/issues/15
+          #
+          # saved = resource.save
         end
       end
 
@@ -267,7 +322,12 @@ module DataMapper
       # @return [Boolean]
       #   +true+ if the given attributes will be rejected.
       def reject_new_record?(relationship, attributes)
-        guard = self.class.options_for_nested_attributes[relationship.name][:reject_if]
+        options = self.class.options_for_nested_attributes
+        if options.empty? || !options[relationship.name].respond_to?(:[])
+          guard = nil
+        else
+          guard = options[relationship.name][:reject_if]
+        end
         return false if guard.nil? # if relationship guard is nil, nothing will be rejected
         has_delete_flag?(attributes) || evaluate_reject_new_record_guard(guard, attributes)
       end
