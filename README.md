@@ -1,5 +1,7 @@
 # dm-accepts_nested_attributes
 
+[![Build Status](https://travis-ci.org/snusnu/dm-accepts_nested_attributes.png?branch=release-1.2)](https://travis-ci.org/snusnu/dm-accepts_nested_attributes)
+
 A DataMapper plugin that allows nested model attribute assignment like activerecord does.
 
 Current documentation can always be found at [rdoc.info](http://rdoc.info/projects/snusnu/dm-accepts_nested_attributes)
