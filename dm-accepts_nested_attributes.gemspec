@@ -16,9 +16,9 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = %w[LICENSE.txt README.md]
   s.require_paths    = ['lib']
 
-  s.add_dependency 'dm-core', '~> 1.1'
-  s.add_development_dependency 'dm-validations', '~> 1.1'
-  s.add_development_dependency 'dm-constraints', '~> 1.1'
+  s.add_dependency 'dm-core', '~> 1.2'
+  s.add_development_dependency 'dm-validations', '~> 1.2'
+  s.add_development_dependency 'dm-constraints', '~> 1.2'
   s.add_development_dependency 'rake', '~> 0.9'
   s.add_development_dependency 'rspec', '~> 1.3'
   s.add_development_dependency 'yard', '~> 0.8'
