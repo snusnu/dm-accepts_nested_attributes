@@ -1,6 +1,0 @@
-TODO
-====
-
-* collect validation errors from related resources
-* update README to include more complete usecases
-* think about replacing :reject_if with :if and :unless

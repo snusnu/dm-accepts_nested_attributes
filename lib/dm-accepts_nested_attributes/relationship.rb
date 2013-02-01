@@ -9,72 +9,69 @@ module DataMapper
       # Values for properties in the primary key that are *not* included in the
       # foreign key must be specified in the attributes hash.
       #
-      # @param model [DataMapper::Model]
-      #   The model that accepts nested attributes.
+      # @param [DataMapper::Resource] resource
+      #   The resource that accepts nested attributes.
       #
-      # @param attributes [Hash]
+      # @param [Hash] attributes
       #   The attributes assigned to the nested attribute setter on the
       #   +model+.
       #
-      # @return [Array]
+      # @return [Array, NilClass]
+      #   Array if valid key values are present, nil otherwise
+      # 
+      # @api private
       def extract_keys_for_nested_attributes(model, attributes)
-        raise NotImplementedError, "extract_keys must be overridden in a derived class"
+        target_model_key = self.target_model.key
+        target_key_array = self.target_key.to_a
+        source_key_array = self.source_key.to_a
+
+        key_values = target_model_key.to_enum(:each_with_index).map do |key, idx|
+          if source_idx = target_key_array.index(key)
+            model[source_key_array.at(source_idx).name]
+          else
+            attributes[key.name]
+          end
+        end
+        key_values = target_model_key.typecast(key_values)
+
+        verify_key_values_for_nested_attributes(key_values)
+      end
+
+      # @api private
+      def verify_key_values_for_nested_attributes(key_values)
+        invalid = self.target_model.key.zip(key_values).any? do |property, value|
+          verify_single_key_value_for_nested_attributes(property, value)
+        end
+
+        invalid ? nil : key_values
+      end
+
+      # @return [Boolean]
+      #   whether +value+ is valid for +property+
+      # 
+      # @api private
+      # 
+      # TODO: move this into Property?
+      def verify_single_key_value_for_nested_attributes(property, value)
+        case
+        when property.allow_nil?            then false
+        when property.allow_blank?          then value.nil?
+        when Property::Boolean === property then false
+        else
+          DataMapper::Ext.blank?(value)
+        end
       end
     end
 
     # Extensions for {DataMapper::Associations::ManyToMany::Relationship}.
     module ManyToMany
+      # @api private
       def extract_keys_for_nested_attributes(model, attributes)
-        keys = self.child_key.map do |key|
+        key_values = self.child_key.map do |key|
           attributes[key.name]
         end
 
-        keys.any? { |key| DataMapper::Ext.blank?(key) } ? nil : keys
-      end
-    end
-
-    # Extensions for {DataMapper::Associations::OneToMany::Relationship}.
-    module OneToMany
-      def extract_keys_for_nested_attributes(model, attributes)
-        keys = self.child_model.key.to_enum(:each_with_index).map do |key, idx|
-          if parent_idx = self.child_key.to_a.index(key)
-            model[self.parent_key.to_a.at(parent_idx).name]
-          else
-            attributes[key.name]
-          end
-        end
-
-        keys.any? { |key| DataMapper::Ext.blank?(key) } ? nil : keys
-      end
-    end
-
-    # Extensions for {DataMapper::Associations::ManyToOne::Relationship}.
-    module ManyToOne
-      def extract_keys_for_nested_attributes(model, attributes)
-        keys = self.parent_model.key.to_enum(:each_with_index).map do |key, idx|
-          if child_idx = self.parent_key.to_a.index(key)
-            model[self.child_key.to_a.at(child_idx).name]
-          else
-            attributes[key.name]
-          end
-        end
-
-        keys.any? { |key| DataMapper::Ext.blank?(key) } ? nil : keys
-      end
-    end
-
-    # Extensions for {DataMapper::Associations::OneToOne::Relationship}.
-    module OneToOne
-      def extract_keys_for_nested_attributes(model, attributes)
-        keys = self.child_model.key.to_enum(:each_with_index).map do |key, idx|
-          if parent_idx = self.child_key.to_a.index(key)
-            model[self.parent_key.to_a.at(parent_idx).name]
-          else
-            attributes[key.name]
-          end
-        end
-
-        keys.any? { |key| DataMapper::Ext.blank?(key) } ? nil : keys
+        verify_key_values_for_nested_attributes(key_values)
       end
     end
 

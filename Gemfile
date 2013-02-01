@@ -1,33 +1,20 @@
-source 'http://rubygems.org'
+require 'pathname'
+
+source :rubygems
+
+gemspec
 
 SOURCE         = ENV.fetch('SOURCE', :git).to_sym
 REPO_POSTFIX   = SOURCE == :path ? ''                                : '.git'
 DATAMAPPER     = SOURCE == :path ? Pathname(__FILE__).dirname.parent : 'http://github.com/datamapper'
-DM_VERSION     = '~> 1.2.0.rc2'
+DM_VERSION     = '~> 1.3.0.beta'
 DO_VERSION     = '~> 0.10.6'
 DM_DO_ADAPTERS = %w[ sqlite postgres mysql oracle sqlserver ]
 CURRENT_BRANCH = ENV.fetch('GIT_BRANCH', 'master')
 
-gem 'dm-core', DM_VERSION,
+gem 'dm-core',     DM_VERSION,
   SOURCE  => "#{DATAMAPPER}/dm-core#{REPO_POSTFIX}",
   :branch => CURRENT_BRANCH
-
-group :development do
-
-  gem 'dm-validations', DM_VERSION,
-    SOURCE  => "#{DATAMAPPER}/dm-validations#{REPO_POSTFIX}",
-    :branch => CURRENT_BRANCH
-
-  gem 'dm-constraints', DM_VERSION,
-    SOURCE  => "#{DATAMAPPER}/dm-constraints#{REPO_POSTFIX}",
-    :branch => CURRENT_BRANCH
-
-  gem 'rake',      '~> 0.9.2'
-  gem 'rspec',     '~> 1.3.2'
-  gem 'yard',      '~> 0.7.2'
-  gem 'jeweler',   '~> 1.6.4'
-
-end
 
 platforms :mri_18 do
   group :quality do
@@ -57,28 +44,23 @@ group :datamapper do
     end
 
     gem 'dm-do-adapter', DM_VERSION,
-      SOURCE => "#{DATAMAPPER}/dm-do-adapter#{REPO_POSTFIX}",
+      SOURCE  => "#{DATAMAPPER}/dm-do-adapter#{REPO_POSTFIX}",
       :branch => CURRENT_BRANCH
-
   end
 
   adapters.each do |adapter|
-
     gem "dm-#{adapter}-adapter", DM_VERSION,
-      SOURCE => "#{DATAMAPPER}/dm-#{adapter}-adapter#{REPO_POSTFIX}",
+      SOURCE  => "#{DATAMAPPER}/dm-#{adapter}-adapter#{REPO_POSTFIX}",
       :branch => CURRENT_BRANCH
-
   end
 
   plugins = ENV['PLUGINS'] || ENV['PLUGIN']
   plugins = plugins.to_s.tr(',', ' ').split.push('dm-migrations').uniq
 
   plugins.each do |plugin|
-
     gem plugin, DM_VERSION,
-      SOURCE => "#{DATAMAPPER}/#{plugin}#{REPO_POSTFIX}",
+      SOURCE  => "#{DATAMAPPER}/#{plugin}#{REPO_POSTFIX}",
       :branch => CURRENT_BRANCH
-
   end
 
 end
