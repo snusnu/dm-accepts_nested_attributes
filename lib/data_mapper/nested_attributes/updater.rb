@@ -29,6 +29,8 @@ module DataMapper
         end
       end
 
+      private
+
       def update_attributes(resource, attributes)
         assert_nested_update_clean_only(resource)
         resource.attributes = updatable_attributes(resource, attributes)
@@ -69,8 +71,6 @@ module DataMapper
           raise UpdateConflictError, "#{resource.model}#update cannot be called on a #{new_or_dirty} nested resource"
         end
       end
-
-      private
 
       def mark_as_destroyable?(attributes)
         configuration.allow_destroy? && configuration.delete_flagged?(attributes)

@@ -30,7 +30,7 @@ module DataMapper
       #
       # @return [Array, NilClass]
       #   Array if valid key values are present, nil otherwise
-      # 
+      #
       # @api private
       def extract(attributes)
         raw_key_values = extract_raw_key_values(attributes)
@@ -38,6 +38,8 @@ module DataMapper
 
         filter_invalid_key_values(key_values)
       end
+
+      private
 
       def extract_raw_key_values(attributes)
         target_model_key.map do |target_property|
@@ -67,9 +69,9 @@ module DataMapper
 
       # @return [Boolean]
       #   whether +value+ is valid for +property+
-      # 
+      #
       # @api private
-      # 
+      #
       # TODO: move this into Property?
       def valid_value_for_property?(property, value)
         case
@@ -82,6 +84,8 @@ module DataMapper
       end
 
       class ManyToMany < KeyValuesExtractor
+        private
+
         def_delegators :relationship, :child_key
 
         alias_method :casting_key, :child_key

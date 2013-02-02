@@ -18,7 +18,7 @@ module DataMapper
 
       # @param [DataMapper::NestedAttributes::Acceptor] configuration
       #   Acceptor whose configuration will guide this Assignment.
-      # 
+      #
       # @param [DataMapper::NestedAttributes::Resource] assignee
       #   Resource which is receiving the nested attribute assignment
       def initialize(assignee, configuration)
@@ -66,6 +66,8 @@ module DataMapper
         self
       end
 
+      private
+
       def key_values_extractor
         @key_values_extractor ||= configuration.key_values_extractor_for(assignee)
       end
@@ -98,6 +100,8 @@ module DataMapper
 
 
       class Resource < Assignment
+        private
+
         def existing_resource_for_key_values(key_values)
           existing = associated
           existing if existing && existing.key == key_values
@@ -169,6 +173,8 @@ module DataMapper
 
           self
         end
+
+        private
 
         def existing_resource_for_key_values(key_values)
           associated.get(*key_values)

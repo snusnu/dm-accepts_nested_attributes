@@ -24,7 +24,7 @@ module DataMapper
         saved
       end
 
-    private
+      private
 
       def destroyables
         @destroyables ||= []

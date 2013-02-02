@@ -87,7 +87,7 @@ module DataMapper
       end
 
 
-    private
+      private
 
       def nested_attributes_module
         @nested_attributes_module ||= begin
