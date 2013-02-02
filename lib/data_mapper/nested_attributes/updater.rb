@@ -22,7 +22,7 @@ module DataMapper
       #
       # @return [void]
       def update(resource, attributes)
-        if configuration.allow_destroy? && configuration.delete_flagged?(attributes)
+        if mark_as_destroyable?(attributes)
           mark_as_destroyable(resource)
         else
           update_attributes(resource, attributes)
@@ -70,6 +70,11 @@ module DataMapper
         end
       end
 
+      private
+
+      def mark_as_destroyable?(attributes)
+        configuration.allow_destroy? && configuration.delete_flagged?(attributes)
+      end
 
       class ManyToMany < Updater
         def mark_as_destroyable(resource)
